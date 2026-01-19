@@ -1,0 +1,1070 @@
+﻿/* -----------------------
+   Global Settings
+-------------------------*/
+body.welcome-body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #ffffff;
+}
+/**************************** -----------------------**************************************
+                               Welcome Page Layout
+*************************** -----------------------**************************************/
+.welcome-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 80px;
+}
+
+.welcome-left {
+    width: 50%;
+}
+    .welcome-left h1 {
+        font-size: 38px;
+        font-weight: bold;
+        line-height: 1.3;
+        margin: 0;
+    }
+    .welcome-left p {
+        font-size: 14px;
+        color: #444;
+        margin-top: 15px;
+        width: 80%;
+    }
+/* Gradient Text */
+.text-gradient {
+    background: linear-gradient(90deg, #94C7B6, #2272AD, #76BAA5, #12889C);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+/* -----------------------
+   Start Button
+-------------------------*/
+.btn-start {
+    display: inline-block;
+    margin-top: 40px;
+    background: #12889C;
+    padding: 12px 45px;
+    color: #fff;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 17px;
+    transition: 0.3s ease;
+}
+
+    .btn-start:hover {
+        opacity: 0.8;
+    }
+/* -----------------------
+   Right Side Image + Gradient Border Box
+-------------------------*/
+.welcome-right {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.welcome-logo-box {
+    padding: 35px 45px;
+    border-radius: 35px;
+    border: 4px solid transparent;
+    background: linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #94C7B6, #2272AD, #76BAA5, #12889C) border-box;
+    box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    margin-top: 35px; /* تنزل شوي تحت */
+}
+.welcome-logo {
+    width: 350px;
+    display: block;
+}
+/* -----------------------
+   Welcome Top Line
+-------------------------*/
+.welcome-body::before {
+    content: "";
+    width: 100%;
+    height: 2px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: linear-gradient(90deg, #94C7B6, #2272AD, #12889C);
+    opacity: 0.35;
+}
+/* -----------------------
+   Welcome Logo Box (Second Version)
+-------------------------*/
+.welcome-logo-box {
+    padding: 55px 70px;
+    border-radius: 45px;
+    border: 3px solid rgba(0, 128, 128, 0.25); /* خفيف جدًا */
+    background: #ffffff;
+    margin-top: 25px;
+    max-width: 500px; /* عرض يشبه الصورة الأصلية */
+    box-shadow: 0 0 20px rgba(0,0,0,0.03); /* ظل خفي خفي */
+}
+
+.welcome-logo {
+    width: 430px; /* أكبر مثل الصورة */
+}
+/*************************** -----------------------**************************************
+                               Authentication Pages
+****************************-------------------------*************************************/
+.auth-body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #94C7B6, #2272AD, #12889C);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.auth-container {
+    background: white;
+    width: 380px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.auth-logo {
+    width: 65px;
+    margin-bottom: 15px;
+}
+
+.auth-title {
+    font-size: 22px;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 13px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+    .auth-input:focus {
+        outline: none;
+        border-color: #12889C;
+    }
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    background: #12889C;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .auth-btn:hover {
+        opacity: 0.85;
+    }
+
+    .auth-btn.secondary {
+        background: transparent;
+        color: #12889C;
+        border: 2px solid #12889C;
+        margin-top: 5px;
+    }
+
+.auth-foot-text {
+    margin-top: 18px;
+    font-size: 13px;
+    color: #555;
+}
+/* Gradient text */
+.text-gradient {
+    background: linear-gradient(90deg, #94C7B6, #2272AD, #12889C);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+/*************************** -----------------------**************************************
+                               Shared Layout
+ *************************** -----------------------************************************** */
+
+/* =========================
+   MAIN LAYOUT
+   ========================= */
+.main-layout {
+    min-height: 100vh;
+    background: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 0; /* ❗ مهم */
+}
+/* =========================
+   SIDEBAR (مطابق للتصميم)
+   ========================= */
+.student-sidebar {
+    width: 240px;
+    background: linear-gradient(to bottom, #76BAA5, #2272AD);
+    color: #ffffff;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-radius: 0 26px 26px 0;
+}
+/* =========================
+   MAIN CONTENT AREA
+   ========================= */
+.main-background-box {
+    margin-left: 260px; 
+    margin-top: 30px;
+    margin-right: 30px;
+    margin-bottom: 30px;
+    background: rgba(183, 180, 192, 0.09);
+    border-radius: 36px;
+    padding: 60px;
+    flex: 1;
+}
+.main-layout {
+    min-height: 100vh;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.student-layout {
+    display: flex;
+    height: calc(100vh - 40px);
+    gap: 24px;
+}
+/* =========================
+   Sidebar
+========================= */
+.student-sidebar,
+.advisor-sidebar {
+    width: 210px;
+    border-radius: 1px;
+    padding: 25px 18px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient( 180deg, #94C7B6 0%, #2272AD 50%, #76BAA5 100%, #12889C 100% );
+}
+/***************************
+   Root Layout
+****************************/
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.main-layout {
+    height: 100vh;
+    background: #ffffff;
+    padding: 0;
+}
+/***************************
+   Sidebar (مطابق للبروتوتايب)
+****************************/
+.student-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 15px;
+}
+
+.student-menu {
+    list-style: none;
+    padding: 0;
+    flex: 1;
+}
+
+    .student-menu li {
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+        .student-menu li.active {
+            background-color: rgba(255,255,255,0.25);
+        }
+/* =========================
+   Main Background Box
+========================= */
+.main-background-box {
+    flex: 1;
+    background: #f7f7f7;
+    border-radius: 36px;
+    padding: 36px 42px;
+    min-height: calc(100vh - 60px); /* يوصل لنهاية الشاشة */
+    margin-top: 50px; /* عدّلي الرقم حسب اللي يريحك */
+    background: #f7f7f7;
+}
+
+/* =========================
+   Sidebar Menu Items
+========================= */
+.student-menu li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 15px;
+    margin-top: 30px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+}
+
+    .student-menu li i {
+        font-size: 16px;
+    }
+    /* العنصر النشط */
+    .student-menu li.active {
+        background: rgba(255,255,255,0.15);
+    }
+/* =========================
+   Student Profile
+========================= */
+.student-profile {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+    .student-profile h4 {
+        color: #ffffff; /* الاسم أبيض */
+        font-size: 15px;
+        font-weight: 600;
+        margin: 8px 0 4px;
+    }
+
+    .student-profile p {
+        color: #E0E0E0; /* 👈 رصاصي فاتح */
+        font-size: 12px;
+        font-weight: 400;
+        margin: 0;
+    }
+
+.icon i {
+    font-size: 22px;
+    color: white;
+}
+
+.card.highlight .icon i {
+    color: #12889C;
+}
+
+.profile-top {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 170px 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+    .logout i {
+        font-size: 16px;
+    }
+/*************************** -----------------------**************************************
+                              صفحة الطالب الرئيسية
+ *************************** -----------------------************************************** */
+/* =========================
+   CARDS
+   ========================= */
+.cards {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+}
+
+.card {
+    background: #ffffff;
+    padding: 40px 30px;
+    width: 280px;
+    min-height: 330px; /* 👈 أطول */
+    border-radius: 26px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+    .card.highlight {
+        background: linear-gradient(180deg, #66ACA7, #317FAB);
+        color: #ffffff;
+        border: 2px dashed rgba(255,255,255,0.6);
+    }
+.begin {
+    color: #1db954;
+}
+
+.current {
+    color: #f5a400;
+}
+
+.near {
+    color: red;
+}
+/***************************
+   Cards
+****************************/
+.cards {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    display: flex;
+    gap: 26px;
+    justify-content: center;
+    margin-top: 70px;
+}
+
+/* =========================
+   Graduation Status
+========================= */
+.graduation-box h3 {
+    background: linear-gradient(90deg, #317FAB 0%, #66ACA7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    margin-bottom: 40px;
+    margin-left: 80px; 
+}
+/* =========================
+   Cards Section
+========================= */
+
+
+.card {
+    width: 250px;
+    height: 10px; /* أقصر */
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 26px 20px;
+    text-align: center;
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.25);
+    border: 3px dashed #dcdcdc; /* الحواف الرمادية */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative; /* 👈 مهم */
+}
+    /* Highlight card */
+    .card.highlight {
+        background: linear-gradient(180deg, #66ACA7, #317FAB);
+        color: #fff;
+        border: 2px dashed #ffffff80;
+    }
+/* =========================
+   Icons
+========================= */
+.icon {
+    width: 80px;
+    height: 80px;
+    background: #0f8fa3;
+    border-radius: 50%;
+    position: absolute; /* 👈 هنا السر */
+    top: 60px; /* 👈 نزول الأيقونة */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card.highlight .icon {
+    background: #fff;
+}
+
+.icon img {
+    filter: brightness(0) invert(1);
+    width: 36px; /* 👈 لا تكون كبيرة */
+    height: auto;
+    display: block;
+}
+
+.card.highlight .icon img {
+    filter: none;
+}
+/* =========================
+   Buttons
+========================= */
+/* أزرار الكروت */
+.btn-outline,
+.btn-white {
+    margin-top: 8px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+}
+/* زر الكرت الأبيض */
+.btn-outline {
+    background: #12889C;
+    border: none;
+    color: white;
+    padding: 12px 26px; /* مريح بدون تكبير */
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    width: fit-content; /* 👈 هذا المهم */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.btn-white {
+    background: #ffffff;
+    color: #12889C;
+    border: none;
+    padding: 12px 26px; /* مريح بدون تكبير */
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    width: fit-content; /* 👈 هذا المهم */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+/* =========================
+   Progress Bar
+========================= */
+.progress-bar {
+    height: 40px; /* 👈 قصير مثل فيغما */
+    border-radius: 999px;
+    background: #ffffff; /* بدون بوكس أبيض */
+    border: 1.5px solid #C9DBF8; /* الإطار الأزرق الخفيف */
+    overflow: hidden;
+    margin: 16px 0 10px;
+    width: 85%;
+    margin: 16px auto 10px; /* 👈 auto يوسّطه */
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient( to right, #f1ff9d 0%, #ffd400 100% );
+}
+/* =========================
+   Typography Helpers
+========================= */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.card:not(.highlight) p {
+    color: #5A6474; /* 👈 الرصاصي */
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 1920px;
+    margin: 0 auto 16px;
+}
+
+.card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 100px 0 8px;
+}
+
+.card h4 {
+    margin-top: 160px; /* 👈 يبعد العنوان عن الأيقونة */
+}
+
+.status-labels {
+    width: 85%; /* نفس عرض البار */
+    margin: 0 auto; /* توسيط */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+
+/*************************************************
+   FORM 5 - Graduation Eligibility
+*************************************************/
+.form5-container {
+    max-width: 900px;
+    margin-left: 60px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+.form5-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.form5-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .form5-title i {
+        font-size: 24px;
+        color: #1f6fa7;
+    }
+
+    .form5-title h2 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+/* Print Button */
+.print-btn {
+    background: #f3f3f3;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .print-btn:hover {
+        background: #e5e5e5;
+    }
+
+/* Student Info */
+.form5-info p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+/* Sections */
+.form5-section {
+    margin-top: 25px;
+}
+
+    .form5-section h4 {
+        font-size: 15px;
+        margin-bottom: 12px;
+    }
+
+/* Courses */
+.course-list {
+    list-style: none;
+    padding: 0;
+}
+
+.course-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.completed {
+    color: #2e8b57;
+}
+
+.not-completed {
+    color: #c0392b;
+}
+
+/* Eligibility */
+.eligibility-status {
+    margin-top: 25px;
+    padding: 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.eligible {
+    background: #e8f5ee;
+    color: #2e8b57;
+}
+
+.not-eligible {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+/* Actions */
+.form5-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+    .form5-actions button {
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+.btn-accept {
+    background: #2e8b57;
+    color: #fff;
+}
+
+.btn-reject {
+    background: #c0392b;
+    color: #fff;
+}
+
+.btn-update {
+    background: #f1c40f;
+    color: #000;
+}
+.btn-history {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .btn-history i {
+        margin-right: 6px;
+    }
+
+/* =========================
+   Advisor Layout Root
+========================= */
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.advisor-layout {
+    display: flex;
+    height: 100vh;
+    background: #ffffff;
+}
+/* =========================
+   Profile
+========================= */
+.advisor-profile {
+    text-align: center;
+    margin-bottom: 40px;
+   
+}
+
+
+   
+.advisor-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 15px;
+}
+
+.advisor-profile h4 {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 10px 0 4px;
+}
+
+.advisor-profile p {
+    color: #E0E0E0;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* =========================
+   Menu
+========================= */
+.advisor-menu {
+    list-style: none;
+    padding: 0;
+    flex: 1;
+}
+
+    .advisor-menu li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+       
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #ffffff;
+        padding-top: 15px;
+    margin-top: 30px;
+    }
+
+        .advisor-menu li i {
+            font-size: 16px;
+        }
+
+        .advisor-menu li.active {
+            background: rgba(255,255,255,0.18);
+        }
+
+/* =========================
+   Logout
+========================= */
+.advisor-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* =========================
+   Main Content
+========================= */
+.advisor-content {
+    flex: 1;
+    background: #f7f7f7;
+    border-radius: 36px;
+    padding: 36px 42px;
+    margin: 30px;
+    overflow-y: hidden;
+}
+.advisor-content {
+    flex: 1;
+    background: #f7f7f7;
+    padding: 40px;
+    margin: 30px;
+    border-radius: 36px;
+    /* ⬅️ احذفي أي shadow هنا */
+    box-shadow: none;
+}
+.form5-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.form5-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.form5-header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* History Button */
+.btn-history {
+    background: #eeeeee;
+    color: #333;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+/*************************************************
+   NOTIFICATIONS – BUTTON (Bell)
+*************************************************/
+
+/* زر الجرس */
+.topbar-notif-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+    .topbar-notif-btn i {
+        color: #ffffff;
+        font-size: 16px;
+    }
+
+/* Overlay */
+.notif-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35); /* ← هذا هو التغميق */
+    z-index: 9999;
+}
+
+/* Panel */
+.notif-panel {
+    position: fixed;
+    top: 90px;
+    left: 260px; /* بعد السايدبار */
+    width: 360px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+/* Header */
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+}
+
+.notif-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+}
+
+.notif-close {
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Divider */
+.notif-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, #317FAB, #66ACA7);
+    margin: 0;
+}
+
+/* List */
+.notif-list {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: #000;
+}
+
+    .notif-item:hover {
+        background: #f6fbff;
+    }
+
+/* Avatar */
+.notif-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #317FAB, #66ACA7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .notif-avatar span {
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+/* Body */
+.notif-body {
+    flex: 1;
+}
+
+.notif-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-desc {
+    font-size: 12px;
+    color: #777;
+    margin-top: 2px;
+}
+
+.notif-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+}
+
+/* Unread dot */
+.notif-unread-dot {
+    width: 8px;
+    height: 8px;
+    background: #e53935;
+    border-radius: 50%;
+}
+/* ===== Notifications (ONE SOURCE OF TRUTH) ===== */
+
+.topbar-notif-btn,
+.advisor-notification {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+    .topbar-notif-btn i,
+    .advisor-notification i {
+        color: #ffffff;
+        font-size: 16px;
+    }
+
+/* Overlay (hidden by default) */
+.notif-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35); /* التغميق */
+    display: none; /* مهم */
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 90px;
+    z-index: 9999;
+}
+
+    .notif-overlay.show {
+        display: flex;
+    }
+
+/* Panel */
+.notif-panel {
+    width: 420px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+

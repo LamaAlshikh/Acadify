@@ -1,0 +1,41 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Acadify – Welcome</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body class="welcome-body">
+
+    <div class="welcome-container">
+
+        <!-- LEFT SECTION -->
+        <div class="welcome-left">
+            <h1>
+                Acadify gives smart academic <br>
+                <span class="text-gradient">insights and guidance</span>
+            </h1>
+
+            <p>
+                A unified system that helps students and advisors manage study plans,
+                track progress, and complete all advising forms automatically.
+            </p>
+
+            <a href="@Url.Action("Login", "Account")" class="btn-start">start</a>
+        </div>
+
+        <!-- RIGHT SECTION (LOGO) -->
+        <div class="welcome-right">
+            <div class="welcome-logo-box">
+                <img src="~/images/Logo.png" class="welcome-logo" alt="Acadify Logo" />
+            </div>
+        </div>
+
+
+
+</body>
+</html>

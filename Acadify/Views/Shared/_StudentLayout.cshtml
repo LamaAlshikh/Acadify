@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Acadify</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body class="main-layout">
+
+    <div class="student-layout">
+
+        <!-- ================= Sidebar ================= -->
+        <aside class="student-sidebar">
+
+            <!-- Profile -->
+            <div class="student-profile">
+                <div class="profile-top">
+                    <img src="~/images/user.png" class="student-avatar" />
+
+                    <!-- Notifications -->
+                    <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
+                        <i class="fa-regular fa-bell"></i>
+                    </button>
+                </div>
+
+                <h4>@ViewBag.StudentName</h4>
+                <p>@ViewBag.StudentEmail</p>
+            </div>
+
+            <!-- Menu -->
+            <ul class="student-menu">
+                <li class="active">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Homepage</span>
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-users"></i>
+                    <span>Community</span>
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Meeting</span>
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-book"></i>
+                    <span>Course Recommendation</span>
+                </li>
+            </ul>
+
+            <!-- Logout -->
+            <div class="logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Log out</span>
+            </div>
+
+        </aside>
+
+        <!-- ================= Main Content ================= -->
+        <div class="main-background-box">
+            <div class="page-content">
+                @RenderBody()
+            </div>
+        </div>
+
+    </div>
+
+    @await Component.InvokeAsync("Notifications")
+
+    <script>
+        function toggleNotifications() {
+            const overlay = document.getElementById('notifOverlay');
+            if (!overlay) return;
+            overlay.classList.toggle('show');
+        }
+
+        function closeNotifications(e) {
+            if (e) e.preventDefault();
+            const overlay = document.getElementById('notifOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('show');
+        }
+    </script>
+
+</body>
+</html>

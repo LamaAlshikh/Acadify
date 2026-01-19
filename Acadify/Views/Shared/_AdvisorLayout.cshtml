@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Acadify – Advisor</title>
+
+    <link rel="stylesheet" href="~/css/advisor-layout.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+
+    <div class="advisor-layout">
+
+        <!-- Sidebar -->
+        <aside class="advisor-sidebar">
+
+            <div class="advisor-profile">
+                <div class="profile-top">
+                    <img src="~/images/user.png" class="advisor-avatar" />
+
+                    <!-- Notifications (SAME AS STUDENT) -->
+                    <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
+                        <i class="fa-regular fa-bell"></i>
+                    </button>
+                </div>
+
+                <h4>Dr. Amina Gamlo</h4>
+                <p>agamlo@kau.edu.sa</p>
+            </div>
+
+            <ul class="advisor-menu">
+                <li class="active">
+                    <i class="fa-solid fa-house"></i>
+                    Homepage
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-file-circle-check"></i>
+                    Forms
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-users"></i>
+                    Community
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Meetings
+                </li>
+            </ul>
+
+            <div class="advisor-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="advisor-content">
+            @RenderBody()
+        </main>
+
+    </div>
+
+    <!-- Notifications ViewComponent -->
+    @await Component.InvokeAsync("Notifications")
+
+    <script>
+        function toggleNotifications() {
+            const overlay = document.getElementById('notifOverlay');
+            if (!overlay) return;
+            overlay.classList.toggle('show');
+        }
+
+        function closeNotifications(e) {
+            if (e) e.preventDefault();
+            const overlay = document.getElementById('notifOverlay');
+            if (overlay) overlay.classList.remove('show');
+        }
+    </script>
+
+</body>
+</html>
