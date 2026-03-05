@@ -1,0 +1,249 @@
+﻿/* =========================
+   Form 4 Page Wrapper
+========================= */
+.advisor-form4-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* =========================
+   Top Header Bar
+========================= */
+.form4-top {
+    background: #fff;
+    border-radius: 18px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form4-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.form4-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #eaf6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .form4-icon i {
+        color: #1f6fa7;
+        font-size: 18px;
+    }
+
+.form4-title h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.form4-title p {
+    margin: 0;
+    color: #777;
+    font-size: 13px;
+}
+
+.form4-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.status-badge {
+    background: #efefef;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+}
+
+.print-btn {
+    background: #f3f3f3;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #000;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* =========================
+   Success Message
+========================= */
+.form4-msg {
+    background: #e8f5ee;
+    color: #2e8b57;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+/* =========================
+   Card Wrapper
+========================= */
+.form4-card {
+    background: #fff;
+    border-radius: 22px;
+    padding: 18px;
+}
+
+/* =========================
+   Paper (Arabic Form)
+========================= */
+.form4-paper {
+    width: 78%;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 12px;
+    padding: 30px 34px;
+    font-family: Arial, sans-serif;
+}
+
+/* Title in the paper */
+.f4-title {
+    text-align: center;
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Paragraph text */
+.f4-paragraph {
+    font-size: 14px;
+    line-height: 2;
+    margin: 12px 0;
+}
+
+/* Underline fields (like Word) */
+.f4-line {
+    display: inline-block;
+    min-width: 140px;
+    border-bottom: 1px solid #000;
+    padding: 0 6px 2px;
+}
+
+/* Number underline */
+.f4-num {
+    display: inline-block;
+    min-width: 40px;
+    border-bottom: 1px solid #000;
+    text-align: center;
+    padding: 0 6px 2px;
+}
+
+/* Hours list */
+.f4-list {
+    margin: 12px 0 16px;
+    font-size: 14px;
+    line-height: 2;
+}
+
+/* Notes section */
+.f4-notes-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 16px;
+}
+
+.f4-notes {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.f4-note-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 1px solid #000;
+    outline: none;
+    padding: 6px 6px;
+    font-size: 14px;
+}
+
+/* Signature area */
+.f4-sign {
+    margin-top: 28px;
+    font-size: 14px;
+}
+
+.f4-sign-label {
+    text-align: right;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.f4-sign-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.f4-sign-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #000;
+    outline: none;
+    padding: 6px;
+    font-size: 14px;
+}
+
+/* =========================
+   Bottom Actions (Same workflow)
+========================= */
+.form4-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.btn-primary-wide {
+    background: #12889C;
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: #66ACA7;
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.btn-light {
+    background: #efefef;
+    color: #333;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 999px;
+}
+
+/* Add notes input at bottom */
+.notes-input {
+    width: 240px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid #cfd8dc;
+    outline: none;
+    box-sizing: border-box;
+}

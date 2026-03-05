@@ -1,0 +1,111 @@
+﻿@model Acadify.Models.Form4ViewModel
+@{
+    Layout = "_AdvisorLayout";
+}
+
+<main class="advisor-form4-page">
+
+    <!-- Top Header -->
+    <section class="form4-top">
+        <div class="form4-title">
+            <div class="form4-icon">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div>
+                <h2>Study Plan Matching</h2>
+                <p>(Form 4)</p>
+            </div>
+        </div>
+
+        <div class="form4-right">
+            <span class="status-badge">@Model.Status</span>
+            <a class="print-btn" href="/Advisor/Form4Print">
+                Print <i class="fa-solid fa-print"></i>
+            </a>
+        </div>
+    </section>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="form4-msg">@TempData["Success"]</div>
+    }
+
+    <form method="post">
+
+        <section class="form4-card">
+            <div class="form4-paper" dir="rtl">
+
+                <h3 class="f4-title">تقرير عن مطابقة الخطة الدراسية</h3>
+
+                <p class="f4-paragraph">
+                    أفيدكم بأن الطالبة/
+                    <span class="f4-line">@Model.StudentName</span>
+                    ذو الرقم الجامعي
+                    <span class="f4-line">@Model.StudentId</span>
+                    لديها عدد ساعات
+                    <span class="f4-num">@Model.EarnedHours</span>
+                    مكتسبة وعدد
+                    <span class="f4-num">@Model.RegisteredHours</span>
+                    ساعات مسجلة للفصل الحالي .
+                    حيث أن الطالبة أنهت أو مسجلة حالياً التالي :
+                </p>
+
+                <div class="f4-list">
+                    <div>(@Model.UniversityReqHours) ساعة متطلبات جامعة</div>
+                    <div>(@Model.PrepYearReqHours) ساعة متطلبات السنة التحضيرية</div>
+                    <div>(@Model.FreeCoursesHours) ساعات مواد حرة</div>
+                    <div>(@Model.CollegeMandatoryHours) ساعة متطلبات الكلية الإجبارية</div>
+                    <div>(@Model.DeptMandatoryHours) ساعة مواد القسم الإجبارية</div>
+                    <div>(@Model.DeptElectiveHours) ساعات مواد القسم الاختيارية</div>
+                </div>
+
+                <p class="f4-paragraph">
+                    وذلك يعني أن مجموع ساعاتها
+                    <span class="f4-num">(@Model.TotalHours)</span>
+                    ساعة وتعتبر الطالبة خريجة لـ
+                    <span class="f4-line">@Model.GraduationTermText</span>.
+                </p>
+
+                <div class="f4-notes-title">ملحوظات إن وجدت :</div>
+
+                <div class="f4-notes">
+                    <input asp-for="Note1" class="f4-note-input" />
+                    <input asp-for="Note2" class="f4-note-input" />
+                    <input asp-for="Note3" class="f4-note-input" />
+                    <input asp-for="Note4" class="f4-note-input" />
+                </div>
+
+                <div class="f4-sign">
+                    <div class="f4-sign-label">@Model.AdvisorNameLabel</div>
+
+                    <div class="f4-sign-row">
+                        <span>الاسم :</span>
+                        <input asp-for="AdvisorName" class="f4-sign-input" />
+                    </div>
+
+                    <div class="f4-sign-row">
+                        <span>التوقيع:</span>
+                        <input asp-for="AdvisorSignature" class="f4-sign-input" />
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="form4-actions">
+            <button type="submit" class="btn-primary-wide" formaction="/Advisor/SendForm4">
+                Send To The Advising Committee
+            </button>
+
+            <input asp-for="AdvisorNotes" class="notes-input" placeholder="Add Notes..." />
+
+            <button type="submit" class="btn-secondary" formaction="/Advisor/SaveForm4">
+                Save
+            </button>
+
+            <a class="btn-light" href="/Advisor/Form4History">Form History</a>
+        </section>
+
+    </form>
+
+</main>
