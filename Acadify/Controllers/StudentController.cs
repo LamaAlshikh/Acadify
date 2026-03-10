@@ -1,5 +1,13 @@
 ﻿using Acadify.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using UglyToad.PdfPig;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Acadify.Controllers
 {
