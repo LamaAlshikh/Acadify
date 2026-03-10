@@ -1,0 +1,160 @@
+﻿/* =========================
+   Admin Layout Root
+========================= */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* ملاحظة: نخلي الصفحة ثابتة والـ scroll يكون داخل المحتوى */
+body {
+    overflow: hidden;
+}
+
+.admin-layout {
+    display: flex;
+    height: 100vh;
+    background: #ffffff;
+}
+
+/* =========================
+   Sidebar
+========================= */
+.admin-sidebar {
+    width: 240px;
+    min-width: 240px;
+    height: 100vh;
+    /* نفس روح الأكاديفاي */
+    background: linear-gradient(180deg, #2A8C8F 0%, #6CB8A9 100%);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    /* ملاحظة: ثبات السايدبار */
+    box-sizing: border-box;
+}
+
+/* =========================
+   Profile
+========================= */
+.admin-profile {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.profile-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.admin-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 12px;
+    object-fit: cover;
+}
+
+.admin-profile h4 {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 10px 0 4px;
+}
+
+.admin-profile p {
+    color: #E0E0E0;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* =========================
+   Menu
+========================= */
+.admin-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+    .admin-menu li {
+        margin-top: 18px;
+    }
+
+        /* ملاحظة: نخلي الرابط هو اللي ياخذ شكل الـ li */
+        .admin-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #ffffff;
+            text-decoration: none;
+            /* تحسين بسيط */
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+
+            .admin-menu li a i {
+                font-size: 16px;
+            }
+
+            .admin-menu li a:hover {
+                background: rgba(255,255,255,0.14);
+                transform: translateY(-1px);
+            }
+
+        /* ملاحظة: لو تبين active من السيرفر لاحقاً */
+        .admin-menu li.active a {
+            background: rgba(255,255,255,0.18);
+        }
+
+/* =========================
+   Logout
+========================= */
+.admin-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.10);
+    transition: background 0.15s ease;
+}
+
+    .admin-logout:hover {
+        background: rgba(255,255,255,0.16);
+    }
+
+/* =========================
+   Main Content
+========================= */
+.admin-content {
+    flex: 1;
+    height: 100vh;
+    /* ملاحظة: هنا يكون الـ scroll */
+    overflow-y: auto;
+    padding: 22px 24px;
+    
+    box-sizing: border-box;
+}
+.admin-sidebar {
+    width: 240px;
+    min-width: 240px;
+    height: 100vh;
+    /* نفس تدرج الأكاديفاي حسب الفيقما */
+    background: linear-gradient(180deg, #94C7B6 0%, #2272AD 50%, #76BAA5 100%, #12889C 100%);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}

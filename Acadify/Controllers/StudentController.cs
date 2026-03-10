@@ -230,8 +230,7 @@ namespace Acadify.Controllers
         // Student Home Page
         public IActionResult StudentHome()
         {
-            // مؤقتًا: القيمة جاية من الإيجنت
-            // لاحقًا: تستبدل بقيمة من Database
+
             int progressFromAgent = 80;
 
             var model = new StudentHomeViewModel
@@ -245,7 +244,7 @@ namespace Acadify.Controllers
             return View(model);
         }
 
-        // تحديد حالة الطالبة بناءً على نسبة التقدم
+
         private string GetStatus(int progress)
         {
             if (progress <= 30)
