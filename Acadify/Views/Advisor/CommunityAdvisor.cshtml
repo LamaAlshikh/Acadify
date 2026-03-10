@@ -1,0 +1,157 @@
+﻿@model Acadify.Models.CommunityAdvisorVM
+
+@{
+    Layout = "_AdvisorLayout";
+    ViewData["Title"] = "Community Advisor";
+    var index = 0;
+}
+
+<div class="community-advisor-page">
+
+    <div class="community-left">
+        <h2 class="community-title">Community</h2>
+        <div class="community-subtitle">Today</div>
+
+        <div class="messages-area">
+            @foreach (var msg in Model.Messages)
+            {
+                index++;
+
+                var rowClass = msg.IsAdvisorMessage ? "right" : "left";
+
+                var circleClass = "circle-blue";
+                var nameClass = "name-blue";
+                var bubbleClass = msg.BubbleColorClass;
+
+                if (msg.BubbleColorClass == "msg-pink")
+                {
+                    circleClass = "circle-pink";
+                    nameClass = "name-pink";
+                }
+                else if (msg.BubbleColorClass == "msg-purple")
+                {
+                    circleClass = "circle-purple";
+                    nameClass = "name-purple";
+                }
+                else if (msg.BubbleColorClass == "msg-indigo")
+                {
+                    circleClass = "circle-indigo";
+                    nameClass = "name-indigo";
+                }
+
+                if (index == 2)
+                {
+                    bubbleClass += " msg-wide";
+                }
+
+                <div class="message-row @rowClass row-@index">
+                    @if (!msg.IsAdvisorMessage)
+                    {
+                        <div class="initial-circle @circleClass">@msg.SenderInitials</div>
+                    }
+
+                    <div class="message-box @bubbleClass">
+                        <div class="sender-name @nameClass">@msg.SenderName</div>
+                        <div class="message-text">@msg.MessageText</div>
+                    </div>
+
+                    @if (msg.IsAdvisorMessage)
+                    {
+                        <div class="initial-circle @circleClass">@msg.SenderInitials</div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div id="liveMessages" class="live-messages"></div>
+
+        <div class="chat-section">
+            <div class="typing-indicator">
+                <div class="typing-user">LA</div>
+                <div class="dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="chat-input-box">
+                <input type="text" id="chatMessageInput" class="chat-text-input" placeholder="Type here..." />
+
+                <div class="chat-icons">
+                    <button type="button" class="chat-icon-btn" id="micBtn">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+
+                    <button type="button" class="chat-icon-btn" id="addBtn">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+
+                    <button type="button" class="chat-send-btn" id="sendBtn">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="community-right">
+        <h3 class="members-title">Members</h3>
+
+        <div class="members-list">
+            @foreach (var member in Model.Members)
+            {
+                <div class="member-card">
+                    <img src="@Url.Content(member.ImagePath)" alt="member" class="member-avatar" />
+                    <p class="member-name">@member.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const input = document.getElementById("chatMessageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const liveMessages = document.getElementById("liveMessages");
+    const micBtn = document.getElementById("micBtn");
+    const addBtn = document.getElementById("addBtn");
+
+    function sendMessage() {
+        const text = input.value.trim();
+        if (text === "") return;
+
+        const row = document.createElement("div");
+        row.className = "message-row right live-row";
+
+        row.innerHTML = `
+                <div class="message-box msg-purple live-bubble">
+                    <div class="sender-name name-purple">Amina Gamlo (me)</div>
+                    <div class="message-text">${text}</div>
+                </div>
+                <div class="initial-circle circle-purple">AG</div>
+            `;
+
+        liveMessages.prepend(row);
+        input.value = "";
+        input.focus();
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    micBtn.addEventListener("click", function () {
+        alert("Microphone button clicked");
+    });
+
+    addBtn.addEventListener("click", function () {
+        alert("Add button clicked");
+    });
+</script>

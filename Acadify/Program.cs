@@ -1,7 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using Acadify.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<AcadifyDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("AcadifyDB")));
 
 var app = builder.Build();
 
@@ -14,16 +21,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Welcome}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
