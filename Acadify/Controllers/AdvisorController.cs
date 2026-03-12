@@ -25,8 +25,7 @@ namespace Acadify.Controllers
                 CPIS375 = false,
                 CPIS342 = true,
 
-                FormStatus = "Pending",
-                CreatedDate = DateTime.Now
+              
             };
 
             // تحديد الأهلية

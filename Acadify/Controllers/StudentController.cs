@@ -1,13 +1,11 @@
 ﻿using Acadify.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using Acadify.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using UglyToad.PdfPig;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 
 

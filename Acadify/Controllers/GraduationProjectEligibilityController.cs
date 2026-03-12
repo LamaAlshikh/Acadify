@@ -17,7 +17,7 @@ namespace Acadify.Controllers
             _context = context;
         }
 
-        // GET: GraduationProjectEligibility/Form5?formId=5
+        // GET: /GraduationProjectEligibility/Form5?formId=5
         [HttpGet]
         public IActionResult Form5(int? formId)
         {
@@ -29,8 +29,9 @@ namespace Acadify.Controllers
             }
             else
             {
+                // لازم تبقى "Form 5" لأن هذا النص مطابق للقيمة المخزنة في جدول Forms
                 selectedFormId = _context.Forms
-                    .Where(f => f.FormType == "Form 5")   // ✅ هذا هو الصحيح عندك
+                    .Where(f => f.FormType == "Form 5")
                     .OrderByDescending(f => f.FormId)
                     .Select(f => f.FormId)
                     .FirstOrDefault();
@@ -39,35 +40,40 @@ namespace Acadify.Controllers
                     return NotFound("No Form 5 record found in Forms table.");
             }
 
-            // 1) جيبي سجل Form5 من جدول GraduationProjectEligibilityForm
+            // جلب سجل الفورم 5 مع بيانات الفورم والطالبة
             var form5 = _context.GraduationProjectEligibilityForms
                 .Include(x => x.Form)
                 .ThenInclude(f => f.Student)
                 .FirstOrDefault(x => x.FormId == selectedFormId);
 
-            if (form5 == null) return NotFound("Form5 not found in GraduationProjectEligibilityForm table.");
+            if (form5 == null)
+                return NotFound("Form5 not found in GraduationProjectEligibilityForm table.");
+
+            if (form5.Form == null)
+                return NotFound("Related Form record was not found.");
 
             int studentId = form5.Form.StudentId;
 
-            // 2) جيبي Transcript للطالبة + المواد المرتبطة
+            // جلب الترانسكربت مع المواد المرتبطة به
             var transcript = _context.Transcripts
                 .Include(t => t.Courses)
                 .FirstOrDefault(t => t.StudentId == studentId);
 
-            // 3) تعبئة Student info للعرض
-            // عدّلي اسم الخاصية حسب Student.cs عندك (Name/FullName/StudentName)
+            // تعبئة بيانات الطالبة للعرض
             form5.StudentName = form5.Form.Student?.Name ?? "-";
             form5.StudentId = studentId.ToString();
 
-            // 4) لو ما فيه ترانسكربت
+            // إذا لم يوجد ترانسكربت
             if (transcript == null)
             {
-                form5.CPIS351 = form5.CPIS358 = form5.CPIS323 =
-                form5.CPIS360 = form5.CPIS375 = form5.CPIS342 = false;
+                form5.CPIS351 = false;
+                form5.CPIS358 = false;
+                form5.CPIS323 = false;
+                form5.CPIS360 = false;
+                form5.CPIS375 = false;
+                form5.CPIS342 = false;
 
                 form5.IsEligible = false;
-
-                // DB fields
                 form5.Eligibility = "Not Eligible";
                 form5.RequiredCoursesStatus = "Transcript not uploaded.";
 
@@ -75,25 +81,24 @@ namespace Acadify.Controllers
                 return View(form5);
             }
 
-            // 5) دالة تساعدنا نفحص وجود المادة في Transcript.Courses
+            // دالة فحص وجود المادة في TranscriptCourse
             bool HasCourse(string code)
             {
-                string norm(string s) => (s ?? "").Replace(" ", "").Trim().ToUpper();
-                var target = norm(code);
+                string Normalize(string s) => (s ?? "").Replace(" ", "").Trim().ToUpper();
+                string target = Normalize(code);
 
-                return transcript.Courses.Any(c => norm(c.CourseId) == target);
+                return transcript.Courses.Any(c => Normalize(c.CourseId) == target);
             }
 
-            // 6) تعبئة الصح/خطأ من الترانسكربت
+            // تعبئة حالة المواد المطلوبة
             form5.CPIS351 = HasCourse("CPIS351");
             form5.CPIS358 = HasCourse("CPIS358");
             form5.CPIS323 = HasCourse("CPIS323");
-
             form5.CPIS360 = HasCourse("CPIS360");
             form5.CPIS375 = HasCourse("CPIS375");
             form5.CPIS342 = HasCourse("CPIS342");
 
-            // 7) حساب الأهلية
+            // حساب الأهلية
             form5.IsEligible =
                 form5.CPIS351 &&
                 form5.CPIS358 &&
@@ -102,8 +107,9 @@ namespace Acadify.Controllers
                 form5.CPIS375 &&
                 form5.CPIS342;
 
-            // 8) تحديث DB fields (Eligibility + RequiredCoursesStatus)
+            // تجهيز قائمة المواد الناقصة
             var missing = new List<string>();
+
             if (!form5.CPIS351) missing.Add("CPIS 351");
             if (!form5.CPIS358) missing.Add("CPIS 358");
             if (!form5.CPIS323) missing.Add("CPIS 323");
@@ -111,6 +117,7 @@ namespace Acadify.Controllers
             if (!form5.CPIS375) missing.Add("CPIS 375");
             if (!form5.CPIS342) missing.Add("CPIS 342");
 
+            // تحديث حقول قاعدة البيانات
             form5.Eligibility = form5.IsEligible ? "Eligible" : "Not Eligible";
             form5.RequiredCoursesStatus = missing.Any()
                 ? "Missing: " + string.Join(", ", missing)
@@ -121,22 +128,23 @@ namespace Acadify.Controllers
             return View(form5);
         }
 
-        // POST: تحديث حالة الفورم (Accept / Reject / Update)
+        // POST: /GraduationProjectEligibility/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateStatus(int formId, string status)
         {
-            // 1) حدّث جدول Forms (FormStatus)
             var form = _context.Forms.FirstOrDefault(f => f.FormId == formId);
-            if (form != null)
-            {
-                form.FormStatus = status;
-                form.FormDate = DateTime.Now;
-            }
+
+            if (form == null)
+                return NotFound("Form record not found.");
+
+            // تحديث حالة الفورم في جدول Forms
+            form.FormStatus = status;
+            form.FormDate = DateTime.Now;
 
             _context.SaveChanges();
 
-            return RedirectToAction("Form5", new { formId });
+            return RedirectToAction("Form5", new { formId = formId });
         }
     }
 }

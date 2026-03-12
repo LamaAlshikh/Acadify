@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Acadify.Models.AdminPages;
 using Acadify.Models;
-using Acadify.Services.AcademicCalendar.Interfaces; // ✅ مهم: عشان يتعرف على IAcademicCalendarAiExtractor
+using Acadify.Services.AcademicCalendar.Interfaces;
 
 namespace Acadify.Controllers.Admin
 {
@@ -10,11 +10,12 @@ namespace Acadify.Controllers.Admin
     {
         private readonly IWebHostEnvironment _env;
         private readonly AcadifyDbContext _db;
-
-        // ✅ Calendar Extractor (Rule-based or AI-based behind the interface)
         private readonly IAcademicCalendarAiExtractor _ai;
 
-        public AdminController(IWebHostEnvironment env, AcadifyDbContext db, IAcademicCalendarAiExtractor ai)
+        public AdminController(
+            IWebHostEnvironment env,
+            AcadifyDbContext db,
+            IAcademicCalendarAiExtractor ai)
         {
             _env = env;
             _db = db;
@@ -66,8 +67,7 @@ namespace Acadify.Controllers.Admin
         }
 
         // =========================
-        // Upload Academic Calendar (PDF -> Extract -> DB)
-        // Using AcademicCalendar table ONLY
+        // Upload Academic Calendar
         // =========================
         [HttpGet]
         public IActionResult UploadAcademicCalendar()
@@ -115,7 +115,7 @@ namespace Acadify.Controllers.Admin
             };
 
             _db.AcademicCalendars.Add(calendar);
-            await _db.SaveChangesAsync(); // generates CalendarId
+            await _db.SaveChangesAsync();
 
             // 3) Extract + save events
             try
@@ -131,19 +131,19 @@ namespace Acadify.Controllers.Admin
                 var calendarsCount = await _db.AcademicCalendars.CountAsync();
 
                 model.SavedFileName = savedFileName;
-                model.Message = $"✅ DB Save OK. CalendarsCount Now = {calendarsCount}. Extracted events: {events?.Count ?? 0}";
+                model.Message = $"DB Save OK. CalendarsCount Now = {calendarsCount}. Extracted events: {events?.Count ?? 0}";
             }
             catch (Exception ex)
             {
                 model.SavedFileName = savedFileName;
-                model.Message = $"⚠️ {ex.InnerException?.Message ?? ex.Message}";
+                model.Message = $"Extraction failed: {ex.InnerException?.Message ?? ex.Message}";
             }
 
             return View(model);
         }
 
         // =========================
-        // Manage Advisor Requests (UI Preview Only)
+        // Manage Advisor Requests
         // =========================
         [HttpGet]
         public IActionResult ManageAdvisorRequests()
@@ -180,13 +180,22 @@ namespace Acadify.Controllers.Admin
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ApproveAdvisorRequest(int requestId) => RedirectToAction(nameof(ManageAdvisorRequests));
+        public IActionResult ApproveAdvisorRequest(int requestId)
+        {
+            return RedirectToAction(nameof(ManageAdvisorRequests));
+        }
 
         [HttpGet]
-        public IActionResult CorrectAdvisorRequest(int requestId) => RedirectToAction(nameof(ManageAdvisorRequests));
+        public IActionResult CorrectAdvisorRequest(int requestId)
+        {
+            return RedirectToAction(nameof(ManageAdvisorRequests));
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RejectAdvisorRequest(int requestId) => RedirectToAction(nameof(ManageAdvisorRequests));
+        public IActionResult RejectAdvisorRequest(int requestId)
+        {
+            return RedirectToAction(nameof(ManageAdvisorRequests));
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Acadify.Models.Db;
+﻿using Acadify.Models;
+using Acadify.Services.AcademicCalendar;
+using Acadify.Services.AcademicCalendar.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,9 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 // MVC
 builder.Services.AddControllersWithViews();
 
+// Session
+builder.Services.AddDistributedMemoryCache();
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-// ✅ Register DbContext
+// DbContext
 builder.Services.AddDbContext<AcadifyDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("AcadifyDb"),
@@ -18,6 +28,10 @@ builder.Services.AddDbContext<AcadifyDbContext>(options =>
             sql.EnableRetryOnFailure();
         }));
 
+// Academic Calendar Services
+builder.Services.AddScoped<IPdfTextExtractor, PdfPigTextExtractor>();
+builder.Services.AddScoped<IPdfOcrService, PdfOcrService>();
+builder.Services.AddScoped<IAcademicCalendarAiExtractor, AcademicCalendarRuleBasedExtractor>();
 
 var app = builder.Build();
 
@@ -31,6 +45,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

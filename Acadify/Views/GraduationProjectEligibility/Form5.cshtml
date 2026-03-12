@@ -2,11 +2,11 @@
 @{
     Layout = "_AdvisorLayout";
 }
+
 <link rel="stylesheet" href="~/css/site.css" />
 
 <div class="form5-container">
 
-    <!-- Header -->
     <div class="form5-header">
         <div class="form5-title">
             <i class="fa-solid fa-file-lines"></i>
@@ -14,7 +14,6 @@
         </div>
 
         <div class="form5-header-actions">
-            <!-- بدل button: link -->
             <a class="btn-history"
                asp-controller="FormHistory"
                asp-action="FormHistory"
@@ -31,13 +30,11 @@
         </div>
     </div>
 
-    <!-- Student Info -->
     <div class="form5-info">
         <p><strong>Student Name:</strong> @(Model.StudentName ?? "-")</p>
         <p><strong>Student ID:</strong> @(Model.StudentId ?? "-")</p>
     </div>
 
-    <!-- Completed Courses -->
     <div class="form5-section">
         <h4>The Student Has Completed The Following Courses:</h4>
 
@@ -59,7 +56,6 @@
         </ul>
     </div>
 
-    <!-- Registered / Expected Courses -->
     <div class="form5-section">
         <h4>The Student Has Completed or Registered For The Following Courses:</h4>
 
@@ -81,17 +77,17 @@
         </ul>
     </div>
 
-    <!-- Eligibility -->
     <div class="eligibility-status @(Model.IsEligible ? "eligible" : "not-eligible")">
-        @(Model.IsEligible ? "The Student Is Eligible to Register Graduation Project"
+        @(Model.IsEligible
+                ? "The Student Is Eligible to Register Graduation Project"
                 : "The Student Is Not Eligible to Register Graduation Project")
     </div>
 
-    <!-- Actions -->
     <form method="post" asp-action="UpdateStatus" class="form5-actions">
         @Html.AntiForgeryToken()
 
         <input type="hidden" name="formId" value="@Model.FormId" />
+
         <button type="submit" name="status" value="Accepted" class="btn-accept">Accept</button>
         <button type="submit" name="status" value="Rejected" class="btn-reject">Reject</button>
         <button type="submit" name="status" value="Updated" class="btn-update">Update</button>
