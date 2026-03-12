@@ -1,0 +1,53 @@
+﻿@model Acadify.Models.AdminPages.UploadAcademicCalendarModel
+
+@{
+    ViewData["Title"] = "Upload Academic Calendar";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Site2.css" />
+
+<div class="upload-page">
+    <div class="upload-card">
+        <h2 class="upload-title">Upload <span class="accent">Academic Calendar</span></h2>
+
+        <form asp-action="UploadAcademicCalendar" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="drop-zone">
+                <div class="drop-icon">☁</div>
+                <p class="drop-text">
+                    drag and drop file or
+                    <label class="browse">
+                        <input asp-for="AcademicCalendarFile" type="file" accept=".pdf" hidden />
+                        browse
+                    </label>
+                </p>
+            </div>
+
+            <span class="hint">Supported format: PDF</span>
+
+            <div class="actions">
+                <button type="submit" class="btn-upload">Upload</button>
+            </div>
+
+            <div class="validation">
+                <span asp-validation-for="AcademicCalendarFile"></span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Message))
+            {
+                <div class="success-msg">@Model.Message</div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.SavedFileName))
+            {
+                <div class="file-info">Saved as: <b>@Model.SavedFileName</b></div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -709,7 +709,7 @@ body {
 
 /* Actions */
 .form5-actions {
-    margin-top: 20px;
+    margin-top: 13px;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -851,14 +851,13 @@ html, body {
     flex: 1;
     background: #f7f7f7;
     border-radius: 36px;
-    padding: 36px 42px;
+    padding: 20px 42px;
     margin: 30px;
     overflow-y: hidden;
 }
 .advisor-content {
     flex: 1;
     background: #f7f7f7;
-    padding: 40px;
     margin: 30px;
     border-radius: 36px;
     /* ⬅️ احذفي أي shadow هنا */
@@ -1067,4 +1066,3 @@ html, body {
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     overflow: hidden;
 }
-
