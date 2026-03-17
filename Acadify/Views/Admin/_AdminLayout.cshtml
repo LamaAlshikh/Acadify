@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Acadify – Admin</title>
+
+    <link rel="stylesheet" href="~/css/admin-layout.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+
+            <div class="admin-profile">
+                <div class="profile-top">
+                    <img src="~/images/user.png" class="admin-avatar" />
+                </div>
+
+                <h4>Admin Panel</h4>
+                <p>admin@kau.edu.sa</p>
+            </div>
+
+            <ul class="admin-menu">
+                <li>
+                    <a asp-controller="Admin" asp-action="UploadStudyPlan">
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                        Study Plan
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-controller="Admin" asp-action="UploadAcademicCalendar">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Academic Calendar
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-controller="Admin" asp-action="ManageAdvisorRequests">
+                        <i class="fa-solid fa-link"></i>
+                        Requests
+                    </a>
+                </li>
+            </ul>
+
+            <div class="admin-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            @RenderBody()
+        </main>
+
+    </div>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>
