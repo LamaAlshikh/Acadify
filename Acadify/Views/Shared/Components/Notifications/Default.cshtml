@@ -1,0 +1,53 @@
+﻿@model List<Acadify.Models.NotificationViewModel>
+
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotifications(event)">
+    <aside class="notif-panel" onclick="event.stopPropagation()">
+
+        <div class="notif-header">
+            <h2 class="notif-title">Notifications</h2>
+            <button type="button" class="notif-close" onclick="closeNotifications(event)">×</button>
+        </div>
+
+        <hr class="notif-divider" />
+
+        <div class="notif-list">
+            @foreach (var n in Model)
+            {
+                <a class="notif-item" href="@n.TargetUrl">
+                    <div class="notif-avatar">
+                        <span>@GetInitials(n.NotificationType, n.SenderName)</span>
+                    </div>
+
+                    <div class="notif-body">
+                        <div class="notif-title-row">
+                            <span class="notif-item-title">@n.Title</span>
+                            @if (!n.IsRead)
+                            {
+                                <span class="notif-unread-dot"></span>
+                            }
+                        </div>
+
+                        <div class="notif-desc">@n.NotificationContent</div>
+                        <div class="notif-time">@n.TimeAgo</div>
+                    </div>
+
+                    <span class="notif-arrow">›</span>
+                </a>
+            }
+        </div>
+
+    </aside>
+</div>
+
+@functions {
+    string GetInitials(string type, string sender)
+    {
+        if (type == "System") return "SY";
+        if (string.IsNullOrEmpty(sender)) return "US";
+
+        var parts = sender.Replace("Dr.", "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length > 1
+            ? $"{parts[0][0]}{parts[^1][0]}".ToUpper()
+            : parts[0][0].ToString().ToUpper();
+    }
+}
