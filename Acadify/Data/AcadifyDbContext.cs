@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Acadify.DbModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Acadify.Data;
