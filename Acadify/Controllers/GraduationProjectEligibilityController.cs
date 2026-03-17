@@ -341,5 +341,24 @@ namespace Acadify.Controllers
 
             return RedirectToAction("Form5", new { formId });
         }
+    
+[HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendToAdvisingCommittee(int formId)
+        {
+            var form = await _context.Forms.FirstOrDefaultAsync(f => f.FormId == formId);
+
+            if (form == null)
+                return NotFound("Form record not found.");
+
+            form.FormStatus = "Sent to Advising Committee";
+            form.FormDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            TempData["ActionMessage"] = "The form is sent to the Advising Committee successfully.";
+
+            return RedirectToAction("Form5", new { formId });
+        }
     }
 }

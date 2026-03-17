@@ -7,17 +7,35 @@ namespace Acadify.Controllers
     {
         // يعرض صفحة التسجيل
         [HttpGet]
-        public IActionResult Login()
         public IActionResult SignUp()
         {
             return View();
         }
 
-        // يستقبل بيانات الفورم
+        // يستقبل بيانات التسجيل
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SignUp(SignUpVM model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // هنا لاحقاً نحفظ البيانات في الداتابيس
+
+            return RedirectToAction("SignUp");
+        }
+
+        // يعرض صفحة تسجيل الدخول
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // يستقبل بيانات تسجيل الدخول
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel model)
-        public IActionResult SignUp(SignUpVM model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -27,11 +45,9 @@ namespace Acadify.Controllers
             {
                 return RedirectToAction("studentHome", "Student");
             }
-            // هنا لاحقاً نحفظ البيانات في الداتابيس
 
             ModelState.AddModelError("", "Invalid email or password.");
             return View(model);
-            return RedirectToAction("SignUp");
         }
     }
 }

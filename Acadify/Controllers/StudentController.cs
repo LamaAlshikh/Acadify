@@ -36,6 +36,46 @@ namespace Acadify.Controllers
                 .FirstOrDefaultAsync();
         }
 
+        // load student name + email for sidebar
+        private async Task LoadStudentSidebarDataAsync()
+        {
+            int? studentId = GetCurrentStudentId();
+
+            if (!studentId.HasValue)
+            {
+                studentId = 2209009; // temporary for testing
+            }
+
+            var student = await _db.Students
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+            {
+                ViewBag.StudentName = "Student";
+                ViewBag.StudentEmail = "";
+                return;
+            }
+
+            ViewBag.StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName");
+            ViewBag.StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail");
+        }
+
+        private static string GetStringPropertyValue(object obj, params string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                var prop = obj.GetType().GetProperty(propertyName);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(obj)?.ToString();
+                    if (!string.IsNullOrWhiteSpace(value))
+                        return value;
+                }
+            }
+
+            return string.Empty;
+        }
+
         private static string ReadPdfText(string fullPath)
         {
             var sb = new StringBuilder();
@@ -190,31 +230,76 @@ namespace Acadify.Controllers
             return newForm5.FormId;
         }
 
-        private string GetStatus(int progress)
+        private int CalculateProgressPercentage(int remainingHours, int totalRequiredHours)
         {
-            if (progress <= 30)
-                return "Beginning";
+            if (remainingHours <= 0)
+                return 100;
 
-            if (progress <= 70)
-                return "Has Remaining Courses";
+            if (remainingHours <= 3)
+                return 99;
 
-            return "Near Graduation";
+            int completedHours = totalRequiredHours - remainingHours;
+
+            double percentage = ((double)completedHours / totalRequiredHours) * 100;
+
+            int roundedToTens = ((int)Math.Floor(percentage / 10.0)) * 10;
+
+            if (roundedToTens < 10 && completedHours > 0)
+                roundedToTens = 10;
+
+            if (roundedToTens > 90)
+                roundedToTens = 90;
+
+            return roundedToTens;
+        }
+
+        private string CalculateCurrentStatus(int remainingHours)
+        {
+            if (remainingHours <= 0)
+                return "Graduated";
+
+            if (remainingHours <= 3)
+                return "Near Graduation";
+
+            return "Has Remaining Courses";
         }
 
         // =======================
         // Student Home Page
         // =======================
         [HttpGet]
-        public IActionResult StudentHome()
+        public async Task<IActionResult> StudentHome()
         {
-            int progressFromAgent = 80;
+            ViewData["Title"] = "Student Home";
+            await LoadStudentSidebarDataAsync();
 
-            var model = new StudentHomeViewModel
+            int? studentId = GetCurrentStudentId();
+
+            if (!studentId.HasValue)
             {
-                StudentName = "lama alshikh",
-                StudentEmail = "lalshikh@stu.kau.edu.sa",
-                ProgressPercentage = progressFromAgent,
-                CurrentStatus = GetStatus(progressFromAgent)
+                studentId = 2209009; // temporary for testing
+            }
+
+            var student = await _db.Students
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+            {
+                return NotFound("Student not found.");
+            }
+
+            var graduationStatus = await _db.GraduationStatuses
+                .FirstOrDefaultAsync(g => g.StudentId == studentId.Value);
+
+            int totalRequiredHours = 140;
+            int remainingHours = graduationStatus?.RemainingHours ?? 140;
+
+            var model = new StudenthomeViewModel
+            {
+                StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName"),
+                StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail"),
+                ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
+                CurrentStatus = CalculateCurrentStatus(remainingHours)
             };
 
             return View(model);
@@ -224,8 +309,10 @@ namespace Acadify.Controllers
         // Upload Transcript Page
         // =======================
         [HttpGet]
-        public IActionResult UploadTranscript()
+        public async Task<IActionResult> UploadTranscript()
         {
+            ViewData["Title"] = "Upload Transcript";
+            await LoadStudentSidebarDataAsync();
             return View();
         }
 
@@ -233,6 +320,9 @@ namespace Acadify.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadTranscript(IFormFile transcriptFile)
         {
+            ViewData["Title"] = "Upload Transcript";
+            await LoadStudentSidebarDataAsync();
+
             if (transcriptFile == null || transcriptFile.Length == 0)
             {
                 ViewBag.Error = "Please select a PDF file.";
@@ -371,20 +461,18 @@ namespace Acadify.Controllers
 
             await _db.SaveChangesAsync();
 
-            var newForm5Id = await CreateNewForm5ForStudentAsync(studentId);
-
-            return RedirectToAction(
-                "Form5",
-                "GraduationProjectEligibility",
-                new { formId = newForm5Id });
+            return RedirectToAction(nameof(StudentHome));
         }
 
         // =======================
         // Student Chat
         // =======================
         [HttpGet]
-        public IActionResult Chat()
+        public async Task<IActionResult> Chat()
         {
+            ViewData["Title"] = "Chat";
+            await LoadStudentSidebarDataAsync();
+
             var model = new StudentChatViewModel
             {
                 AdvisorName = "DR. Amina Hasan Gamlo",
@@ -432,8 +520,11 @@ namespace Acadify.Controllers
                           CommunityStudent
            ========================================================= */
         [HttpGet]
-        public IActionResult CommunityStudent()
+        public async Task<IActionResult> CommunityStudent()
         {
+            ViewData["Title"] = "Community Student";
+            await LoadStudentSidebarDataAsync();
+
             var model = new CommunityStudentVM
             {
                 Messages = new List<CommunityMessageVM>

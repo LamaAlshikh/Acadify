@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/css/UploadTranscript.css" />
     <link rel="stylesheet" href="~/css/StudentChat.css" />
-
 
     <!-- Font Awesome -->
     <link rel="stylesheet"
@@ -22,7 +22,6 @@
 </head>
 
 <body class="@ViewBag.BodyClass">
-
 
     <div class="student-layout">
 
@@ -40,6 +39,7 @@
                     </button>
                 </div>
 
+                <!-- student name + email under profile -->
                 <h4>@ViewBag.StudentName</h4>
                 <p>@ViewBag.StudentEmail</p>
             </div>
@@ -60,15 +60,16 @@
                     </a>
                 </li>
 
-                <li>
-                    <a asp-controller="Student" asp-action="StudentHome">
+                <!-- name stays Meeting, but opens Chat page -->
+                <li class="@(ViewData["Title"]?.ToString() == "Chat" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="Chat">
                         <i class="fa-solid fa-calendar-check"></i>
                         <span>Meeting</span>
                     </a>
                 </li>
 
-                <li>
-                    <a asp-controller="Student" asp-action="StudentHome">
+                <li class="@(ViewData["Title"]?.ToString() == "Course Recommendation" ? "active" : "")">
+                    <a asp-controller="Recommendation" asp-action="Index">
                         <i class="fa-solid fa-book"></i>
                         <span>Course Recommendation</span>
                     </a>

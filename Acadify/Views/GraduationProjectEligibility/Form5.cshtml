@@ -14,11 +14,6 @@
         </div>
     }
 
-    @if (Model.IsHistoryView)
-    {
-       
-    }
-
     <div class="form5-header">
         <div class="form5-title">
             <i class="fa-solid fa-file-lines"></i>
@@ -149,8 +144,8 @@
 
         <div class="eligibility-status @(Model.IsEligible ? "eligible" : "not-eligible")">
             @(Model.IsEligible
-                    ? "The Student Is Eligible to Register Graduation Project"
-                    : "The Student Is Not Eligible to Register Graduation Project")
+                ? "The Student Is Eligible to Register Graduation Project"
+                : "The Student Is Not Eligible to Register Graduation Project")
         </div>
 
         @if (!Model.IsHistoryView)
@@ -165,11 +160,22 @@
                 <form method="post"
                       asp-controller="GraduationProjectEligibility"
                       asp-action="UpdateStatus"
-                      style="display:inline;">
+                      class="inline-form">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="formId" value="@Model.FormId" />
                     <button type="submit" name="status" value="Accepted" class="btn-accept">Accept</button>
                     <button type="submit" name="status" value="Rejected" class="btn-reject">Reject</button>
+                </form>
+
+                <form method="post"
+                      asp-controller="GraduationProjectEligibility"
+                      asp-action="SendToAdvisingCommittee"
+                      class="inline-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="formId" value="@Model.FormId" />
+                    <button type="submit" class="btn-send-committee">
+                        Send to Advising Committee
+                    </button>
                 </form>
             </div>
         }

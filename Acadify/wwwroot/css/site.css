@@ -344,9 +344,8 @@ html, body {
 
     .student-profile h4 {
         color: #ffffff; /* الاسم أبيض */
-        font-size: 15px;
-        font-weight: 600;
-        margin: 8px 0 4px;
+        font-size:11px;
+        margin: 20px 0 4px;
     }
 
     .student-profile p {
@@ -1148,4 +1147,16 @@ html, body {
     .layout-sidebar {
         display: none !important;
     }
+}
+.btn-send-committee {
+    background:#317FAB;
+    color: #fff;
+}
+.btn-white,
+.btn-white:link,
+.btn-white:visited,
+.btn-outline,
+.btn-outline:link,
+.btn-outline:visited {
+    text-decoration: none;
 }
