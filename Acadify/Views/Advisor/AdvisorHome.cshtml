@@ -1,0 +1,91 @@
+﻿@model List<Acadify.Models.AdvisorHomeStudentVM>
+
+@{
+    Layout = "_AdvisorLayout";
+    ViewData["Title"] = "Advisor Home";
+
+    var selectedCohort = Context.Request.Query["cohort"].ToString();
+    var cohorts = Model.Select(s => s.CohortYear).Distinct().OrderByDescending(x => x).ToList();
+}
+
+<div class="advisor-home-page">
+
+    <div class="page-head">
+        <h2 class="page-title">my student</h2>
+
+        <form method="get" asp-controller="Advisor" asp-action="AdvisorHome" class="cohort-form">
+            <select name="cohort" class="cohort-select" onchange="this.form.submit()">
+                <option value="">Cohort</option>
+                @foreach (var year in cohorts)
+                {
+                    if (selectedCohort == year.ToString())
+                    {
+                        <option value="@year" selected>@year</option>
+                    }
+                    else
+                    {
+                        <option value="@year">@year</option>
+                    }
+                }
+            </select>
+        </form>
+    </div>
+
+    @foreach (var group in Model.GroupBy(s => s.CohortYear).OrderByDescending(g => g.Key))
+    {
+        <div class="year-title">@group.Key</div>
+
+        <div class="student-list">
+            @foreach (var student in group)
+            {
+                <div class="student-card">
+                    <div class="student-left">
+                        <img src="@Url.Content(student.ImagePath)" alt="student" class="student-avatar" />
+
+                        <div class="student-info">
+                            <p class="student-name">@student.StudentName</p>
+
+                            <div class="student-status-line">
+                                <span class="status-label">status:</span>
+
+                                @if (student.AcademicStatus.ToLower().Contains("near"))
+                                {
+                                    <span class="status-near">@student.AcademicStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="status-remaining">@student.AcademicStatus</span>
+                                }
+
+                                @if (student.MatchStatus.ToLower() == "matched")
+                                {
+                                    <span class="status-matched">@student.MatchStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="status-notmatched">@student.MatchStatus</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="student-actions">
+                        <a asp-controller="Advisor"
+                           asp-action="StudentFormsByStudent"
+                           asp-route-studentId="@student.StudentId"
+                           class="btn-forms">
+                            Forms
+                        </a>
+
+                        <a asp-controller="Advisor"
+                           asp-action="RequestMeeting"
+                           asp-route-studentId="@student.StudentId"
+                           class="btn-meeting">
+                            Meeting
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

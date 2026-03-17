@@ -1,0 +1,46 @@
+﻿@model Acadify.Models.SignUpVM
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Sign Up";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/RahafZh.css" />
+
+</head>
+
+<body class="signup-page">
+
+    <div class="container">
+
+        <div class="logo">
+            <img src="~/images/logoAccount.png" alt="Logo" />
+        </div>
+
+        <h1>Create <span>your account</span></h1>
+
+        <form class="form" method="post" asp-action="SignUp" asp-controller="Account">
+
+            <input class="input" asp-for="FullName" type="text" placeholder="Full name" />
+            <input class="input" asp-for="Email" type="email" placeholder="Email" />
+            <input class="input" asp-for="ID" type="text" placeholder="ID" />
+            <input class="input" asp-for="Password" type="password" placeholder="Password" />
+            <input class="input" asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" />
+
+            <button class="btn" type="submit">Sign up</button>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

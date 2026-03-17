@@ -1,16 +1,19 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acadify – Advisor</title>
-
-    <link rel="stylesheet" href="~/css/advisor-layout.css" />
+   
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/RahafZh.css" />
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/AdvisorForm3.css" />
     <link rel="stylesheet" href="~/css/AdvisorForm4.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
 </head>
 
 <body>
@@ -26,31 +29,39 @@
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
                         <i class="fa-regular fa-bell"></i>
                     </button>
-                </div>
+                    </div> 
 
                 <h4>Dr. Amina Gamlo</h4>
                 <p>agamlo@kau.edu.sa</p>
             </div>
 
             <ul class="advisor-menu">
-                <li class="active">
-                    <i class="fa-solid fa-house"></i>
-                    Homepage
+                <li class="@(ViewData["Title"]?.ToString() == "Advisor Home" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="AdvisorHome">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Homepage</span>
+                    </a>
+                </li>
+
+                <li class="@(ViewData["Title"]?.ToString() == "Student Forms" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="StudentForms">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Forms</span>
+                    </a>
+                </li>
+
+                <li class="@(ViewData["Title"]?.ToString() == "Community Advisor" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="CommunityAdvisor">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Community</span>
+                    </a>
                 </li>
 
                 <li>
-                    <i class="fa-solid fa-file-circle-check"></i>
-                    Forms
-                </li>
-
-                <li>
-                    <i class="fa-solid fa-users"></i>
-                    Community
-                </li>
-
-                <li>
-                    <i class="fa-solid fa-calendar-check"></i>
-                    Meetings
+                    <a asp-controller="Advisor" asp-action="AdvisorHome">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Meetings</span>
+                    </a>
                 </li>
             </ul>
 
@@ -81,7 +92,7 @@
             const overlay = document.getElementById('notifOverlay');
             if (overlay) overlay.classList.remove('show');
         }
-    </script>
+    </script> 
 
 </body>
 </html>

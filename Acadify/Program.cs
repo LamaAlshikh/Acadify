@@ -28,6 +28,7 @@ builder.Services.AddDbContext<AcadifyDbContext>(options =>
 
 builder.Services.AddScoped<OpenAiVisionClient>();
 builder.Services.AddScoped<IAcademicCalendarAiExtractor, AcademicCalendarFixedExtractor>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -47,4 +48,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Welcome}/{id?}");
 
-app.Run(); 
+app.Run();
