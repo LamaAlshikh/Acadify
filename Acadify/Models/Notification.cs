@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Acadify.Models;
 
 [Table("Notification")]
-[Index("StudentId", Name = "IX_Notif_StudentID")]
-[Index("AdvisorId", Name = "IX_Notif_AdvisorID")]
-[Index("AdminId", Name = "IX_Notif_AdminID")]
+[Index(nameof(StudentId), Name = "IX_Notif_StudentID")]
+[Index(nameof(AdvisorId), Name = "IX_Notif_AdvisorID")]
+[Index(nameof(AdminId), Name = "IX_Notif_AdminID")]
 public partial class Notification
 {
     [Key]
@@ -20,7 +20,6 @@ public partial class Notification
     [Column("date")]
     public DateTime Date { get; set; }
 
-    // ممكن نخليه للاسم القديم أو توصيف إضافي
     [Column("type")]
     [StringLength(100)]
     public string? Type { get; set; }
@@ -47,15 +46,15 @@ public partial class Notification
     [Column("isRead")]
     public bool IsRead { get; set; } = false;
 
-    [ForeignKey("AdvisorId")]
+    [ForeignKey(nameof(AdvisorId))]
     [InverseProperty("Notifications")]
     public virtual Advisor? Advisor { get; set; }
 
-    [ForeignKey("StudentId")]
+    [ForeignKey(nameof(StudentId))]
     [InverseProperty("Notifications")]
     public virtual Student? Student { get; set; }
 
-    [ForeignKey("AdminId")]
+    [ForeignKey(nameof(AdminId))]
     [InverseProperty("Notifications")]
     public virtual Admin? Admin { get; set; }
 }

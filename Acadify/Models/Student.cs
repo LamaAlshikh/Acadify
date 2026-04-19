@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Acadify.Models;
 
 [Table("Student")]
-[Index("AdvisorId", Name = "IX_Student_AdvisorID")]
-[Index("UserId", Name = "UQ_Student_UserID", IsUnique = true)]
+[Index(nameof(AdvisorId), Name = "IX_Student_AdvisorID")]
+[Index(nameof(UserId), Name = "UQ_Student_UserID", IsUnique = true)]
 public partial class Student
 {
     [Key]
@@ -36,29 +36,29 @@ public partial class Student
     [Column("advisorID")]
     public int? AdvisorId { get; set; }
 
-    [ForeignKey("AdvisorId")]
-    [InverseProperty("Students")]
+    [ForeignKey(nameof(AdvisorId))]
+    [InverseProperty(nameof(Models.Advisor.Students))]
     public virtual Advisor? Advisor { get; set; }
 
-    [ForeignKey("UserId")]
-    [InverseProperty("Student")]
+    [ForeignKey(nameof(UserId))]
+    [InverseProperty(nameof(Models.User.Student))]
     public virtual User User { get; set; } = null!;
 
-    [InverseProperty("Student")]
+    [InverseProperty(nameof(Models.Form.Student))]
     public virtual ICollection<Form> Forms { get; set; } = new List<Form>();
 
-    [InverseProperty("Student")]
+    [InverseProperty(nameof(Models.GraduationStatus.Student))]
     public virtual GraduationStatus? GraduationStatus { get; set; }
 
-    [InverseProperty("Student")]
+    [InverseProperty(nameof(Models.MatchingStatus.Student))]
     public virtual MatchingStatus? MatchingStatus { get; set; }
 
-    [InverseProperty("Student")]
+    [InverseProperty(nameof(Models.Meeting.Student))]
     public virtual ICollection<Meeting> Meetings { get; set; } = new List<Meeting>();
 
-    [InverseProperty("Student")]
+    [InverseProperty(nameof(Models.Notification.Student))]
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
-    [InverseProperty("Student")]
+    [InverseProperty(nameof(Models.Transcript.Student))]
     public virtual Transcript? Transcript { get; set; }
 }
