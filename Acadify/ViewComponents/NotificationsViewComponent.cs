@@ -54,7 +54,7 @@ namespace Acadify.ViewComponents
                 Title = BuildTitle(n.SourceType),
                 SenderName = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
                 IsRead = n.IsRead,
-                TargetUrl = BuildTargetUrl(n.SourceType, role),
+                TargetUrl = BuildTargetUrl(n.SourceType, role, n),
                 TimeAgo = GetTimeAgo(n.Date),
                 SourceType = string.IsNullOrWhiteSpace(n.SourceType) ? "General" : n.SourceType!
             }).ToList();
@@ -71,41 +71,28 @@ namespace Acadify.ViewComponents
 
         private string GetCurrentRole()
         {
-            if (User.IsInRole("Admin")) return "Admin";
-            if (User.IsInRole("Advisor")) return "Advisor";
-            return "Student";
+            return HttpContext.Session.GetString("UserRole") ?? "";
         }
 
         private int? GetStudentId()
         {
-            var claim = HttpContext.User.FindFirst("StudentId")?.Value;
-            return int.TryParse(claim, out var id) ? id : null;
+            return HttpContext.Session.GetInt32("StudentId");
         }
 
         private int? GetAdvisorId()
         {
-            var claim = HttpContext.User.FindFirst("AdvisorId")?.Value;
-            return int.TryParse(claim, out var id) ? id : null;
+            return HttpContext.Session.GetInt32("AdvisorId");
         }
 
         private int? GetAdminId()
         {
-            var claim = HttpContext.User.FindFirst("AdminId")?.Value;
-            return int.TryParse(claim, out var id) ? id : null;
-        }
-
-        private string GetFutureText(int daysLeft)
-        {
-            if (daysLeft == 0) return "Today";
-            if (daysLeft == 1) return "Tomorrow";
-            return $"After {daysLeft} days";
+            return HttpContext.Session.GetInt32("AdminId");
         }
 
         private async Task<List<NotificationViewModel>> BuildAcademicCalendarNotificationsAsync(string role)
         {
             var result = new List<NotificationViewModel>();
 
-            // إشعارات الكالندر تظهر فقط للطالبة والمرشد
             if (role != "Student" && role != "Advisor")
                 return result;
 
@@ -129,7 +116,6 @@ namespace Acadify.ViewComponents
                 var eventDate = e.GregorianDate.Date;
                 var daysLeft = (eventDate - today).Days;
 
-                // فقط: قبل يومين، قبل يوم، ويوم الحدث نفسه
                 if (daysLeft != 2 && daysLeft != 1 && daysLeft != 0)
                     continue;
 
@@ -184,24 +170,61 @@ namespace Acadify.ViewComponents
                 "Calendar" => "Academic calendar",
                 "Request" => "Request notification",
                 "StudyPlan" => "Study plan notification",
+                "Community" => "Community notification",
                 _ => "System notification"
             };
         }
 
-        private string BuildTargetUrl(string? sourceType, string role)
+        private string BuildTargetUrl(string? sourceType, string role, Notification notification)
         {
             return sourceType switch
             {
-                "Recommendation" => role == "Student" ? "/Student/StudentHome" : "/Forms",
-                "Meeting" => "/Meeting",
-                "Chat" => "/Community",
-                "Form" => "/Forms",
-                "Transcript" => "/Student/StudentHome",
+                "Recommendation" => role == "Student" ? "/Student/StudentHome" : "/Advisor/AdvisorHome",
+
+                "Meeting" => role == "Advisor"
+                    ? "/Advisor/Meetings"
+                    : "/Student/Meeting",
+
+                "Chat" => role == "Advisor"
+                    ? "/Advisor/CommunityAdvisor"
+                    : "/Student/CommunityStudent",
+
+                "Community" => role == "Advisor"
+                    ? "/Advisor/CommunityAdvisor"
+                    : "/Student/CommunityStudent",
+
+                "Form" => BuildFormTargetUrl(role, notification),
+
+                "Transcript" => role == "Advisor"
+                    ? "/Advisor/AdvisorHome"
+                    : role == "Admin"
+                        ? "/Admin/ManageAdvisorRequests"
+                        : "/Student/StudentHome",
+
                 "Calendar" => "/Notifications/Panel",
-                "Request" => role == "Admin" ? "/Admin/ManageAdvisorRequests" : "/Student/StudentHome",
+
+                "Request" => "/Notifications/Panel",
+
                 "StudyPlan" => "/Admin/UploadStudyPlan",
+
                 _ => "/Notifications/Panel"
             };
+        }
+
+        private string BuildFormTargetUrl(string role, Notification notification)
+        {
+            if (role == "Admin")
+                return "/Admin/ManageAdvisorRequests";
+
+            if (role == "Advisor")
+            {
+                if (notification.StudentId.HasValue)
+                    return $"/Advisor/StudentForms?studentId={notification.StudentId.Value}";
+
+                return "/Advisor/AdvisorHome";
+            }
+
+            return "/Student/StudentHome";
         }
 
         private string GetTimeAgo(DateTime date)

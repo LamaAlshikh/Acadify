@@ -4,6 +4,7 @@
 }
 
 <link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/form5.css" />
 
 <div class="form5-container">
 
@@ -24,10 +25,10 @@
         {
             <div class="form5-header-actions">
                 <a class="btn-history"
-                   asp-controller="FormHistory"
-                   asp-action="FormHistory"
-                   asp-route-studentId="@Model.Form.StudentId"
-                   asp-route-formType="GraduationProjectEligibilityForm">
+                       asp-controller="FormHistory"
+                       asp-action="FormHistory"
+                       asp-route-studentId="@Model.Form.StudentId"
+                       asp-route-formType="GraduationProjectEligibilityForm">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     History
                 </a>

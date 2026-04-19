@@ -22,6 +22,152 @@ namespace Acadify.Controllers.Admin
             _ai = ai;
         }
 
+        private async Task AddNotificationAsync(
+            string senderRole,
+            string sourceType,
+            string type,
+            string message,
+            int? studentId = null,
+            int? advisorId = null,
+            int? adminId = null)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                SenderRole = senderRole,
+                SourceType = sourceType,
+                Type = type,
+                Message = message,
+                StudentId = studentId,
+                AdvisorId = advisorId,
+                AdminId = adminId,
+                Date = DateTime.Now,
+                IsRead = false
+            });
+
+            await _db.SaveChangesAsync();
+        }
+
+        [HttpGet]
+        public IActionResult AdminPagesController()
+        {
+            if (HttpContext.Session.GetString("Role") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateAdvisorRequestInline(int requestId, string? advisorId, string? manualAdvisorEmail)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            var request = await _db.AdvisorRequests
+                .Include(r => r.Student)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+            {
+                TempData["RequestError"] = "Request was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            Advisor? advisor = null;
+
+            if (!string.IsNullOrWhiteSpace(advisorId) && advisorId != "manual")
+            {
+                if (int.TryParse(advisorId, out int parsedAdvisorId))
+                {
+                    advisor = await _db.Advisors
+                        .Include(a => a.User)
+                        .FirstOrDefaultAsync(a => a.AdvisorId == parsedAdvisorId);
+                }
+
+                if (advisor == null)
+                {
+                    TempData["RequestError"] = "Selected advisor was not found.";
+                    return RedirectToAction(nameof(ManageAdvisorRequests));
+                }
+
+                if (advisor.User == null)
+                {
+                    TempData["RequestError"] = "Advisor user data was not found.";
+                    return RedirectToAction(nameof(ManageAdvisorRequests));
+                }
+
+                request.Student.AdvisorId = advisor.AdvisorId;
+                request.RequestedAdvisorId = advisor.AdvisorId;
+                request.RequestedAdvisorEmail = advisor.User.Email;
+                request.Status = "Approved";
+                request.UpdatedAt = DateTime.Now;
+
+                await _db.SaveChangesAsync();
+
+                await AddNotificationAsync(
+                    senderRole: "Admin",
+                    sourceType: "Request",
+                    type: "student assigned to advisor",
+                    message: $"{request.Student.Name} was assigned to you as a new student.",
+                    studentId: request.Student.StudentId,
+                    advisorId: advisor.AdvisorId);
+
+                TempData["RequestSuccess"] = "Advisor request updated and approved successfully.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            if (advisorId == "manual")
+            {
+                if (string.IsNullOrWhiteSpace(manualAdvisorEmail))
+                {
+                    TempData["RequestError"] = "Please enter advisor email.";
+                    return RedirectToAction(nameof(ManageAdvisorRequests));
+                }
+
+                string email = manualAdvisorEmail.Trim().ToLower();
+
+                var existingAdvisor = await _db.Advisors
+                    .Include(a => a.User)
+                    .FirstOrDefaultAsync(a => a.User.Email.ToLower() == email);
+
+                if (existingAdvisor != null)
+                {
+                    request.Student.AdvisorId = existingAdvisor.AdvisorId;
+                    request.RequestedAdvisorId = existingAdvisor.AdvisorId;
+                    request.RequestedAdvisorEmail = existingAdvisor.User.Email;
+                    request.Status = "Approved";
+                    request.UpdatedAt = DateTime.Now;
+
+                    await _db.SaveChangesAsync();
+
+                    await AddNotificationAsync(
+                        senderRole: "Admin",
+                        sourceType: "Request",
+                        type: "student assigned to advisor",
+                        message: $"{request.Student.Name} was assigned to you as a new student.",
+                        studentId: request.Student.StudentId,
+                        advisorId: existingAdvisor.AdvisorId);
+
+                    TempData["RequestSuccess"] = "Advisor request updated and approved successfully.";
+                    return RedirectToAction(nameof(ManageAdvisorRequests));
+                }
+
+                request.Student.AdvisorId = null;
+                request.RequestedAdvisorId = null;
+                request.RequestedAdvisorEmail = email;
+                request.Status = "Updated";
+                request.UpdatedAt = DateTime.Now;
+
+                await _db.SaveChangesAsync();
+
+                TempData["RequestSuccess"] = "Advisor email updated successfully. The request is still waiting for the correct advisor.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            TempData["RequestError"] = "Please select an advisor.";
+            return RedirectToAction(nameof(ManageAdvisorRequests));
+        }
+
         // =========================
         // Upload Study Plan
         // =========================
@@ -68,7 +214,8 @@ namespace Acadify.Controllers.Admin
 
         // =========================
         // Upload Academic Calendar
-        // =========================[HttpGet]
+        // =========================
+        [HttpGet]
         public IActionResult UploadAcademicCalendar()
         {
             return View(new UploadAcademicCalendarModel());
@@ -133,9 +280,9 @@ namespace Acadify.Controllers.Admin
                 model.Message = "Academic calendar uploaded successfully.";
                 model.IsSuccess = true;
             }
-            catch
+            catch (Exception ex)
             {
-                model.Message = "An error occurred while uploading the academic calendar.";
+                model.Message = ex.ToString();
                 model.IsSuccess = false;
             }
 
@@ -146,33 +293,45 @@ namespace Acadify.Controllers.Admin
         // Manage Advisor Requests
         // =========================
         [HttpGet]
-        public IActionResult ManageAdvisorRequests()
+        public async Task<IActionResult> ManageAdvisorRequests()
         {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            var requests = await _db.AdvisorRequests
+                .Include(r => r.Student)
+                    .ThenInclude(s => s.User)
+                .Include(r => r.RequestedAdvisor)
+                    .ThenInclude(a => a!.User)
+                .Where(r => r.Status == "Pending" || r.Status == "Updated")
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            var advisors = await _db.Advisors
+                .Include(a => a.User)
+                .OrderBy(a => a.User.Name)
+                .ToListAsync();
+
+            ViewBag.Advisors = advisors;
+
             var vm = new ManageRequestsVM
             {
-                PendingRequests = new List<ManageRequestsVM.RequestRow>
+                PendingRequests = requests.Select(r => new ManageRequestsVM.RequestRow
                 {
-                    new ManageRequestsVM.RequestRow
-                    {
-                        RequestId = 1,
-                        StudentName = "Lama Alshikh",
-                        UniversityId = "214000123",
-                        RequestedAdvisorName = "Dr. Amina Hassan",
-                        RequestedAdvisorEmail = "aminah@kau.edu.sa",
-                        Status = "Pending",
-                        CreatedAt = DateTime.Now.AddDays(-1)
-                    },
-                    new ManageRequestsVM.RequestRow
-                    {
-                        RequestId = 2,
-                        StudentName = "Sara Ahmed",
-                        UniversityId = "214000456",
-                        RequestedAdvisorName = "Dr. Hind Hassan",
-                        RequestedAdvisorEmail = "hind@kau.edu.sa",
-                        Status = "Pending",
-                        CreatedAt = DateTime.Now.AddHours(-6)
-                    }
-                }
+                    RequestId = r.RequestId,
+                    StudentId = r.StudentId,
+                    RequestedAdvisorId = r.RequestedAdvisorId,
+                    StudentName = r.Student.Name,
+                    UniversityId = r.Student.User.Email,
+                    RequestedAdvisorName = r.RequestedAdvisor != null
+                        ? r.RequestedAdvisor.User.Name
+                        : "Not registered yet",
+                    RequestedAdvisorEmail = r.RequestedAdvisor != null
+                        ? r.RequestedAdvisor.User.Email
+                        : (r.RequestedAdvisorEmail ?? ""),
+                    Status = r.Status,
+                    CreatedAt = r.CreatedAt
+                }).ToList()
             };
 
             return View(vm);
@@ -180,21 +339,180 @@ namespace Acadify.Controllers.Admin
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ApproveAdvisorRequest(int requestId)
+        public async Task<IActionResult> ApproveAdvisorRequest(int requestId)
         {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            var request = await _db.AdvisorRequests
+                .Include(r => r.Student)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+            {
+                TempData["RequestError"] = "Request was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            Advisor? advisor = null;
+
+            if (request.RequestedAdvisorId.HasValue)
+            {
+                advisor = await _db.Advisors
+                    .Include(a => a.User)
+                    .FirstOrDefaultAsync(a => a.AdvisorId == request.RequestedAdvisorId.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(request.RequestedAdvisorEmail))
+            {
+                string requestedEmail = request.RequestedAdvisorEmail.Trim().ToLower();
+
+                advisor = await _db.Advisors
+                    .Include(a => a.User)
+                    .FirstOrDefaultAsync(a => a.User.Email.ToLower() == requestedEmail);
+            }
+
+            if (advisor == null)
+            {
+                TempData["RequestError"] = "Advisor was not found. Please update the request first.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            if (advisor.User == null)
+            {
+                TempData["RequestError"] = "Advisor user data was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            if (request.Student == null)
+            {
+                TempData["RequestError"] = "Student data was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            request.Student.AdvisorId = advisor.AdvisorId;
+            request.RequestedAdvisorId = advisor.AdvisorId;
+            request.RequestedAdvisorEmail = advisor.User.Email;
+            request.Status = "Approved";
+            request.UpdatedAt = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+
+            await AddNotificationAsync(
+                senderRole: "Admin",
+                sourceType: "Request",
+                type: "student assigned to advisor",
+                message: $"{request.Student.Name} was assigned to you as a new student.",
+                studentId: request.Student.StudentId,
+                advisorId: advisor.AdvisorId);
+
+            TempData["RequestSuccess"] = "Advisor request approved successfully.";
             return RedirectToAction(nameof(ManageAdvisorRequests));
         }
 
         [HttpGet]
-        public IActionResult CorrectAdvisorRequest(int requestId)
+        public async Task<IActionResult> CorrectAdvisorRequest(int requestId)
         {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            var request = await _db.Set<AdvisorRequest>()
+                .Include(r => r.Student)
+                    .ThenInclude(s => s.User)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+
+            var advisors = await _db.Advisors
+                .Include(a => a.User)
+                .OrderBy(a => a.User.Name)
+                .ToListAsync();
+
+            ViewBag.RequestId = request.RequestId;
+            ViewBag.StudentName = request.Student.Name;
+            ViewBag.Advisors = advisors;
+
+            return View(request);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CorrectAdvisorRequest(int requestId, int advisorId)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            var request = await _db.AdvisorRequests
+                .Include(r => r.Student)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+            {
+                TempData["RequestError"] = "Request was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            var advisor = await _db.Advisors
+                .Include(a => a.User)
+                .FirstOrDefaultAsync(a => a.AdvisorId == advisorId);
+
+            if (advisor == null)
+            {
+                TempData["RequestError"] = "Advisor was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            if (advisor.User == null)
+            {
+                TempData["RequestError"] = "Advisor user data was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            if (request.Student == null)
+            {
+                TempData["RequestError"] = "Student data was not found.";
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+            }
+
+            request.Student.AdvisorId = advisor.AdvisorId;
+            request.RequestedAdvisorId = advisor.AdvisorId;
+            request.RequestedAdvisorEmail = advisor.User.Email;
+            request.Status = "Approved";
+            request.UpdatedAt = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+
+            await AddNotificationAsync(
+                senderRole: "Admin",
+                sourceType: "Request",
+                type: "student assigned to advisor",
+                message: $"{request.Student.Name} was assigned to you as a new student.",
+                studentId: request.Student.StudentId,
+                advisorId: advisor.AdvisorId);
+
+            TempData["RequestSuccess"] = "Advisor request updated and approved successfully.";
             return RedirectToAction(nameof(ManageAdvisorRequests));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RejectAdvisorRequest(int requestId)
+        public async Task<IActionResult> RejectAdvisorRequest(int requestId)
         {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            var request = await _db.Set<AdvisorRequest>()
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return RedirectToAction(nameof(ManageAdvisorRequests));
+
+            request.Status = "Rejected";
+            request.UpdatedAt = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+
+            TempData["RequestSuccess"] = "Advisor request rejected.";
             return RedirectToAction(nameof(ManageAdvisorRequests));
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Acadify.Models;
+using Acadify.Models.StudentPages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UglyToad.PdfPig;
@@ -22,6 +23,94 @@ namespace Acadify.Controllers
         // =========================
         // Helpers
         // =========================
+        private async Task AddNotificationAsync(
+            string senderRole,
+            string sourceType,
+            string type,
+            string message,
+            int? studentId = null,
+            int? advisorId = null,
+            int? adminId = null)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                SenderRole = senderRole,
+                SourceType = sourceType,
+                Type = type,
+                Message = message,
+                StudentId = studentId,
+                AdvisorId = advisorId,
+                AdminId = adminId,
+                Date = DateTime.Now,
+                IsRead = false
+            });
+
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task AddNotificationToAllAdminsAsync(
+            string senderRole,
+            string sourceType,
+            string type,
+            string message,
+            int? studentId = null,
+            int? advisorId = null)
+        {
+            var admins = await _db.Admins.ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                _db.Notifications.Add(new Notification
+                {
+                    SenderRole = senderRole,
+                    SourceType = sourceType,
+                    Type = type,
+                    Message = message,
+                    StudentId = studentId,
+                    AdvisorId = advisorId,
+                    AdminId = admin.AdminId,
+                    Date = DateTime.Now,
+                    IsRead = false
+                });
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task AddGeneratedFormsNotificationsAsync(Student student)
+        {
+            var messages = new List<string>
+            {
+                "Academic Advising Confirmation form is generated from the transcript.",
+                "Next Semester Course Selection form is generated from the transcript.",
+                "Meeting Record Form is generated from the transcript.",
+                "Study Plan Matching form is generated from the transcript.",
+                "Graduation Project Eligibility form is generated from the transcript."
+            };
+
+            foreach (var msg in messages)
+            {
+                if (student.AdvisorId.HasValue)
+                {
+                    await AddNotificationAsync(
+                        senderRole: "System",
+                        sourceType: "Form",
+                        type: "generated form",
+                        message: $"{student.Name}: {msg}",
+                        studentId: student.StudentId,
+                        advisorId: student.AdvisorId.Value);
+                }
+                else
+                {
+                    await AddNotificationToAllAdminsAsync(
+                        senderRole: "System",
+                        sourceType: "Form",
+                        type: "generated form",
+                        message: $"{student.Name}: {msg}",
+                        studentId: student.StudentId);
+                }
+            }
+        }
 
         private int? GetCurrentStudentId()
         {
@@ -36,14 +125,15 @@ namespace Acadify.Controllers
                 .FirstOrDefaultAsync();
         }
 
-        // load student name + email for sidebar
         private async Task LoadStudentSidebarDataAsync()
         {
             int? studentId = GetCurrentStudentId();
 
             if (!studentId.HasValue)
             {
-                studentId = 2209009; // temporary for testing
+                ViewBag.StudentName = "Student";
+                ViewBag.StudentEmail = "";
+                return;
             }
 
             var student = await _db.Students
@@ -52,12 +142,12 @@ namespace Acadify.Controllers
             if (student == null)
             {
                 ViewBag.StudentName = "Student";
-                ViewBag.StudentEmail = "";
+                ViewBag.StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "";
                 return;
             }
 
             ViewBag.StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName");
-            ViewBag.StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail");
+            ViewBag.StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "";
         }
 
         private static string GetStringPropertyValue(object obj, params string[] propertyNames)
@@ -239,9 +329,7 @@ namespace Acadify.Controllers
                 return 99;
 
             int completedHours = totalRequiredHours - remainingHours;
-
             double percentage = ((double)completedHours / totalRequiredHours) * 100;
-
             int roundedToTens = ((int)Math.Floor(percentage / 10.0)) * 10;
 
             if (roundedToTens < 10 && completedHours > 0)
@@ -265,39 +353,247 @@ namespace Acadify.Controllers
         }
 
         // =======================
+        // Select Advisor
+        // =======================
+        [HttpGet]
+        public async Task<IActionResult> SelectAdvisor(string? search)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
+            ViewData["Title"] = "Select Advisor";
+            await LoadStudentSidebarDataAsync();
+
+            int? studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return RedirectToAction("Login", "Account");
+
+            var student = await _db.Students
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+                return RedirectToAction("Login", "Account");
+
+            if (student.AdvisorId.HasValue)
+                return RedirectToAction(nameof(StudentHome));
+
+            var latestRequest = await _db.Set<AdvisorRequest>()
+                .Include(r => r.RequestedAdvisor)
+                    .ThenInclude(a => a!.User)
+                .Where(r => r.StudentId == student.StudentId)
+                .OrderByDescending(r => r.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            var advisorsQuery = _db.Advisors
+                .Include(a => a.User)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+
+                advisorsQuery = advisorsQuery.Where(a =>
+                    a.User.Name.ToLower().Contains(search) ||
+                    a.User.Email.ToLower().Contains(search) ||
+                    (a.Department != null && a.Department.ToLower().Contains(search)));
+            }
+
+            var advisors = await advisorsQuery
+                .OrderBy(a => a.User.Name)
+                .Select(a => new AdvisorCardVM
+                {
+                    AdvisorId = a.AdvisorId,
+                    AdvisorName = a.User.Name,
+                    AdvisorEmail = a.User.Email,
+                    Department = a.Department
+                })
+                .ToListAsync();
+
+            var vm = new SelectAdvisorVM
+            {
+                StudentName = student.Name,
+                Advisors = advisors,
+                SearchTerm = search ?? string.Empty
+            };
+
+            if (latestRequest != null && latestRequest.Status == "Pending")
+            {
+                vm.HasPendingRequest = true;
+                vm.PendingStatus = latestRequest.Status;
+                vm.PendingAdvisorEmail = latestRequest.RequestedAdvisor != null
+                    ? latestRequest.RequestedAdvisor.User.Email
+                    : latestRequest.RequestedAdvisorEmail;
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitAdvisorSelection(int advisorId)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
+            int? studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return RedirectToAction("Login", "Account");
+
+            var student = await _db.Students.FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+            if (student == null)
+                return RedirectToAction("Login", "Account");
+
+            if (student.AdvisorId.HasValue)
+                return RedirectToAction(nameof(StudentHome));
+
+            var advisor = await _db.Advisors
+                .Include(a => a.User)
+                .FirstOrDefaultAsync(a => a.AdvisorId == advisorId);
+
+            if (advisor == null)
+            {
+                TempData["AdvisorError"] = "Selected advisor was not found.";
+                return RedirectToAction(nameof(SelectAdvisor));
+            }
+
+            var hasPending = await _db.Set<AdvisorRequest>()
+                .AnyAsync(r => r.StudentId == student.StudentId && r.Status == "Pending");
+
+            if (hasPending)
+            {
+                TempData["AdvisorError"] = "You already have a pending request.";
+                return RedirectToAction(nameof(SelectAdvisor));
+            }
+
+            var request = new AdvisorRequest
+            {
+                StudentId = student.StudentId,
+                RequestedAdvisorId = advisor.AdvisorId,
+                RequestedAdvisorEmail = advisor.User.Email,
+                Status = "Pending",
+                CreatedAt = DateTime.Now
+            };
+
+            _db.Set<AdvisorRequest>().Add(request);
+            await _db.SaveChangesAsync();
+            await AddNotificationToAllAdminsAsync(
+                senderRole: "Student",
+                sourceType: "Request",
+                type: "advisor selection request",
+                message: $"{student.Name} sent an advisor request to {advisor.User.Name}.",
+                studentId: student.StudentId);
+
+            TempData["AdvisorSuccess"] = "Your advisor request has been sent to the admin.";
+            return RedirectToAction(nameof(SelectAdvisor));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitManualAdvisorEmail(SelectAdvisorVM model)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
+            int? studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return RedirectToAction("Login", "Account");
+
+            var student = await _db.Students.FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+            if (student == null)
+                return RedirectToAction("Login", "Account");
+
+            if (student.AdvisorId.HasValue)
+                return RedirectToAction(nameof(StudentHome));
+
+            if (string.IsNullOrWhiteSpace(model.ManualAdvisorEmail))
+            {
+                TempData["AdvisorError"] = "Please enter the advisor email.";
+                return RedirectToAction(nameof(SelectAdvisor));
+            }
+
+            var hasPending = await _db.Set<AdvisorRequest>()
+                .AnyAsync(r => r.StudentId == student.StudentId && r.Status == "Pending");
+
+            if (hasPending)
+            {
+                TempData["AdvisorError"] = "You already have a pending request.";
+                return RedirectToAction(nameof(SelectAdvisor));
+            }
+
+            string email = model.ManualAdvisorEmail.Trim().ToLower();
+
+            var advisor = await _db.Advisors
+                .Include(a => a.User)
+                .FirstOrDefaultAsync(a => a.User.Email.ToLower() == email);
+
+            var request = new AdvisorRequest
+            {
+                StudentId = student.StudentId,
+                RequestedAdvisorId = advisor?.AdvisorId,
+                RequestedAdvisorEmail = email,
+                Status = "Pending",
+                CreatedAt = DateTime.Now
+            };
+
+            _db.Set<AdvisorRequest>().Add(request);
+            await _db.SaveChangesAsync();
+
+            await AddNotificationToAllAdminsAsync(
+      senderRole: "Student",
+      sourceType: "Request",
+      type: "manual advisor request",
+      message: $"{student.Name} sent a manual advisor request for {email}.",
+      studentId: student.StudentId);
+
+            TempData["AdvisorSuccess"] = "Your request has been sent to the admin for review.";
+            return RedirectToAction(nameof(SelectAdvisor));
+        }
+
+        // =======================
         // Student Home Page
         // =======================
         [HttpGet]
         public async Task<IActionResult> StudentHome()
         {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
             ViewData["Title"] = "Student Home";
             await LoadStudentSidebarDataAsync();
 
             int? studentId = GetCurrentStudentId();
 
             if (!studentId.HasValue)
-            {
-                studentId = 2209009; // temporary for testing
-            }
+                return RedirectToAction("Login", "Account");
 
             var student = await _db.Students
                 .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
 
             if (student == null)
-            {
                 return NotFound("Student not found.");
-            }
+
+            if (!student.AdvisorId.HasValue)
+                return RedirectToAction(nameof(SelectAdvisor));
 
             var graduationStatus = await _db.GraduationStatuses
                 .FirstOrDefaultAsync(g => g.StudentId == studentId.Value);
 
             int totalRequiredHours = 140;
             int remainingHours = graduationStatus?.RemainingHours ?? 140;
+            int completedHours = totalRequiredHours - remainingHours;
+
+            if (completedHours < 0)
+                completedHours = 0;
 
             var model = new StudenthomeViewModel
             {
+                StudentId = student.StudentId,
                 StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName"),
-                StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail"),
+                StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "",
+                RemainingHours = remainingHours,
+                CompletedHours = completedHours,
+                TotalRequiredHours = totalRequiredHours,
                 ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
                 CurrentStatus = CalculateCurrentStatus(remainingHours)
             };
@@ -311,6 +607,9 @@ namespace Acadify.Controllers
         [HttpGet]
         public async Task<IActionResult> UploadTranscript()
         {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
             ViewData["Title"] = "Upload Transcript";
             await LoadStudentSidebarDataAsync();
             return View();
@@ -320,6 +619,9 @@ namespace Acadify.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadTranscript(IFormFile transcriptFile)
         {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
             ViewData["Title"] = "Upload Transcript";
             await LoadStudentSidebarDataAsync();
 
@@ -351,13 +653,6 @@ namespace Acadify.Controllers
             if (student == null)
             {
                 ViewBag.Error = "Student record is not found in the database.";
-                return View();
-            }
-
-            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
-            if (!advisorId.HasValue || advisorId.Value <= 0)
-            {
-                ViewBag.Error = "No advisor is assigned to this student.";
                 return View();
             }
 
@@ -461,6 +756,38 @@ namespace Acadify.Controllers
 
             await _db.SaveChangesAsync();
 
+            await AddNotificationAsync(
+                senderRole: "System",
+                sourceType: "Recommendation",
+                type: "initial recommendation",
+                message: "Your initial recommendation is ready after transcript upload.",
+                studentId: student.StudentId);
+
+            if (student.AdvisorId.HasValue)
+            {
+                await AddNotificationAsync(
+                    senderRole: "Student",
+                    sourceType: "Transcript",
+                    type: "transcript uploaded",
+                    message: $"{student.Name} uploaded the transcript.",
+                    studentId: student.StudentId,
+                    advisorId: student.AdvisorId.Value);
+            }
+            else
+            {
+                await AddNotificationToAllAdminsAsync(
+                    senderRole: "Student",
+                    sourceType: "Transcript",
+                    type: "transcript uploaded",
+                    message: $"{student.Name} uploaded the transcript and is waiting for advisor assignment.",
+                    studentId: student.StudentId);
+            }
+
+            await AddGeneratedFormsNotificationsAsync(student);
+
+            if (!student.AdvisorId.HasValue)
+                return RedirectToAction(nameof(SelectAdvisor));
+
             return RedirectToAction(nameof(StudentHome));
         }
 
@@ -470,6 +797,9 @@ namespace Acadify.Controllers
         [HttpGet]
         public async Task<IActionResult> Chat()
         {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
             ViewData["Title"] = "Chat";
             await LoadStudentSidebarDataAsync();
 
@@ -516,12 +846,15 @@ namespace Acadify.Controllers
             return RedirectToAction("Chat");
         }
 
-        /* =========================================================
-                          CommunityStudent
-           ========================================================= */
+        // =======================
+        // Community Student
+        // =======================
         [HttpGet]
         public async Task<IActionResult> CommunityStudent()
         {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
             ViewData["Title"] = "Community Student";
             await LoadStudentSidebarDataAsync();
 

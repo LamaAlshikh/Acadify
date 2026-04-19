@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +6,15 @@ namespace Acadify.Models;
 
 [Table("Student")]
 [Index("AdvisorId", Name = "IX_Student_AdvisorID")]
+[Index("UserId", Name = "UQ_Student_UserID", IsUnique = true)]
 public partial class Student
 {
     [Key]
     [Column("studentID")]
     public int StudentId { get; set; }
+
+    [Column("userID")]
+    public int UserId { get; set; }
 
     [StringLength(120)]
     public string Name { get; set; } = null!;
@@ -37,6 +39,10 @@ public partial class Student
     [ForeignKey("AdvisorId")]
     [InverseProperty("Students")]
     public virtual Advisor? Advisor { get; set; }
+
+    [ForeignKey("UserId")]
+    [InverseProperty("Student")]
+    public virtual User User { get; set; } = null!;
 
     [InverseProperty("Student")]
     public virtual ICollection<Form> Forms { get; set; } = new List<Form>();

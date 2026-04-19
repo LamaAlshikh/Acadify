@@ -24,6 +24,8 @@ public partial class AcadifyDbContext : DbContext
 
     public virtual DbSet<Advisor> Advisors { get; set; }
 
+    public virtual DbSet<AdvisorRequest> AdvisorRequests { get; set; }
+
     public virtual DbSet<Community> Communities { get; set; }
 
     public virtual DbSet<CommunityMessage> CommunityMessages { get; set; }
@@ -90,7 +92,6 @@ public partial class AcadifyDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            // صار تاريخ فعلي
             entity.Property(e => e.GregorianDate)
                   .HasColumnType("date")
                   .IsRequired();
@@ -127,11 +128,53 @@ public partial class AcadifyDbContext : DbContext
         {
             entity.HasKey(e => e.AdvisorId).HasName("PK__Advisor__D008127590DAB1D2");
 
-            entity.Property(e => e.AdvisorId).ValueGeneratedNever();
-
-            entity.HasOne(d => d.AdvisorNavigation)
+            entity.HasOne(d => d.User)
                 .WithOne(p => p.Advisor)
+                .HasForeignKey<Advisor>(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Advisor_User");
+        });
+
+        modelBuilder.Entity<AdvisorRequest>(entity =>
+        {
+            entity.HasKey(e => e.RequestId).HasName("PK_AdvisorRequest");
+
+            entity.ToTable("AdvisorRequest");
+
+            entity.Property(e => e.RequestId).HasColumnName("requestID");
+            entity.Property(e => e.StudentId).HasColumnName("studentID");
+            entity.Property(e => e.RequestedAdvisorId).HasColumnName("requestedAdvisorID");
+
+            entity.Property(e => e.RequestedAdvisorEmail)
+                .HasMaxLength(150)
+                .HasColumnName("requestedAdvisorEmail");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(30)
+                .HasColumnName("status")
+                .HasDefaultValue("Pending");
+
+            entity.Property(e => e.AdminNote)
+                .HasMaxLength(300)
+                .HasColumnName("adminNote");
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnName("createdAt")
+                .HasDefaultValueSql("(sysdatetime())");
+
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnName("updatedAt");
+
+            entity.HasOne(d => d.Student)
+                .WithMany()
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AdvisorRequest_Student");
+
+            entity.HasOne(d => d.RequestedAdvisor)
+                .WithMany()
+                .HasForeignKey(d => d.RequestedAdvisorId)
+                .HasConstraintName("FK_AdvisorRequest_Advisor");
         });
 
         modelBuilder.Entity<Community>(entity =>
@@ -352,6 +395,7 @@ public partial class AcadifyDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
+            entity.ToTable("User");
             entity.HasKey(e => e.UserId).HasName("PK__User__CB9A1CDF6994AC27");
         });
 

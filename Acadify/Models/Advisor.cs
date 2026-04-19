@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Acadify.Models;
 
@@ -13,13 +10,16 @@ public partial class Advisor
     [Column("advisorID")]
     public int AdvisorId { get; set; }
 
+    [Column("userID")]
+    public int UserId { get; set; }
+
     [Column("department")]
     [StringLength(120)]
     public string? Department { get; set; }
 
-    [ForeignKey("AdvisorId")]
+    [ForeignKey("UserId")]
     [InverseProperty("Advisor")]
-    public virtual User AdvisorNavigation { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 
     [InverseProperty("Advisor")]
     public virtual ICollection<Form> Forms { get; set; } = new List<Form>();

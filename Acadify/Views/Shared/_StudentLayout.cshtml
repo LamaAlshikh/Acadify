@@ -96,18 +96,18 @@
     @await Component.InvokeAsync("Notifications")
 
     <script>
-        function toggleNotifications() {
-            const overlay = document.getElementById('notifOverlay');
-            if (!overlay) return;
-            overlay.classList.toggle('show');
-        }
+            function toggleNotifications() {
+                const overlay = document.getElementById('notifOverlay');
+                if (!overlay) return;
+                overlay.classList.toggle('show');
+            }
 
-        function closeNotifications(e) {
-            if (e) e.preventDefault();
-            const overlay = document.getElementById('notifOverlay');
-            if (!overlay) return;
-            overlay.classList.remove('show');
-        }
+            function closeNotifications(e) {
+                if (e) e.preventDefault();
+                const overlay = document.getElementById('notifOverlay');
+                if (!overlay) return;
+                overlay.classList.remove('show');
+            }
     </script>
 
 </body>

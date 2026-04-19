@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Acadify.Models;
 
 [Table("User")]
-[Index("Email", Name = "UQ__User__AB6E6164942EBD22", IsUnique = true)]
 public partial class User
 {
     [Key]
@@ -23,10 +19,14 @@ public partial class User
 
     [Column("password")]
     [StringLength(255)]
-    [InverseProperty("User")]
-    public virtual Admin? Admin { get; set; }
     public string Password { get; set; } = null!;
 
-    [InverseProperty("AdvisorNavigation")]
+    [InverseProperty("User")]
+    public virtual Admin? Admin { get; set; }
+
+    [InverseProperty("User")]
     public virtual Advisor? Advisor { get; set; }
+
+    [InverseProperty("User")]
+    public virtual Student? Student { get; set; }
 }

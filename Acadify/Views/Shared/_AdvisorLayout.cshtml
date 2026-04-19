@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acadify – Advisor</title>
-   
+
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/RahafZh.css" />
 
@@ -29,7 +29,7 @@
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
                         <i class="fa-regular fa-bell"></i>
                     </button>
-                    </div> 
+                </div>
 
                 <h4>Dr. Amina Gamlo</h4>
                 <p>agamlo@kau.edu.sa</p>
@@ -57,7 +57,7 @@
                     </a>
                 </li>
 
-                <li>
+                <li class="@(ViewData["Title"]?.ToString() == "Meetings" ? "active" : "")">
                     <a asp-controller="Advisor" asp-action="AdvisorHome">
                         <i class="fa-solid fa-calendar-check"></i>
                         <span>Meetings</span>
@@ -66,8 +66,10 @@
             </ul>
 
             <div class="advisor-logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
+                <a asp-controller="Account" asp-action="Logout" class="logout-link">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
             </div>
 
         </aside>
@@ -81,18 +83,18 @@
     @await Component.InvokeAsync("Notifications")
 
     <script>
-        function toggleNotifications() {
-            const overlay = document.getElementById('notifOverlay');
-            if (!overlay) return;
-            overlay.classList.toggle('show');
-        }
+            function toggleNotifications() {
+                const overlay = document.getElementById('notifOverlay');
+                if (!overlay) return;
+                overlay.classList.toggle('show');
+            }
 
-        function closeNotifications(e) {
-            if (e) e.preventDefault();
-            const overlay = document.getElementById('notifOverlay');
-            if (overlay) overlay.classList.remove('show');
-        }
-    </script> 
+            function closeNotifications(e) {
+                if (e) e.preventDefault();
+                const overlay = document.getElementById('notifOverlay');
+                if (overlay) overlay.classList.remove('show');
+            }
+    </script>
 
 </body>
 </html>
