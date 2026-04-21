@@ -32,4 +32,6 @@ public partial class Student
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual Transcript? Transcript { get; set; }
+
+    public virtual ICollection<TranscriptCourseDecision> TranscriptCourseDecisions { get; set; } = new List<TranscriptCourseDecision>();
 }

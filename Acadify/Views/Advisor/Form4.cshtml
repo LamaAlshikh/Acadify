@@ -65,6 +65,53 @@
                 ساعة.
             </p>
 
+            <!-- التعديل الاضافي  -->
+            @if (Model.PendingCourses != null && Model.PendingCourses.Any())
+            {
+                <div class="form4-equivalency-box">
+                    <h3 class="form4-equivalency-title">Courses Requiring Advisor Decision</h3>
+
+                    <div class="form4-equivalency-list">
+                        @for (int i = 0; i < Model.PendingCourses.Count; i++)
+                        {
+                            <div class="course-decision-card">
+                                <div class="course-decision-info">
+                                    <span class="course-title">
+                                        @Model.PendingCourses[i].TranscriptCourseId (@Model.PendingCourses[i].Hours hours)
+                                    </span>
+                                </div>
+
+                                <input type="hidden" asp-for="PendingCourses[i].TranscriptCourseId" />
+                                <input type="hidden" asp-for="PendingCourses[i].TranscriptCourseName" />
+                                <input type="hidden" asp-for="PendingCourses[i].Hours" />
+
+                                <div class="course-decision-controls">
+                                    <select asp-for="PendingCourses[i].DecisionType" class="decision-type-select">
+                                        <option value="">-- Select Decision --</option>
+                                        <option value="FreeElective">Free Elective</option>
+                                        <option value="EquivalentToPlan">Equivalent to IS Course</option>
+                                    </select>
+
+                                    <select asp-for="PendingCourses[i].EquivalentCourseId" class="equivalent-course-select">
+                                        <option value="">-- Select Equivalent Course --</option>
+                                        @foreach (var course in Model.PlanCourseOptions)
+                                        {
+                                            <option value="@course.CourseId">@course.CourseId</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form4-equivalency-actions">
+                        <button type="submit" class="btn-approve-free" formaction="/Advisor/ApproveFreeCourses">
+                            <i class="fa-solid fa-check"></i>confirm
+                        </button>
+                    </div>
+                </div>
+            }
+
             <div class="f4-notes-section">
                 <label class="f4-notes-title" for="AdvisorNotesBox">ملحوظات إن وجدت :</label>
 
@@ -109,4 +156,25 @@
     function printForm() {
         window.print();
     }
+
+           document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".course-decision-card");
+
+        rows.forEach(row => {
+            const decisionSelect = row.querySelector(".decision-type-select");
+            const equivalentSelect = row.querySelector(".equivalent-course-select");
+
+            function toggleEquivalent() {
+                if (decisionSelect.value === "EquivalentToPlan") {
+                    equivalentSelect.style.display = "inline-block";
+                } else {
+                    equivalentSelect.value = "";
+                    equivalentSelect.style.display = "none";
+                }
+            }
+
+            toggleEquivalent();
+            decisionSelect.addEventListener("change", toggleEquivalent);
+        });
+    });
 </script>

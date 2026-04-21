@@ -57,6 +57,8 @@ public partial class AcadifyDbContext : DbContext
 
     public virtual DbSet<VwMyStudent> VwMyStudents { get; set; }
 
+    public virtual DbSet<TranscriptCourseDecision> TranscriptCourseDecisions { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:AcadifyDb");
 
@@ -582,6 +584,43 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.StudentName)
                 .HasMaxLength(120)
                 .HasColumnName("studentName");
+        });
+
+
+
+
+        modelBuilder.Entity<TranscriptCourseDecision>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.TranscriptCourseId)
+                .HasMaxLength(30);
+
+            entity.Property(e => e.DecisionType)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.EquivalentCourseId)
+                .HasMaxLength(30);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Student)
+                .WithMany(p => p.TranscriptCourseDecisions)
+                .HasForeignKey(d => d.StudentId);
+
+            entity.HasOne(d => d.TranscriptCourse)
+                .WithMany()
+                .HasForeignKey(d => d.TranscriptCourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(d => d.EquivalentCourse)
+                .WithMany()
+                .HasForeignKey(d => d.EquivalentCourseId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         OnModelCreatingPartial(modelBuilder);

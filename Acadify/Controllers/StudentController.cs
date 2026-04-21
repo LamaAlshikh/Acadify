@@ -264,6 +264,170 @@ namespace Acadify.Controllers
 
 
 
+        private static Dictionary<string, int> ExtractCourseHoursMapFromPdf(string fullPath, List<string>? targetCourseIds)
+        {
+            var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+            using var doc = UglyToad.PdfPig.PdfDocument.Open(fullPath);
+
+            foreach (var page in doc.GetPages())
+            {
+                var words = page.GetWords()
+                    .OrderByDescending(w => w.BoundingBox.Bottom)
+                    .ThenBy(w => w.BoundingBox.Left)
+                    .ToList();
+
+                var lines = GroupWordsIntoLines(words);
+
+                foreach (var line in lines)
+                {
+                    var tokens = line
+                        .OrderBy(w => w.BoundingBox.Left)
+                        .Select(w => w.Text.Trim().ToUpperInvariant())
+                        .Where(t => !string.IsNullOrWhiteSpace(t))
+                        .ToList();
+
+                    if (tokens.Count == 0)
+                        continue;
+
+                    var lineCourseIds = ExtractCourseIdsFromTokens(tokens);
+
+                    foreach (var courseId in lineCourseIds)
+                    {
+                        if (targetCourseIds != null && !targetCourseIds.Contains(courseId, StringComparer.OrdinalIgnoreCase))
+                            continue;
+
+                        if (result.ContainsKey(courseId))
+                            continue;
+
+                        if (!TryFindCourseOnLine(tokens, courseId, out var codeIndex))
+                            continue;
+
+                        if (TryExtractHourNearCourse(tokens, codeIndex, out var hours))
+                            result[courseId] = hours;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static List<List<UglyToad.PdfPig.Content.Word>> GroupWordsIntoLines(List<UglyToad.PdfPig.Content.Word> words)
+        {
+            var lines = new List<List<UglyToad.PdfPig.Content.Word>>();
+
+            foreach (var word in words)
+            {
+                var existingLine = lines.FirstOrDefault(line =>
+                    Math.Abs(line[0].BoundingBox.Bottom - word.BoundingBox.Bottom) <= 3.5);
+
+                if (existingLine == null)
+                {
+                    lines.Add(new List<UglyToad.PdfPig.Content.Word> { word });
+                }
+                else
+                {
+                    existingLine.Add(word);
+                }
+            }
+
+            return lines;
+        }
+
+        private static List<string> ExtractCourseIdsFromTokens(List<string> tokens)
+        {
+            var result = new List<string>();
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
+                if (m.Success)
+                {
+                    result.Add((m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant());
+                    continue;
+                }
+
+                if (i < tokens.Count - 1 &&
+                    Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
+                    Regex.IsMatch(tokens[i + 1], @"^\d{3}$"))
+                {
+                    result.Add((tokens[i] + tokens[i + 1]).ToUpperInvariant());
+                }
+            }
+
+            return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static bool TryFindCourseOnLine(List<string> tokens, string courseId, out int codeIndex)
+        {
+            codeIndex = -1;
+
+            var upperCourseId = courseId.ToUpperInvariant();
+            var prefix = new string(upperCourseId.TakeWhile(char.IsLetter).ToArray());
+            var number = new string(upperCourseId.SkipWhile(char.IsLetter).ToArray());
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
+                if (m.Success)
+                {
+                    var code = (m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant();
+                    if (code == upperCourseId)
+                    {
+                        codeIndex = i;
+                        return true;
+                    }
+                }
+
+                if (i < tokens.Count - 1 &&
+                    Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
+                    tokens[i] == prefix &&
+                    tokens[i + 1] == number)
+                {
+                    codeIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool TryExtractHourNearCourse(List<string> tokens, int codeIndex, out int hours)
+        {
+            hours = 0;
+
+            var candidates = new List<(int Distance, int Value, bool IsBefore)>();
+
+            for (int i = Math.Max(0, codeIndex - 10); i <= Math.Min(tokens.Count - 1, codeIndex + 10); i++)
+            {
+                if (i == codeIndex)
+                    continue;
+
+                if (Regex.IsMatch(tokens[i], @"^[0-5]$"))
+                {
+                    int value = int.Parse(tokens[i]);
+                    int distance = Math.Abs(i - codeIndex);
+                    bool isBefore = i < codeIndex;
+
+                    candidates.Add((distance, value, isBefore));
+                }
+            }
+
+            if (candidates.Count == 0)
+                return false;
+
+            var best = candidates
+                .OrderBy(c => c.Distance)
+                .ThenBy(c => c.IsBefore ? 0 : 1)
+                .ThenBy(c => c.Value == 0 ? 1 : 0)
+                .First();
+
+            hours = best.Value;
+            return true;
+        }
+
+
+
 
 
 
@@ -382,6 +546,9 @@ namespace Acadify.Controllers
                 code.StartsWith("SUMMER", StringComparison.OrdinalIgnoreCase) ||
                 code.StartsWith("WINTER", StringComparison.OrdinalIgnoreCase));
 
+            // اقرأ ساعات المواد من الترانسكربت
+            var transcriptHourMap = ExtractCourseHoursMapFromPdf(fullPath, courseCodesSet.ToList());
+
             // ✅ Debug
             ViewBag.CodesCount = courseCodesSet.Count;
             ViewBag.CodesPreview = string.Join(", ", courseCodesSet.OrderBy(x => x));
@@ -423,6 +590,19 @@ namespace Acadify.Controllers
                     .Where(c => courseCodesSet.Contains(c.CourseId))
                     .ToListAsync();
 
+                foreach (var course in coursesInDb)
+                {
+                    bool isUnclassified = string.IsNullOrWhiteSpace(course.RequirementCategory);
+                    bool hasZeroHours = course.Hours <= 0;
+
+                    if ((isUnclassified || hasZeroHours) &&
+                        transcriptHourMap.TryGetValue(course.CourseId, out var extractedHours) &&
+                        extractedHours > 0)
+                    {
+                        course.Hours = extractedHours;
+                    }
+                }
+
                 var existingIds = coursesInDb
                     .Select(c => c.CourseId)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -445,7 +625,7 @@ namespace Acadify.Controllers
                     {
                         CourseId = id,
                         CourseName = id,
-                        Hours = 0
+                        Hours = transcriptHourMap.TryGetValue(id, out var extractedHours) ? extractedHours : 0
                     };
 
                     _db.Courses.Add(newCourse);

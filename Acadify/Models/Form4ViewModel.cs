@@ -26,5 +26,8 @@
         public string AdvisorName { get; set; } = "";
 
         public string AdvisorNotes { get; set; } = "";
+
+        public List<Form4CourseDecisionItemVM> PendingCourses { get; set; } = new();
+        public List<PlanCourseOptionVM> PlanCourseOptions { get; set; } = new();
     }
 }

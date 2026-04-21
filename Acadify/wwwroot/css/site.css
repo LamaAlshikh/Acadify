@@ -1154,3 +1154,133 @@ html, body {
     display: block;
     box-sizing: content-box;
 }
+
+
+
+
+
+
+.history-page {
+    padding: 28px 32px;
+}
+
+.history-header {
+    margin-bottom: 18px;
+}
+
+.history-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #4ca8b8;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #dff3f5;
+    box-shadow: 0 0 0 2px #7cc6cf inset;
+    font-size: 18px;
+}
+
+.history-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+}
+
+.history-shell {
+    background: #f7f7f7;
+    border-radius: 30px;
+    padding: 28px;
+    min-height: 70vh;
+}
+
+.history-empty {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+    padding: 40px 0;
+}
+
+.history-card {
+    background: #fff;
+    border: 1px solid #a9c9ef;
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.history-card-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.history-doc-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #48a8b8;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #dff3f5;
+    font-size: 18px;
+}
+
+.history-form-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 4px;
+}
+
+.history-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.history-status-label,
+.history-date-label {
+    color: #999;
+}
+
+.history-status {
+    color: #46b96d;
+}
+
+.history-date {
+    color: #f39a4a;
+}
+
+.history-view-btn {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #f3f6f7;
+    border: 1px solid #a9c9ef;
+    color: #6e9bb0;
+    text-decoration: none;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+    .history-view-btn:hover {
+        background: #eaf3f7;
+    }
