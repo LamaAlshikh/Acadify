@@ -1,0 +1,61 @@
+﻿@model Acadify.Models.StudentChatViewModel
+@{
+    Layout = "_StudentLayout";
+}
+
+<main class="chat-page">
+
+    <!-- Header -->
+    <section class="chat-header">
+        <div class="chat-header-left">
+            <div class="chat-avatar"></div>
+            <h2>@Model.AdvisorName</h2>
+        </div>
+    </section>
+
+    <!-- Messages -->
+    <section class="chat-body">
+
+        @* Recording line *@
+        @if (ViewBag.RecordingMessage != null && ViewBag.RecordingMessage != "")
+        {
+            <div class="chat-recording-line">
+                @ViewBag.RecordingMessage
+            </div>
+        }
+
+        @foreach (var msg in Model.Messages)
+        {
+            if (msg.IsFromStudent)
+            {
+                <div class="msg-row msg-right">
+                    <div class="msg-bubble">
+                        <div class="msg-name">@((msg.SenderName ?? "").Replace("(me)", "").Trim())</div>
+                        <div class="msg-text">@msg.Text</div>
+                    </div>
+                    <div class="msg-circle blue">LA</div>
+                </div>
+            }
+            else
+            {
+                <div class="msg-row msg-left">
+                    <div class="msg-circle purple">AG</div>
+                    <div class="msg-bubble">
+                        <div class="msg-name">@((msg.SenderName ?? "").Replace("(me)", "").Trim())</div>
+                        <div class="msg-text">@msg.Text</div>
+                    </div>
+                </div>
+            }
+        }
+
+    </section>
+
+    <!-- Input -->
+    <section class="chat-footer">
+        <form method="post" asp-action="SendMessage" asp-controller="Student" class="chat-form">
+            <input type="text" name="message" placeholder="Type here..." class="chat-input" required />
+            <button type="submit" class="chat-send">Send</button>
+        </form>
+    </section>
+
+</main>

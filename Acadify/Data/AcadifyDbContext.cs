@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Acadify.DbModels;
+﻿using Acadify.DbModels;
 using Microsoft.EntityFrameworkCore;
-
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 namespace Acadify.Data;
 
 public partial class AcadifyDbContext : DbContext
@@ -15,6 +15,8 @@ public partial class AcadifyDbContext : DbContext
         : base(options)
     {
     }
+
+    
 
     public virtual DbSet<AcademicAdvisingConfirmationForm> AcademicAdvisingConfirmationForms { get; set; }
 
@@ -280,4 +282,7 @@ public partial class AcadifyDbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+
+    
 }

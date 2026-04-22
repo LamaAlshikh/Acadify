@@ -4,79 +4,89 @@
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - Acadify</title>
 
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/StudentLayout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/StudentForm2.css" asp-append-version="true" />
+
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<body class="main-layout">
-
+<body class="main-layout @ViewBag.BodyClass">
     <div class="student-layout">
 
-        <!-- ================= Sidebar ================= -->
-        <aside class="student-sidebar">
+        @{
+            var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        }
 
-            <!-- Profile -->
+        <aside class="student-sidebar">
             <div class="student-profile">
                 <div class="profile-top">
                     <img src="~/images/user.png" class="student-avatar" />
 
-                    <!-- Notifications -->
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
                         <i class="fa-regular fa-bell"></i>
                     </button>
                 </div>
 
                 <h4>@ViewBag.StudentName</h4>
-                <p>@ViewBag.StudentEmail</p>
+
+                @if (!string.IsNullOrWhiteSpace(ViewBag.StudentEmail as string))
+                {
+                    <p>@ViewBag.StudentEmail</p>
+                }
             </div>
 
-            <!-- Menu -->
             <ul class="student-menu">
-                <li class="active">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Homepage</span>
+                <li class="@(currentAction == "StudentHome" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="StudentHome">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Homepage</span>
+                    </a>
+                </li>
+                 
+               
+                
+                <li class="@(currentAction == "Chat" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="Chat">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Community</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-users"></i>
-                    <span>Community</span>
+                <li class="@(currentAction == "Meeting" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="Meeting">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Meetings</span>
+                    </a>
                 </li>
-
-                <li>
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>Meeting</span>
-                </li>
-
-                <li>
-                    <i class="fa-solid fa-book"></i>
+           
+            <li class="@(currentAction == "CourseRecommendation" ? "active" : "")">
+                <a asp-controller="Student" asp-action="CourseRecommendation">
+                    <i class="fa-solid fa-book-open"></i>
                     <span>Course Recommendation</span>
-                </li>
+                </a>
+            </li>
+
             </ul>
 
-            <!-- Logout -->
             <div class="logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Log out</span>
+                <a asp-controller="Account" asp-action="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
             </div>
-
         </aside>
 
-        <!-- ================= Main Content ================= -->
         <div class="main-background-box">
             <div class="page-content">
                 @RenderBody()
             </div>
         </div>
-
     </div>
 
     @await Component.InvokeAsync("Notifications")
@@ -95,6 +105,5 @@
             overlay.classList.remove('show');
         }
     </script>
-
 </body>
 </html>

@@ -1,0 +1,112 @@
+﻿@model Acadify.Models.Form4ViewModel
+@{
+    Layout = "_AdvisorLayout";
+}
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="form4-container">
+
+    <!-- Header -->
+    <div class="form4-header">
+        <div class="form4-title">
+            <i class="fa-solid fa-file-lines form4-title-icon"></i>
+            <div>
+                <h2>Study Plan Matching (Form 4)</h2>
+                
+            </div>
+        </div>
+
+        <div class="form4-header-actions">
+            <a class="btn-history" href="/Advisor/Form4History">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                History
+            </a>
+
+            <button type="button" onclick="printForm()" class="print-btn">
+                <i class="fa fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="form4-msg">@TempData["Success"]</div>
+    }
+
+    <form method="post">
+
+        <div class="form4-paper" dir="rtl">
+
+            <h3 class="f4-title">تقرير عن مطابقة الخطة الدراسية</h3>
+
+            <p class="f4-paragraph">
+                أفيدكم بأن الطالبة/
+                <span class="f4-line">@Model.StudentName</span>
+                ذو الرقم الجامعي
+                <span class="f4-line">@Model.StudentId</span>
+                لديها عدد ساعات
+                <span class="f4-num">@Model.EarnedHours</span>
+                مكتسبة.
+                حيث أن الطالبة أنهت أو مسجلة حالياً التالي :
+            </p>
+
+            <div class="f4-list">
+                <div>(@Model.UniversityReqHours) ساعة متطلبات جامعة</div>
+                <div>(@Model.PrepYearReqHours) ساعة متطلبات السنة التحضيرية</div>
+                <div>(@Model.FreeCoursesHours) ساعات مواد حرة</div>
+                <div>(@Model.CollegeMandatoryHours) ساعة متطلبات الكلية الإجبارية</div>
+                <div>(@Model.DeptMandatoryHours) ساعة مواد القسم الإجبارية</div>
+                <div>(@Model.DeptElectiveHours) ساعات مواد القسم الاختيارية</div>
+            </div>
+
+            <p class="f4-paragraph">
+                وذلك يعني أن مجموع ساعاتها
+                <span class="f4-num">(@Model.TotalHours)</span>
+                ساعة.
+            </p>
+
+            <div class="f4-notes-section">
+                <label class="f4-notes-title" for="AdvisorNotesBox">ملحوظات إن وجدت :</label>
+
+                <div class="f4-notes-box">
+                    <textarea id="AdvisorNotesBox"
+                              asp-for="AdvisorNotes"
+                              class="f4-notes-textarea"
+                             "></textarea>
+                </div>
+            </div>
+
+            <div class="f4-sign">
+                <div class="f4-sign-label">@Model.AdvisorNameLabel</div>
+
+                <div class="f4-sign-row">
+                    <span>الاسم :</span>
+                    <input asp-for="AdvisorName" class="f4-sign-input" />
+                </div>
+
+                
+            </div>
+
+        </div>
+
+        <div class="form4-actions">
+            <button type="submit" class="btn-send" formaction="/Advisor/SendForm4">
+                Send To The Advising Committee
+            </button>
+
+            
+
+            <button type="submit" class="btn-save" formaction="/Advisor/SaveForm4">
+                Save
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    function printForm() {
+        window.print();
+    }
+</script>

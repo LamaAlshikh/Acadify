@@ -1,0 +1,23 @@
+﻿.advisor-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+    .advisor-menu li a:visited,
+    .advisor-menu li a:hover,
+    .advisor-menu li a:active {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+.advisor-menu li.active a {
+    color: #ffffff;
+    text-decoration: none;
+}
+.advisor-menu li a i {
+    color: #ffffff;
+}
