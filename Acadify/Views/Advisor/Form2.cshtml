@@ -1,0 +1,150 @@
+﻿@model Acadify.Models.Form2ViewModel
+
+@{
+    ViewData["Title"] = "Form 2";
+    Layout = "_AdvisorLayout";
+}
+
+<link rel="stylesheet" href="~/css/advisorform2.css" asp-append-version="true" />
+
+<div class="form-paper">
+
+<div class="f2-wrap">
+    <div class="f2-header">
+        <h2 class="f2-title">
+            <i class="fa-solid fa-file-lines"></i>
+            Course Choice and Monitoring (Form 2)
+        </h2>
+
+        <button type="button" onclick="window.print()" class="f2-btn secondary">
+            <i class="fa-solid fa-print"></i>
+            Print
+        </button>
+    </div>
+
+    <div class="f2-box">
+        <form method="post" asp-action="ApproveForm2" asp-controller="Advisor">
+            <input type="hidden" asp-for="StudentId" />
+
+            <h3 class="f2-section-title">Student Information</h3>
+
+            <div class="f2-grid">
+                <div class="f2-field">
+                    <label>Name</label>
+                    <input asp-for="StudentName" readonly />
+                </div>
+
+                <div class="f2-field">
+                    <label>Student ID</label>
+                    <input asp-for="StudentId" readonly />
+                </div>
+
+                <div class="f2-field">
+                    <label>Semester</label>
+                    <input asp-for="Semester" />
+                </div>
+
+                <div class="f2-field">
+                    <label>Running Credit Hours</label>
+                    <input asp-for="RunningCreditHours" />
+                </div>
+
+                <div class="f2-field">
+                    <label>Drop Subjects</label>
+                    <input asp-for="DropSubjects" />
+                </div>
+
+                <div class="f2-field">
+                    <label>IC Subjects</label>
+                    <input asp-for="ICSubjects" />
+                </div>
+
+                <div class="f2-field f2-field-full">
+                    <label>IP Subjects</label>
+                    <input asp-for="IPSubjects" />
+                </div>
+            </div>
+
+            <h3 class="f2-section-title">Course Recommendation for Coming Semester</h3>
+
+            <div class="f2-grid">
+                <div class="f2-field">
+                    <label>Advised Credit Hours</label>
+                    <input asp-for="AdvisedCreditHours" readonly />
+                </div>
+
+                <div class="f2-field">
+                    <label>Coming Semester</label>
+                    <input asp-for="ComingSemester" />
+                </div>
+
+                <div class="f2-field">
+                    <label>Level</label>
+                    <input asp-for="Level" />
+                </div>
+            </div>
+
+            @if (Model.SelectedCourses != null && Model.SelectedCourses.Any())
+            {
+                <div class="f2-selected-courses-box">
+                    <h3 class="f2-selected-title">Selected Courses</h3>
+
+                    <table class="f2-selected-table">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Credit Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var course in Model.SelectedCourses)
+                            {
+                                <tr>
+                                    <td>@course.CourseId</td>
+                                    <td>@course.Hours</td>
+                                </tr>
+                            }
+                            <tr class="f2-total-row">
+                                <td>Total</td>
+                                <td>@Model.AdvisedCreditHours</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="f2-empty-box">
+                    No courses were selected by the student.
+                </div>
+            }
+
+            <div class="f2-field f2-field-full" style="margin-top:20px;">
+                <label>Advisor Notes</label>
+                <textarea name="advisorNotes" rows="4"></textarea>
+            </div>
+
+                <div class="f2-actions">
+                    <button type="submit"
+                            formaction="@Url.Action("SaveForm2", "Advisor")"
+                            class="f2-btn primary">
+                        Save
+                    </button>
+
+                    <button type="submit"
+                            formaction="@Url.Action("SendForm2", "Advisor")"
+                            class="f2-btn primary">
+                        Send To The Advising Committee
+                    </button>
+
+                    <button type="submit"
+                            formaction="@Url.Action("ReturnForm2ToStudent", "Advisor")"
+                            class="f2-btn primary">
+                        Return to Student
+                    </button>
+                </div>
+        </form>
+    </div>
+</div>
+
+</div>

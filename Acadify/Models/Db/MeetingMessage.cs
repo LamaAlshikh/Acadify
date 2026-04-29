@@ -14,4 +14,8 @@ public partial class MeetingMessage
     public string MessageText { get; set; } = null!;
 
     public DateTime? MessageDate { get; set; }
+<<<<<<< HEAD
+=======
+    public bool IsRecorded { get; set; }
+>>>>>>> origin_second/rahafgh
 }

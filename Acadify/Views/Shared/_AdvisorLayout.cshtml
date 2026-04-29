@@ -7,6 +7,7 @@
     <title>Acadify – Advisor</title>
    
     <link rel="stylesheet" href="~/css/site.css" />
+<<<<<<< HEAD
     <link rel="stylesheet" href="~/css/RahafZh.css" />
 
     <link rel="stylesheet"
@@ -14,6 +15,18 @@
     <link rel="stylesheet" href="~/css/AdvisorForm3.css" />
     <link rel="stylesheet" href="~/css/AdvisorForm4.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+=======
+   
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/AdvisorForm3.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/AdvisorForm4.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/advisor-layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/AdvisorLayout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/AdvisorChat.css" />
+>>>>>>> origin_second/rahafgh
 </head>
 
 <body>
@@ -34,13 +47,21 @@
                 <h4>Dr. Amina Gamlo</h4>
                 <p>agamlo@kau.edu.sa</p>
             </div>
+            @{
+                var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+            }
 
             <ul class="advisor-menu">
+<<<<<<< HEAD
                 <li class="@(ViewData["Title"]?.ToString() == "Advisor Home" ? "active" : "")">
+=======
+                <li class="@(currentAction == "AdvisorHome" ? "active" : "")">
+>>>>>>> origin_second/rahafgh
                     <a asp-controller="Advisor" asp-action="AdvisorHome">
                         <i class="fa-solid fa-house"></i>
                         <span>Homepage</span>
                     </a>
+<<<<<<< HEAD
                 </li>
 
                 <li class="@(ViewData["Title"]?.ToString() == "Student Forms" ? "active" : "")">
@@ -59,11 +80,34 @@
 
                 <li>
                     <a asp-controller="Advisor" asp-action="AdvisorHome">
+=======
+                </li>
+
+                <li class="@((currentAction == "Forms" || currentAction == "Form1" || currentAction == "Form2" || currentAction == "Form3" || currentAction == "Form4" || currentAction == "Form5") ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="Forms">
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        <span>Forms</span>
+                    </a>
+                </li>
+
+                <li class="@(currentAction == "Community" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="Community">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Community</span>
+                    </a>
+                </li>
+
+                <li class="@(currentAction == "Meeting" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="Meeting">
+>>>>>>> origin_second/rahafgh
                         <i class="fa-solid fa-calendar-check"></i>
                         <span>Meetings</span>
                     </a>
                 </li>
             </ul>
+
+
+
 
             <div class="advisor-logout">
                 <i class="fa-solid fa-right-from-bracket"></i>

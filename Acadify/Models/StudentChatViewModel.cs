@@ -16,6 +16,10 @@
         public string Text { get; set; } = "";
         public bool IsFromStudent { get; set; } // true = right, false = left
         public string TimeText { get; set; } = ""; // optional
+<<<<<<< HEAD
+=======
+        public bool IsRecorded { get; set; } = false;
+>>>>>>> origin_second/rahafgh
     }
 
 

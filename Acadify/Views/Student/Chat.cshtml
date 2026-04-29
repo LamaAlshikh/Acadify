@@ -17,10 +17,17 @@
     <section class="chat-body">
 
         @* Recording line *@
+<<<<<<< HEAD
         @if (Model.IsRecordingStarted)
         {
             <div class="chat-recording-line">
                 The chat recording is started
+=======
+        @if (ViewBag.RecordingMessage != null && ViewBag.RecordingMessage != "")
+        {
+            <div class="chat-recording-line">
+                @ViewBag.RecordingMessage
+>>>>>>> origin_second/rahafgh
             </div>
         }
 
@@ -30,7 +37,11 @@
             {
                 <div class="msg-row msg-right">
                     <div class="msg-bubble">
+<<<<<<< HEAD
                         <div class="msg-name">@msg.SenderName</div>
+=======
+                        <div class="msg-name">@((msg.SenderName ?? "").Replace("(me)", "").Trim())</div>
+>>>>>>> origin_second/rahafgh
                         <div class="msg-text">@msg.Text</div>
                     </div>
                     <div class="msg-circle blue">LA</div>
@@ -41,7 +52,11 @@
                 <div class="msg-row msg-left">
                     <div class="msg-circle purple">AG</div>
                     <div class="msg-bubble">
+<<<<<<< HEAD
                         <div class="msg-name">@msg.SenderName</div>
+=======
+                        <div class="msg-name">@((msg.SenderName ?? "").Replace("(me)", "").Trim())</div>
+>>>>>>> origin_second/rahafgh
                         <div class="msg-text">@msg.Text</div>
                     </div>
                 </div>

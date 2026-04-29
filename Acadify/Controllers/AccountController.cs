@@ -5,6 +5,7 @@ namespace Acadify.Controllers
 {
     public class AccountController : Controller
     {
+<<<<<<< HEAD
         // يعرض صفحة التسجيل
         [HttpGet]
         public IActionResult SignUp()
@@ -26,13 +27,18 @@ namespace Acadify.Controllers
         }
 
         // يعرض صفحة تسجيل الدخول
+=======
+>>>>>>> origin_second/rahafgh
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+<<<<<<< HEAD
         // يستقبل بيانات تسجيل الدخول
+=======
+>>>>>>> origin_second/rahafgh
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel model)

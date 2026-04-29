@@ -1,18 +1,42 @@
+<<<<<<< HEAD
 ﻿.advisor-form3-page {
     height: calc(100vh - 60px);
     display: flex;
     flex-direction: column;
     gap: 16px;
+=======
+﻿.form3-container {
+    max-width: 1100px;
+    margin-left: 60px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    font-family: Arial, sans-serif;
+    overflow: visible;
+    height: auto;
+    min-height: auto;
+>>>>>>> origin_second/rahafgh
 }
 
 /* Top */
 .form3-top {
+<<<<<<< HEAD
     background: #ffffff;
     border-radius: 18px;
     padding: 14px 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+=======
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+>>>>>>> origin_second/rahafgh
 }
 
 .form3-title {
@@ -38,6 +62,7 @@
 
 .form3-title h2 {
     margin: 0;
+<<<<<<< HEAD
     font-size: 18px;
     font-weight: 700;
 }
@@ -62,10 +87,50 @@
     padding: 10px 14px;
     border-radius: 12px;
     font-size: 14px;
+=======
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.form3-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.form3-top-btn,
+.print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f3f3f3;
+    color: #333;
+    text-decoration: none;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .form3-top-btn:hover,
+    .print-btn:hover {
+        background: #e5e5e5;
+    }
+
+.form3-msg {
+    background: #e8f5ee;
+    color: #2e8b57;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 18px;
+>>>>>>> origin_second/rahafgh
 }
 
 /* Card */
 .form3-card {
+<<<<<<< HEAD
     flex: none;
     height: 560px; /* ✅ مهم عشان الأزرار تظهر */
     background: #ffffff;
@@ -143,12 +208,34 @@
     border-radius: 16px;
     padding: 22px;
     border: 1px solid #e6e6e6;
+=======
+    margin-bottom: 24px;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    overflow: visible;
+}
+
+/* Inner paper */
+.form3-paper {
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    padding: 28px 34px;
+    overflow-x: auto;
+>>>>>>> origin_second/rahafgh
 }
 
 .form3-title-center h3 {
     text-align: center;
     margin: 0 0 18px;
+<<<<<<< HEAD
     font-size: 16px;
+=======
+    font-size: 18px;
+>>>>>>> origin_second/rahafgh
     font-weight: 700;
 }
 
@@ -156,7 +243,12 @@
     display: flex;
     justify-content: space-between;
     gap: 20px;
+<<<<<<< HEAD
     margin-bottom: 14px;
+=======
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+>>>>>>> origin_second/rahafgh
 }
 
     .form3-student-line label {
@@ -171,6 +263,10 @@
     outline: none;
     width: 220px;
     padding: 4px 6px;
+<<<<<<< HEAD
+=======
+    background: transparent;
+>>>>>>> origin_second/rahafgh
 }
 
 .form3-table {
@@ -199,6 +295,10 @@
     padding: 6px 8px;
     outline: none;
     margin-top: 6px;
+<<<<<<< HEAD
+=======
+    box-sizing: border-box;
+>>>>>>> origin_second/rahafgh
 }
 
 .cell-textarea {
@@ -208,6 +308,10 @@
     padding: 8px;
     outline: none;
     resize: vertical;
+<<<<<<< HEAD
+=======
+    box-sizing: border-box;
+>>>>>>> origin_second/rahafgh
 }
 
 .check-row {
@@ -234,8 +338,153 @@
     font-size: 11px;
     color: #444;
 }
+<<<<<<< HEAD
 .form3-table input,
 .form3-table textarea {
     width: 100%;
     box-sizing: border-box; /* 👈 هذا المهم */
 }
+=======
+
+.form3-table input,
+.form3-table textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Bottom actions */
+.form3-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary-wide {
+    background: #12889C;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-save {
+    background: #66ACA7;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    .btn-save:hover {
+        opacity: 0.9;
+    }
+
+.advisor-content {
+    overflow-y: auto !important;
+    height: 100vh;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .form3-container {
+        margin-left: 20px;
+        padding: 24px;
+    }
+
+    .form3-paper {
+        padding: 22px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .form3-top {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .form3-top-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .form3-actions {
+        justify-content: flex-start;
+    }
+}
+@media print {
+
+    /* إخفاء كل شيء في الصفحة */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* إظهار الفورم فقط */
+    .form3-paper,
+    .form3-paper * {
+        visibility: visible !important;
+    }
+
+    /* وضع الفورم في أعلى الصفحة عند الطباعة */
+    .form3-paper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        overflow: visible !important;
+    }
+
+    /* إخفاء العناصر التي لا نريدها */
+    .form3-top,
+    .form3-actions,
+    .form3-msg,
+    .advisor-sidebar,
+    .sidebar,
+    .topbar,
+    .navbar,
+    .print-btn,
+    .form3-top-btn {
+        display: none !important;
+    }
+
+    /* منع قص الجدول أو الصفوف */
+    .form3-card,
+    .form3-container {
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+
+    .form3-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+        .form3-table tr,
+        .form3-table td,
+        .form3-table th {
+            page-break-inside: avoid !important;
+        }
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+}
+>>>>>>> origin_second/rahafgh

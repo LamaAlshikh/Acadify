@@ -1,0 +1,494 @@
+﻿/* ===================================== */
+/* Form 2 - Unified Style                */
+/* Matches Form 1 in screen + print      */
+/* ===================================== */
+
+/* ---------- Main Wrapper ---------- */
+.f2-wrap {
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.f2-box {
+    width: 100%;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+/* ---------- Header ---------- */
+.f2-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.f2-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.3;
+}
+
+    .f2-title i {
+        font-size: 18px;
+        color: #111;
+    }
+
+/* ---------- Section Titles ---------- */
+.f2-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 24px 0 14px;
+    color: #111;
+}
+
+/* ---------- Grid ---------- */
+.f2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 20px;
+    margin-bottom: 16px;
+}
+
+/* ---------- Fields ---------- */
+.f2-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.f2-field-full {
+    grid-column: 1 / -1;
+}
+
+.f2-field label {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #111;
+}
+
+.f2-field input,
+.f2-field textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    background: #f3f3f3;
+    font-size: 13px;
+    font-weight: 400;
+    color: #111;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.2s ease;
+    box-shadow: none;
+}
+
+    .f2-field input:focus,
+    .f2-field textarea:focus {
+        border: 1px solid #cfcfcf;
+        background: #efefef;
+        outline: none;
+        box-shadow: none;
+    }
+
+    .f2-field input[readonly]:focus {
+        border: 1px solid #d9d9d9;
+        background: #f3f3f3;
+        box-shadow: none;
+    }
+
+.f2-field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* ---------- Recommendation Link Box ---------- */
+.f2-link-box {
+    width: 100%;
+    min-height: 46px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+.f2-full-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* ---------- Selected Courses Title ---------- */
+.f2-selected-courses-box {
+    margin-top: 18px;
+}
+
+.f2-selected-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+/* ---------- Selected Courses Table ---------- */
+/* فقط الإطار الخارجي، بدون خطوط داخلية */
+.f2-selected-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+    .f2-selected-table th,
+    .f2-selected-table td {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 13px;
+        color: #111;
+        border: none;
+    }
+
+    .f2-selected-table th {
+        background: #f7f7f7;
+        font-weight: 600;
+    }
+
+.f2-total-row td {
+    font-weight: 600;
+}
+
+/* ---------- Fallback Course Cards ---------- */
+.f2-course-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+    margin-bottom: 14px;
+}
+
+.f2-course-card {
+    background: #f3f3f3;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.f2-course-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+.f2-course-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+}
+
+.f2-course-hours {
+    font-size: 12px;
+    color: #555;
+}
+
+.f2-total-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f3f3f3;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #111;
+}
+
+    .f2-total-box strong {
+        font-size: 14px;
+    }
+
+.f2-empty-box {
+    background: #f3f3f3;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    padding: 14px;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+/* ---------- Buttons ---------- */
+.f2-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.f2-btn,
+.f2-print-btn {
+    border: none;
+    border-radius: 14px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s ease;
+    box-shadow: none;
+}
+
+    .f2-btn.secondary,
+    .f2-print-btn.secondary {
+        background: #f3f3f3;
+        color: #111;
+        border: 1px solid #d9d9d9;
+    }
+
+        .f2-btn.secondary:hover,
+        .f2-print-btn.secondary:hover {
+            background: #ececec;
+        }
+
+    .f2-btn.primary {
+        background: #1c8aa0;
+        color: #fff;
+    }
+
+        .f2-btn.primary:hover {
+            background: #17778a;
+        }
+
+/* ---------- Scroll ---------- */
+html, body {
+    overflow-y: auto !important;
+}
+
+.main-background-box,
+.page-content,
+.content,
+.main-content {
+    overflow-y: auto !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
+    .f2-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .f2-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .f2-field-full {
+        grid-column: auto;
+    }
+
+    .f2-course-main {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .f2-title {
+        font-size: 18px;
+    }
+
+    .f2-btn,
+    .f2-print-btn {
+        width: 100%;
+    }
+}
+
+/* ===================================== */
+/* Print                                 */
+/* ===================================== */
+@media print {
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .f2-wrap,
+    .f2-wrap * {
+        visibility: visible !important;
+    }
+
+    .f2-wrap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        background: #fff !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+    }
+
+    .f2-header button,
+    .f2-actions,
+    .advisor-sidebar,
+    .student-sidebar,
+    .sidebar,
+    .navbar,
+    .topbar,
+    .print-btn,
+    .f2-print-btn,
+    .logout,
+    .notif-btn {
+        display: none !important;
+    }
+
+    .main-background-box,
+    .page-content,
+    .content,
+    .main-content,
+    .f2-box {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .f2-header {
+        display: block !important;
+        margin-bottom: 18px !important;
+    }
+
+    .f2-title {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin: 0 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        color: #000 !important;
+        line-height: 1.3 !important;
+    }
+
+        .f2-title i {
+            font-size: 18px !important;
+            color: #000 !important;
+        }
+
+    .f2-section-title,
+    .f2-selected-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        margin: 16px 0 10px !important;
+        color: #000 !important;
+    }
+
+    .f2-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px 20px !important;
+        margin: 0 !important;
+    }
+
+    .f2-field,
+    .f2-field-full {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-bottom: 14px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .f2-field-full {
+        grid-column: 1 / -1 !important;
+    }
+
+    .f2-field label {
+        display: block !important;
+        margin-bottom: 6px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        color: #000 !important;
+    }
+
+    .f2-field input,
+    .f2-field textarea {
+        width: 100% !important;
+        min-height: 38px !important;
+        padding: 7px 12px !important;
+        border: 1px solid #a9a9a9 !important;
+        border-radius: 12px !important;
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .f2-field textarea {
+        min-height: 70px !important;
+        resize: none !important;
+    }
+
+    .f2-selected-courses-box {
+        margin-top: 16px !important;
+    }
+
+    .f2-selected-table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        background: #fff !important;
+        border: 1px solid #a9a9a9 !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+
+        .f2-selected-table th,
+        .f2-selected-table td {
+            padding: 8px 12px !important;
+            text-align: left !important;
+            font-size: 12px !important;
+            color: #000 !important;
+            border: none !important;
+        }
+
+        .f2-selected-table th {
+            background: #f7f7f7 !important;
+            font-weight: 700 !important;
+        }
+
+    .f2-total-row td {
+        font-weight: 700 !important;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+}

@@ -6,6 +6,10 @@ namespace Acadify.Models.Db;
 public partial class MeetingForm
 {
     public int FormId { get; set; }
+<<<<<<< HEAD
+=======
+    public int? MeetingId { get; set; }
+>>>>>>> origin_second/rahafgh
 
     public DateTime? MeetingStart { get; set; }
 

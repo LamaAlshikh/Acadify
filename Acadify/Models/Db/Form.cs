@@ -1,10 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+<<<<<<< HEAD
 
 namespace Acadify.Models.Db;
 
 public partial class Form
 {
+=======
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Acadify.Models.Db;
+
+
+
+public partial class Form
+{
+
+    [InverseProperty("Form")]
+    public virtual CourseChoiceMonitoringForm? CourseChoiceMonitoringForm { get; set; }
+>>>>>>> origin_second/rahafgh
     public int FormId { get; set; }
 
     public int StudentId { get; set; }
@@ -36,4 +49,9 @@ public partial class Form
     public virtual Student Student { get; set; } = null!;
 
     public virtual StudyPlanMatchingForm? StudyPlanMatchingForm { get; set; }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin_second/rahafgh
 }

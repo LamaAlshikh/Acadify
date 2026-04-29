@@ -1,0 +1,342 @@
+﻿/* ===================================== */
+/* Form 1 - Unified Style                */
+/* Matches Form 2 in screen + print      */
+/* ===================================== */
+
+/* ---------- Main Wrapper ---------- */
+.form1-paper {
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ---------- Header ---------- */
+.form1-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.form1-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .form1-title h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #111;
+        line-height: 1.3;
+    }
+
+    .form1-title i {
+        font-size: 18px;
+        color: #111;
+    }
+
+.form1-header-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* ---------- Grid ---------- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 20px;
+    margin-bottom: 16px;
+}
+
+/* ---------- Fields ---------- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #111;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        min-height: 46px;
+        padding: 10px 14px;
+        border: 1px solid #d9d9d9;
+        border-radius: 12px;
+        background: #f3f3f3;
+        font-size: 13px;
+        font-weight: 400;
+        color: #111;
+        box-sizing: border-box;
+        outline: none;
+        transition: 0.2s ease;
+        margin-top: 0;
+        box-shadow: none;
+    }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border: 1px solid #cfcfcf;
+            background: #efefef;
+            outline: none;
+            box-shadow: none;
+        }
+
+        .form-group input[readonly]:focus {
+            border: 1px solid #d9d9d9;
+            background: #f3f3f3;
+            box-shadow: none;
+        }
+
+    .form-group textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+/* ---------- Optional Success Message ---------- */
+.success-msg {
+    background: #e6f9f0;
+    color: #1e7f4f;
+    border: 1px solid #b7efd3;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+    .form-actions button,
+    .btn-history,
+    .print-btn {
+        border: none;
+        border-radius: 14px;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.2s ease;
+        box-shadow: none;
+    }
+
+.btn-history,
+.print-btn {
+    background: #f3f3f3;
+    color: #111;
+    border: 1px solid #d9d9d9;
+}
+
+    .btn-history:hover,
+    .print-btn:hover {
+        background: #ececec;
+    }
+
+.btn-save,
+.btn-send {
+    background: #1c8aa0;
+    color: #fff;
+}
+
+    .btn-save:hover,
+    .btn-send:hover {
+        background: #17778a;
+    }
+
+/* ---------- Scroll ---------- */
+html, body {
+    overflow-y: auto !important;
+}
+
+.main-background-box,
+.page-content,
+.content,
+.main-content {
+    overflow-y: auto !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
+    .form1-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .form1-title h2 {
+        font-size: 18px;
+    }
+
+    .form-actions button,
+    .btn-history,
+    .print-btn {
+        width: 100%;
+    }
+}
+
+/* ===================================== */
+/* Print                                 */
+/* ===================================== */
+@media print {
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .form1-paper,
+    .form1-paper * {
+        visibility: visible !important;
+    }
+
+    .form1-paper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        background: #fff !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+    }
+
+    .form1-header-actions,
+    .form-actions,
+    .advisor-sidebar,
+    .student-sidebar,
+    .sidebar,
+    .navbar,
+    .topbar,
+    .print-btn,
+    .btn-history,
+    .btn-save,
+    .btn-send,
+    .notif-btn,
+    .logout {
+        display: none !important;
+    }
+
+    .main-background-box,
+    .page-content,
+    .content,
+    .main-content {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .form1-header {
+        display: block !important;
+        margin-bottom: 18px !important;
+    }
+
+    .form1-title {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+        .form1-title h2 {
+            margin: 0 !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            color: #000 !important;
+            line-height: 1.3 !important;
+        }
+
+        .form1-title i {
+            font-size: 18px !important;
+            color: #000 !important;
+        }
+
+    .form-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px 20px !important;
+        margin: 0 !important;
+    }
+
+    .form-group,
+    .form-group.full {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-bottom: 14px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+        .form-group.full {
+            grid-column: 1 / -1 !important;
+        }
+
+        .form-group label {
+            display: block !important;
+            margin-bottom: 6px !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            color: #000 !important;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100% !important;
+            min-height: 38px !important;
+            padding: 7px 12px !important;
+            border: 1px solid #a9a9a9 !important;
+            border-radius: 12px !important;
+            background: #fff !important;
+            color: #000 !important;
+            font-size: 12px !important;
+            font-weight: 400 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        .form-group textarea {
+            min-height: 70px !important;
+            resize: none !important;
+        }
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+}

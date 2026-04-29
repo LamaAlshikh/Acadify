@@ -14,7 +14,12 @@ public partial class AcadifyDbContext : DbContext
         : base(options)
     {
     }
+<<<<<<< HEAD
 
+=======
+    public virtual DbSet<StudyPlanCourse> StudyPlanCourses { get; set; }
+    public virtual DbSet<CourseChoiceMonitoringForm> CourseChoiceMonitoringForms { get; set; }
+>>>>>>> origin_second/rahafgh
     public virtual DbSet<AcademicAdvisingConfirmationForm> AcademicAdvisingConfirmationForms { get; set; }
 
     public virtual DbSet<AcademicCalendar> AcademicCalendars { get; set; }
@@ -58,10 +63,28 @@ public partial class AcadifyDbContext : DbContext
     public virtual DbSet<VwMyStudent> VwMyStudents { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+<<<<<<< HEAD
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:AcadifyDb");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+=======
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<StudyPlanCourse>(entity =>
+        {
+            entity.ToTable("StudyPlanCourse");
+            entity.HasKey(e => new { e.PlanId, e.CourseId });
+
+            entity.Property(e => e.PlanId).HasColumnName("planID");
+            entity.Property(e => e.CourseId).HasColumnName("courseID");
+            entity.Property(e => e.SemesterNo).HasColumnName("semesterNo");
+            entity.Property(e => e.DisplayOrder).HasColumnName("displayOrder");
+        });
+
+>>>>>>> origin_second/rahafgh
         modelBuilder.Entity<AcademicAdvisingConfirmationForm>(entity =>
         {
             entity.HasKey(e => e.FormId).HasName("PK__Academic__51BCB7CBD5B24476");
@@ -160,11 +183,29 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.CourseId)
                 .HasMaxLength(30)
                 .HasColumnName("courseID");
+<<<<<<< HEAD
             entity.Property(e => e.CourseName)
                 .HasMaxLength(200)
                 .HasColumnName("courseName");
             entity.Property(e => e.GraduationRequirement).HasMaxLength(200);
             entity.Property(e => e.Hours).HasColumnName("hours");
+=======
+
+            entity.Property(e => e.CourseName)
+                .HasMaxLength(200)
+                .HasColumnName("courseName");
+
+            entity.Property(e => e.GraduationRequirement)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.RequirementCategory)
+                .HasMaxLength(50)
+                .HasColumnName("RequirementCategory");
+
+            entity.Property(e => e.Hours)
+                .HasColumnName("hours");
+
+>>>>>>> origin_second/rahafgh
             entity.Property(e => e.Prerequisite)
                 .HasMaxLength(200)
                 .HasColumnName("prerequisite");
@@ -433,6 +474,7 @@ public partial class AcadifyDbContext : DbContext
                 .HasColumnName("pdfFile");
             entity.Property(e => e.TotalHours).HasColumnName("totalHours");
 
+<<<<<<< HEAD
             entity.HasMany(d => d.Courses).WithMany(p => p.Plans)
                 .UsingEntity<Dictionary<string, object>>(
                     "StudyPlanCourse",
@@ -452,6 +494,9 @@ public partial class AcadifyDbContext : DbContext
                             .HasMaxLength(30)
                             .HasColumnName("courseID");
                     });
+=======
+            
+>>>>>>> origin_second/rahafgh
         });
 
         modelBuilder.Entity<StudyPlanMatchingForm>(entity =>
@@ -463,6 +508,10 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.FormId)
                 .ValueGeneratedNever()
                 .HasColumnName("formID");
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin_second/rahafgh
             entity.Property(e => e.EarnedHours).HasColumnName("earnedHours");
             entity.Property(e => e.GraduationStatus)
                 .HasMaxLength(80)
@@ -471,6 +520,17 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.RemainingHours).HasColumnName("remainingHours");
             entity.Property(e => e.RequiredHours).HasColumnName("requiredHours");
 
+<<<<<<< HEAD
+=======
+            entity.Property(e => e.UniversityHours).HasColumnName("universityHours");
+            entity.Property(e => e.PrepYearHours).HasColumnName("prepYearHours");
+            entity.Property(e => e.FreeCoursesHours).HasColumnName("freeCoursesHours");
+            entity.Property(e => e.CollegeMandatoryHours).HasColumnName("collegeMandatoryHours");
+            entity.Property(e => e.DeptMandatoryHours).HasColumnName("deptMandatoryHours");
+            entity.Property(e => e.DeptElectiveHours).HasColumnName("deptElectiveHours");
+            entity.Property(e => e.TotalHours).HasColumnName("totalHours");
+
+>>>>>>> origin_second/rahafgh
             entity.HasOne(d => d.Form).WithOne(p => p.StudyPlanMatchingForm)
                 .HasForeignKey<StudyPlanMatchingForm>(d => d.FormId)
                 .HasConstraintName("FK_SPMF_Forms");
@@ -565,6 +625,58 @@ public partial class AcadifyDbContext : DbContext
                 .HasColumnName("studentName");
         });
 
+<<<<<<< HEAD
+=======
+
+
+        modelBuilder.Entity<CourseChoiceMonitoringForm>(entity =>
+        {
+            entity.HasKey(e => e.FormId).HasName("PK_CourseChoiceMonitoringForm");
+
+            entity.ToTable("CourseChoiceMonitoringForm");
+
+            entity.Property(e => e.FormId)
+                .ValueGeneratedNever()
+                .HasColumnName("formID");
+
+            entity.Property(e => e.Semester)
+                .HasMaxLength(100)
+                .HasColumnName("semester");
+
+            entity.Property(e => e.ComingSemester)
+                .HasMaxLength(100)
+                .HasColumnName("comingSemester");
+
+            entity.Property(e => e.RunningCreditHours)
+                .HasColumnName("runningCreditHours");
+
+            entity.Property(e => e.AdvisedCreditHours)
+                .HasColumnName("advisedCreditHours");
+
+            entity.Property(e => e.Level)
+                .HasMaxLength(100)
+                .HasColumnName("level");
+
+            entity.Property(e => e.DropSubjects)
+                .HasColumnName("dropSubjects");
+
+            entity.Property(e => e.ICSubjects)
+                .HasColumnName("icSubjects");
+
+            entity.Property(e => e.IpSubjects)
+                .HasColumnName("ipSubjects");
+
+            entity.Property(e => e.SelectedCoursesJson)
+                .HasColumnName("selectedCoursesJson");
+
+            entity.HasOne(d => d.Form)
+                .WithOne(p => p.CourseChoiceMonitoringForm)
+                .HasForeignKey<CourseChoiceMonitoringForm>(d => d.FormId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CourseChoiceMonitoringForm_Form");
+        });
+
+>>>>>>> origin_second/rahafgh
         OnModelCreatingPartial(modelBuilder);
     }
 
