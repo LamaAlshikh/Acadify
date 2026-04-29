@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
 namespace Acadify.Models.Db;
 
 public partial class Form
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,6 +28,8 @@ public partial class Form
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
     public int FormId { get; set; }
 
     public int StudentId { get; set; }
@@ -57,10 +63,13 @@ public partial class Form
     public virtual StudyPlanMatchingForm? StudyPlanMatchingForm { get; set; }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 }

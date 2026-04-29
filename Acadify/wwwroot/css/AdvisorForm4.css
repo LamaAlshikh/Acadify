@@ -1,5 +1,8 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 ﻿/* =========================
    Form 4 Page Wrapper
 ========================= */
@@ -19,6 +22,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -51,6 +55,8 @@
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 }
 
 .form4-title {
@@ -58,6 +64,9 @@
     align-items: center;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
     gap: 12px;
 }
 
@@ -79,6 +88,7 @@
 .form4-title h2 {
     margin: 0;
     font-size: 18px;
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -97,6 +107,8 @@
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
     font-weight: 700;
 }
 
@@ -105,6 +117,9 @@
     color: #777;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
     font-size: 13px;
 }
 
@@ -170,6 +185,7 @@
 .f4-title {
     text-align: center;
     margin: 0 0 18px;
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -235,12 +251,17 @@
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
     font-size: 18px;
     font-weight: 700;
 }
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 /* Paragraph text */
 .f4-paragraph {
     font-size: 14px;
@@ -249,6 +270,7 @@
 }
 
 /* Underline fields (like Word) */
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -264,6 +286,8 @@
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 .f4-line {
     display: inline-block;
     min-width: 140px;
@@ -273,11 +297,15 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* Number underline */
 =======
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+/* Number underline */
+>>>>>>> origin_second/لما2
 .f4-num {
     display: inline-block;
     min-width: 40px;
@@ -288,6 +316,9 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 /* Hours list */
 .f4-list {
     margin: 12px 0 16px;
@@ -322,6 +353,7 @@
 /* Signature area */
 .f4-sign {
     margin-top: 28px;
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -382,11 +414,14 @@
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
     font-size: 14px;
 }
 
 .f4-sign-label {
     text-align: right;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     margin-bottom: 12px;
@@ -396,6 +431,9 @@
 =======
     margin-bottom: 14px;
 >>>>>>> origin_second/linaLMversion
+=======
+    margin-bottom: 12px;
+>>>>>>> origin_second/لما2
     font-weight: 600;
 }
 
@@ -405,6 +443,7 @@
     align-items: center;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin-top: 12px;
 =======
     margin-top: 14px;
@@ -412,6 +451,9 @@
 =======
     margin-top: 14px;
 >>>>>>> origin_second/linaLMversion
+=======
+    margin-top: 12px;
+>>>>>>> origin_second/لما2
 }
 
 .f4-sign-input {
@@ -421,6 +463,9 @@
     outline: none;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
     padding: 6px;
     font-size: 14px;
 }
@@ -471,6 +516,7 @@
     outline: none;
     box-sizing: border-box;
 }
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -792,3 +838,5 @@
         background: #246b90;
     }
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2

@@ -18,12 +18,15 @@
         public string TimeText { get; set; } = ""; // optional
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         public bool IsRecorded { get; set; } = false;
 >>>>>>> origin_second/rahafgh
 =======
         public bool IsRecorded { get; set; } = false;
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
     }
 
 

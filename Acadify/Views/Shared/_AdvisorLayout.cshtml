@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <head>
     <meta charset="utf-8" />
@@ -18,10 +19,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
 =======
 =======
+=======
+
+>>>>>>> origin_second/لما2
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acadify – Advisor</title>
 
+<<<<<<< HEAD
 >>>>>>> origin_second/linaLMversion
    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -38,6 +44,16 @@
 =======
     <link rel="stylesheet" href="~/css/AdvisorChat.css" />
 >>>>>>> origin_second/linaLMversion
+=======
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/RahafZh.css" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/AdvisorForm3.css" />
+    <link rel="stylesheet" href="~/css/AdvisorForm4.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+>>>>>>> origin_second/لما2
 </head>
 
 <body>
@@ -45,13 +61,17 @@
     <div class="advisor-layout">
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         <!-- Sidebar -->
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
         <aside class="advisor-sidebar">
 
             <div class="advisor-profile">
                 <div class="profile-top">
+<<<<<<< HEAD
 <<<<<<< HEAD
                     <img src="~/images/user.png" class="advisor-avatar" alt="Advisor" />
 
@@ -61,8 +81,10 @@
                     </div> 
 =======
                     <img src="~/images/user.png" class="advisor-avatar" />
+=======
+                    <img src="~/images/user.png" class="advisor-avatar" alt="Advisor" />
+>>>>>>> origin_second/لما2
 
-                    <!-- Notifications (SAME AS STUDENT) -->
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
                         <i class="fa-regular fa-bell"></i>
                     </button>
@@ -138,39 +160,52 @@
 =======
 
             <ul class="advisor-menu">
-                <li class="active">
-                    <i class="fa-solid fa-house"></i>
-                    Homepage
+                <li class="@(ViewData["Title"]?.ToString() == "Advisor Home" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="AdvisorHome">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Homepage</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-file-circle-check"></i>
-                    Forms
+                <li class="@(ViewData["Title"]?.ToString() == "Student Forms" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="StudentForms">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Forms</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-users"></i>
-                    Community
+                <li class="@(ViewData["Title"]?.ToString() == "Community Advisor" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="CommunityAdvisor">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Community</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-calendar-check"></i>
-                    Meetings
+                <li class="@(ViewData["Title"]?.ToString() == "Meetings" ? "active" : "")">
+                    <a asp-controller="Advisor" asp-action="AdvisorHome">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Meetings</span>
+                    </a>
                 </li>
             </ul>
 
 >>>>>>> origin_second/linaLMversion
             <div class="advisor-logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
+                <a asp-controller="Account" asp-action="Logout" class="logout-link">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
             </div>
 
         </aside>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         <!-- Main Content -->
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
         <main class="advisor-content">
             @RenderBody()
         </main>
@@ -178,18 +213,22 @@
     </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     <!-- Notifications ViewComponent -->
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
     @await Component.InvokeAsync("Notifications")
 
     <script>
-        function toggleNotifications() {
-            const overlay = document.getElementById('notifOverlay');
-            if (!overlay) return;
-            overlay.classList.toggle('show');
-        }
+            function toggleNotifications() {
+                const overlay = document.getElementById('notifOverlay');
+                if (!overlay) return;
+                overlay.classList.toggle('show');
+            }
 
+<<<<<<< HEAD
         function closeNotifications(e) {
             if (e) e.preventDefault();
             const overlay = document.getElementById('notifOverlay');
@@ -206,3 +245,14 @@
 </body>
 </html>
 >>>>>>> origin_second/linaLMversion
+=======
+            function closeNotifications(e) {
+                if (e) e.preventDefault();
+                const overlay = document.getElementById('notifOverlay');
+                if (overlay) overlay.classList.remove('show');
+            }
+    </script>
+
+</body>
+</html>
+>>>>>>> origin_second/لما2

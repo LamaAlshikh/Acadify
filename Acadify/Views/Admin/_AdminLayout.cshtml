@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+<<<<<<< HEAD
     <title>Acadify – Admin</title>
+=======
+    <title>@ViewData["Title"] - Acadify</title>
+>>>>>>> origin_second/لما2
 
     <link rel="stylesheet" href="~/css/admin-layout.css" />
     <link rel="stylesheet" href="~/css/site.css" />
@@ -20,6 +24,7 @@
 
             <div class="admin-profile">
                 <div class="profile-top">
+<<<<<<< HEAD
                     <img src="~/images/user.png" class="admin-avatar" />
                 </div>
 
@@ -46,13 +51,56 @@
                     <a asp-controller="Admin" asp-action="ManageAdvisorRequests">
                         <i class="fa-solid fa-link"></i>
                         Requests
+=======
+                    <img src="~/images/user.png" class="admin-avatar" alt="Admin" />
+
+                    <!-- Notifications -->
+                    <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
+                        <i class="fa-regular fa-bell"></i>
+                    </button>
+                </div>
+
+                <h4>@(Context.Session.GetString("UserName") ?? "Admin Panel")</h4>
+                <p>@(Context.Session.GetString("UserEmail") ?? "admin@kau.edu.sa")</p>
+            </div>
+
+            <ul class="admin-menu">
+                <li class="@(ViewData["Title"]?.ToString() == "Upload Study Plan" ? "active" : "")">
+                    <a asp-controller="Admin" asp-action="UploadStudyPlan">
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                        <span>Study Plan</span>
+                    </a>
+                </li>
+
+                <li class="@(ViewData["Title"]?.ToString() == "Upload Academic Calendar" ? "active" : "")">
+                    <a asp-controller="Admin" asp-action="UploadAcademicCalendar">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span>Academic Calendar</span>
+                    </a>
+                </li>
+
+                <li class="@(ViewData["Title"]?.ToString() == "Manage Advisor Requests" ? "active" : "")">
+                    <a asp-controller="Admin" asp-action="ManageAdvisorRequests">
+                        <i class="fa-solid fa-link"></i>
+                        <span>Requests</span>
+>>>>>>> origin_second/لما2
                     </a>
                 </li>
             </ul>
 
             <div class="admin-logout">
+<<<<<<< HEAD
                 <i class="fa-solid fa-right-from-bracket"></i>
                 Logout
+=======
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" style="background:none;border:none;color:inherit;display:flex;align-items:center;gap:10px;cursor:pointer;font:inherit;padding:0;">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+>>>>>>> origin_second/لما2
             </div>
 
         </aside>
@@ -64,6 +112,26 @@
 
     </div>
 
+<<<<<<< HEAD
+=======
+    @await Component.InvokeAsync("Notifications")
+
+    <script>
+            function toggleNotifications() {
+                const overlay = document.getElementById('notifOverlay');
+                if (!overlay) return;
+                overlay.classList.toggle('show');
+            }
+
+            function closeNotifications(e) {
+                if (e) e.preventDefault();
+                const overlay = document.getElementById('notifOverlay');
+                if (!overlay) return;
+                overlay.classList.remove('show');
+            }
+    </script>
+
+>>>>>>> origin_second/لما2
     @RenderSection("Scripts", required: false)
 
 </body>

@@ -25,7 +25,10 @@ namespace Acadify.Controllers
 
         private async Task<int?> GetAdvisorIdForStudentAsync(int studentId)
         {
+<<<<<<< HEAD
             // مهم: إذا اسم الحقل عندك مختلف، بدليه هنا فقط
+=======
+>>>>>>> origin_second/لما2
             return await _context.Students
                 .Where(s => s.StudentId == studentId)
                 .Select(s => (int?)s.AdvisorId)
@@ -194,7 +197,10 @@ namespace Acadify.Controllers
             if (form5Entity == null || form5Entity.Form == null)
                 return NotFound();
 
+<<<<<<< HEAD
             // حماية: الطالبة لا تفتح فورم لطالبة ثانية إذا كان الاعتماد على السشن
+=======
+>>>>>>> origin_second/لما2
             var sessionStudentId = GetCurrentStudentId();
             if (sessionStudentId.HasValue && form5Entity.Form.StudentId != sessionStudentId.Value)
                 return Forbid();
@@ -341,8 +347,13 @@ namespace Acadify.Controllers
 
             return RedirectToAction("Form5", new { formId });
         }
+<<<<<<< HEAD
     
 [HttpPost]
+=======
+
+        [HttpPost]
+>>>>>>> origin_second/لما2
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendToAdvisingCommittee(int formId)
         {

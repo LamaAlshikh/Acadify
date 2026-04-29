@@ -1,14 +1,19 @@
 <<<<<<< HEAD
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   "$schema": "http://json.schemastore.org/launchsettings.json",
 =======
   "$schema": "https://json.schemastore.org/launchsettings.json",
 >>>>>>> origin_second/rahafgh
+=======
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+>>>>>>> origin_second/لما2
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
+<<<<<<< HEAD
 <<<<<<< HEAD
       "applicationUrl": "http://localhost:51690",
       "sslPort": 44302
@@ -22,16 +27,26 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
 >>>>>>> origin_second/linaLMversion
+=======
+      "applicationUrl": "http://localhost:51690",
+      "sslPort": 44302
+    }
+  },
+>>>>>>> origin_second/لما2
   "profiles": {
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
 <<<<<<< HEAD
+<<<<<<< HEAD
       "applicationUrl": "http://localhost:5281",
 =======
       "applicationUrl": "http://localhost:5004",
 >>>>>>> origin_second/linaLMversion
+=======
+      "applicationUrl": "http://localhost:5281",
+>>>>>>> origin_second/لما2
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -41,6 +56,9 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
       "applicationUrl": "https://localhost:7057;http://localhost:5281",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -52,6 +70,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+<<<<<<< HEAD
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -69,3 +88,8 @@
 =======
 }
 >>>>>>> origin_second/linaLMversion
+=======
+    }
+  }
+}
+>>>>>>> origin_second/لما2

@@ -19,6 +19,7 @@ public partial class StudyPlanMatchingForm
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public virtual Form Form { get; set; } = null!;
 }
 =======
@@ -45,3 +46,7 @@ public partial class StudyPlanMatchingForm
 =======
 }
 >>>>>>> origin_second/linaLMversion
+=======
+    public virtual Form Form { get; set; } = null!;
+}
+>>>>>>> origin_second/لما2

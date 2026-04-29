@@ -20,9 +20,13 @@ body.welcome-body {
     width: 50%;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
     .welcome-left h1 {
         font-size: 38px;
         font-weight: bold;
@@ -30,9 +34,13 @@ body.welcome-body {
         margin: 0;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
     .welcome-left p {
         font-size: 14px;
         color: #444;
@@ -73,9 +81,13 @@ body.welcome-body {
     align-items: center;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
 .welcome-logo-box {
     padding: 35px 45px;
     border-radius: 35px;
@@ -85,9 +97,13 @@ body.welcome-body {
     margin-top: 35px; /* تنزل شوي تحت */
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
 .welcome-logo {
     width: 350px;
     display: block;
@@ -245,8 +261,12 @@ body.welcome-body {
    MAIN CONTENT AREA
    ========================= */
 .main-background-box {
+<<<<<<< HEAD
     margin-left: 260px; 
 >>>>>>> origin_second/linaLMversion
+=======
+    margin-left: 260px;
+>>>>>>> origin_second/لما2
     margin-top: 30px;
     margin-right: 30px;
     margin-bottom: 30px;
@@ -256,11 +276,15 @@ body.welcome-body {
     flex: 1;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/rahafgh
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
 .main-layout {
     min-height: 100vh;
     padding: 20px;
@@ -407,10 +431,15 @@ html, body {
 
     .student-profile h4 {
         color: #ffffff; /* الاسم أبيض */
+<<<<<<< HEAD
         font-size: 15px;
         font-weight: 600;
         margin: 8px 0 4px;
 >>>>>>> origin_second/linaLMversion
+=======
+        font-size:11px;
+        margin: 20px 0 4px;
+>>>>>>> origin_second/لما2
     }
 
     .student-profile p {
@@ -483,9 +512,13 @@ html, body {
         border: 2px dashed rgba(255,255,255,0.6);
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
 .begin {
     color: #1db954;
 }
@@ -520,10 +553,14 @@ html, body {
     font-weight: 600;
     margin-bottom: 40px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin-left: 80px;
 =======
     margin-left: 80px; 
 >>>>>>> origin_second/linaLMversion
+=======
+    margin-left: 80px;
+>>>>>>> origin_second/لما2
 }
 /* =========================
    Cards Section
@@ -792,10 +829,14 @@ body {
 /* Actions */
 .form5-actions {
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin-top: 13px;
 =======
     margin-top: 20px;
 >>>>>>> origin_second/linaLMversion
+=======
+    margin-top: 13px;
+>>>>>>> origin_second/لما2
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -824,9 +865,13 @@ body {
     color: #000;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
 .btn-history {
     background: #e0e0e0;
     color: #333;
@@ -872,6 +917,7 @@ html, body {
     text-align: center;
     margin-bottom: 40px;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 }
 
@@ -884,6 +930,13 @@ html, body {
 
    
 >>>>>>> origin_second/linaLMversion
+=======
+
+}
+
+
+
+>>>>>>> origin_second/لما2
 .advisor-avatar {
     width: 70px;
     height: 70px;
@@ -920,20 +973,28 @@ html, body {
         gap: 12px;
         padding: 12px;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
        
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
         border-radius: 10px;
         cursor: pointer;
         font-size: 14px;
         color: #ffffff;
         padding-top: 15px;
 <<<<<<< HEAD
+<<<<<<< HEAD
         margin-top: 30px;
 =======
     margin-top: 30px;
 >>>>>>> origin_second/linaLMversion
+=======
+        margin-top: 30px;
+>>>>>>> origin_second/لما2
     }
 
         .advisor-menu li i {
@@ -982,6 +1043,7 @@ html, body {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin_second/rahafgh
@@ -989,6 +1051,8 @@ html, body {
 
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 .form5-container {
     max-width: 900px;
     margin: 0 auto;
@@ -998,9 +1062,13 @@ html, body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
 .form5-header {
     display: flex;
     justify-content: space-between;
@@ -1198,6 +1266,9 @@ html, body {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 .form-alert-success {
     background: #eaf7ef;
     color: #1f7a3d;
@@ -1207,6 +1278,7 @@ html, body {
     margin-bottom: 16px;
     font-weight: 600;
 }
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -2391,6 +2463,9 @@ html, body {
 
 >>>>>>> origin_second/rahafgh
 
+=======
+
+>>>>>>> origin_second/لما2
 .form-alert-info {
     background: #eef5ff;
     color: #245b9e;
@@ -2466,6 +2541,7 @@ html, body {
 .btn-outline:visited {
     text-decoration: none;
 }
+<<<<<<< HEAD
 =======
 
 
@@ -2594,3 +2670,17 @@ html, body {
         background: #eaf3f7;
     }
 >>>>>>> origin_second/linaLMversion
+=======
+    .btn-white,
+    .btn-white:link,
+    .btn-white:visited,
+    .btn-white:hover,
+    .btn-white:active,
+    .btn-outline,
+    .btn-outline:link,
+    .btn-outline:visited,
+    .btn-outline:hover,
+    .btn-outline:active {
+        text-decoration: none !important;
+    }
+>>>>>>> origin_second/لما2

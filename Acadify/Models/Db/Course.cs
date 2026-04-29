@@ -15,6 +15,7 @@ public partial class Course
 
     public string? GraduationRequirement { get; set; }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 =======
@@ -24,6 +25,9 @@ public partial class Course
     public string? RequirementCategory { get; set; }
 
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
     public virtual ICollection<StudyPlan> Plans { get; set; } = new List<StudyPlan>();
 
     public virtual ICollection<Transcript> Transcripts { get; set; } = new List<Transcript>();

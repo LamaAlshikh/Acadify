@@ -1,6 +1,10 @@
 ﻿@{
     Layout = "_StudentLayout";
     ViewBag.BodyClass = "upload-page";
+<<<<<<< HEAD
+=======
+    ViewData["Title"] = "Upload Transcript";
+>>>>>>> origin_second/لما2
 }
 
 <main class="student-content">
@@ -31,6 +35,23 @@
 
             <p class="format-text">Supported format : PDF</p>
 
+<<<<<<< HEAD
+=======
+            @if (ViewBag.Error != null)
+            {
+                <div class="text-danger" style="margin-top:10px;">
+                    @ViewBag.Error
+                </div>
+            }
+
+            @if (ViewBag.Success != null)
+            {
+                <div class="text-success" style="margin-top:10px;">
+                    @ViewBag.Success
+                </div>
+            }
+
+>>>>>>> origin_second/لما2
             <button id="uploadBtn" type="submit" class="upload-btn">
                 <span id="btnText">Upload</span>
                 <span id="btnLoader" style="display:none;">Uploading...</span>
@@ -39,8 +60,11 @@
         </form>
 
     </section>
+<<<<<<< HEAD
 
    
+=======
+>>>>>>> origin_second/لما2
 </main>
 
 <script>
@@ -51,27 +75,44 @@
         const btnLoader = document.getElementById("btnLoader");
         const fileInput = document.getElementById("fileUpload");
         const selectedFileName = document.getElementById("selectedFileName");
+<<<<<<< HEAD
         
         const pageTitle = document.querySelector(".upload-card h2");
 
         const successMessage = '@Html.Raw(ViewBag.Success != null ? ViewBag.Success.ToString().Replace("'", "\\'") : "")';
         const errorMessage = '@Html.Raw(ViewBag.Error != null ? ViewBag.Error.ToString().Replace("'", "\\'") : "")';
 
+=======
+        const pageTitle = document.querySelector(".upload-card h2");
+
+>>>>>>> origin_second/لما2
         if (fileInput) {
             fileInput.addEventListener("change", function () {
                 if (fileInput.files.length > 0) {
                     selectedFileName.textContent = "File: " + fileInput.files[0].name;
                     selectedFileName.style.display = "block";
+<<<<<<< HEAD
+=======
+                } else {
+                    selectedFileName.textContent = "";
+                    selectedFileName.style.display = "none";
+>>>>>>> origin_second/لما2
                 }
             });
         }
 
         if (form) {
             form.addEventListener("submit", function () {
+<<<<<<< HEAD
+=======
+                if (fileInput.files.length === 0) return;
+
+>>>>>>> origin_second/لما2
                 uploadBtn.disabled = true;
                 btnText.style.display = "none";
                 btnLoader.style.display = "inline";
 
+<<<<<<< HEAD
                 if (fileInput.files.length > 0) {
                     const fileName = fileInput.files[0].name;
                     pageTitle.innerHTML = 'Uploading <span>file...</span>';
@@ -88,5 +129,12 @@
     if (errorMessage) {
         alert(errorMessage);
     }
+=======
+                pageTitle.innerHTML = 'Uploading <span>file...</span>';
+                selectedFileName.textContent = "File: " + fileInput.files[0].name;
+                selectedFileName.style.display = "block";
+            });
+        }
+>>>>>>> origin_second/لما2
     });
 </script>

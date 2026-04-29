@@ -16,6 +16,7 @@ public partial class AcadifyDbContext : DbContext
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
     public virtual DbSet<StudyPlanCourse> StudyPlanCourses { get; set; }
@@ -24,6 +25,9 @@ public partial class AcadifyDbContext : DbContext
 =======
 
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
     public virtual DbSet<AcademicAdvisingConfirmationForm> AcademicAdvisingConfirmationForms { get; set; }
 
     public virtual DbSet<AcademicCalendar> AcademicCalendars { get; set; }
@@ -67,6 +71,7 @@ public partial class AcadifyDbContext : DbContext
     public virtual DbSet<VwMyStudent> VwMyStudents { get; set; }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 <<<<<<< HEAD
 =======
@@ -74,10 +79,14 @@ public partial class AcadifyDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 >>>>>>> origin_second/linaLMversion
+=======
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+>>>>>>> origin_second/لما2
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:AcadifyDb");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
@@ -98,6 +107,8 @@ public partial class AcadifyDbContext : DbContext
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
         modelBuilder.Entity<AcademicAdvisingConfirmationForm>(entity =>
         {
             entity.HasKey(e => e.FormId).HasName("PK__Academic__51BCB7CBD5B24476");
@@ -198,11 +209,15 @@ public partial class AcadifyDbContext : DbContext
                 .HasColumnName("courseID");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity.Property(e => e.CourseName)
                 .HasMaxLength(200)
                 .HasColumnName("courseName");
             entity.Property(e => e.GraduationRequirement).HasMaxLength(200);
             entity.Property(e => e.Hours).HasColumnName("hours");
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -225,6 +240,8 @@ public partial class AcadifyDbContext : DbContext
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
             entity.Property(e => e.Prerequisite)
                 .HasMaxLength(200)
                 .HasColumnName("prerequisite");
@@ -495,8 +512,11 @@ public partial class AcadifyDbContext : DbContext
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
             entity.HasMany(d => d.Courses).WithMany(p => p.Plans)
                 .UsingEntity<Dictionary<string, object>>(
                     "StudyPlanCourse",
@@ -517,11 +537,14 @@ public partial class AcadifyDbContext : DbContext
                             .HasColumnName("courseID");
                     });
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<StudyPlanMatchingForm>(entity =>
@@ -535,12 +558,15 @@ public partial class AcadifyDbContext : DbContext
                 .HasColumnName("formID");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin_second/rahafgh
 =======
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
             entity.Property(e => e.EarnedHours).HasColumnName("earnedHours");
             entity.Property(e => e.GraduationStatus)
                 .HasMaxLength(80)
@@ -549,6 +575,7 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.RemainingHours).HasColumnName("remainingHours");
             entity.Property(e => e.RequiredHours).HasColumnName("requiredHours");
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -566,6 +593,8 @@ public partial class AcadifyDbContext : DbContext
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
             entity.HasOne(d => d.Form).WithOne(p => p.StudyPlanMatchingForm)
                 .HasForeignKey<StudyPlanMatchingForm>(d => d.FormId)
                 .HasConstraintName("FK_SPMF_Forms");
@@ -662,6 +691,7 @@ public partial class AcadifyDbContext : DbContext
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -752,6 +782,8 @@ public partial class AcadifyDbContext : DbContext
         });
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
         OnModelCreatingPartial(modelBuilder);
     }
 

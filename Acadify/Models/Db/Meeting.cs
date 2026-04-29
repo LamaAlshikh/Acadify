@@ -14,6 +14,7 @@ public partial class Meeting
     public string? ChatRecord { get; set; }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     public string? ChatSummary { get; set; }
 
@@ -22,10 +23,13 @@ public partial class Meeting
     public string? ChatSummary { get; set; }
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
     public DateTime? StartTime { get; set; }
 
     public DateTime? EndTime { get; set; }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -40,10 +44,13 @@ public partial class Meeting
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
     public virtual Advisor Advisor { get; set; } = null!;
 
     public virtual Student Student { get; set; } = null!;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -52,4 +59,6 @@ public partial class Meeting
 =======
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 }

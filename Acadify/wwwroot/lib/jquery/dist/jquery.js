@@ -1,5 +1,6 @@
 /*!
 <<<<<<< HEAD
+<<<<<<< HEAD
  * jQuery JavaScript Library v3.6.0
  * https://jquery.com/
  *
@@ -11,15 +12,27 @@
  * https://jquery.com/
  *
 >>>>>>> origin_second/linaLMversion
+=======
+ * jQuery JavaScript Library v3.6.0
+ * https://jquery.com/
+ *
+ * Includes Sizzle.js
+ * https://sizzlejs.com/
+ *
+>>>>>>> origin_second/لما2
  * Copyright OpenJS Foundation and other contributors
  * Released under the MIT license
  * https://jquery.org/license
  *
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Date: 2021-03-02T17:08Z
 =======
  * Date: 2023-08-28T13:37Z
 >>>>>>> origin_second/linaLMversion
+=======
+ * Date: 2021-03-02T17:08Z
+>>>>>>> origin_second/لما2
  */
 ( function( global, factory ) {
 
@@ -34,10 +47,14 @@
 		// This accentuates the need for the creation of a real `window`.
 		// e.g. var jQuery = require("jquery")(window);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// See ticket #14549 for more info.
 =======
 		// See ticket trac-14549 for more info.
 >>>>>>> origin_second/linaLMversion
+=======
+		// See ticket #14549 for more info.
+>>>>>>> origin_second/لما2
 		module.exports = global.document ?
 			factory( global, true ) :
 			function( w ) {
@@ -165,6 +182,7 @@ function toType( obj ) {
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 var
 	version = "3.6.0",
 =======
@@ -172,6 +190,10 @@ var version = "3.7.1",
 
 	rhtmlSuffix = /HTML$/i,
 >>>>>>> origin_second/linaLMversion
+=======
+var
+	version = "3.6.0",
+>>>>>>> origin_second/لما2
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -418,6 +440,7 @@ jQuery.extend( {
 	},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	// Retrieve the text value of an array of DOM nodes
@@ -452,6 +475,8 @@ jQuery.extend( {
 	},
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 	// results is for internal usage only
 	makeArray: function( arr, results ) {
 		var ret = results || [];
@@ -475,6 +500,7 @@ jQuery.extend( {
 	},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	isXMLDoc: function( elem ) {
 		var namespace = elem && elem.namespaceURI,
@@ -486,6 +512,8 @@ jQuery.extend( {
 	},
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 	// Support: Android <=4.0 only, PhantomJS 1 only
 	// push.apply(_, arraylike) throws on ancient WebKit
 	merge: function( first, second ) {
@@ -588,6 +616,9 @@ function isArrayLike( obj ) {
 		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 var Sizzle =
 /*!
  * Sizzle CSS Selector Engine v2.3.6
@@ -600,6 +631,7 @@ var Sizzle =
  * Date: 2021-02-16
  */
 ( function( window ) {
+<<<<<<< HEAD
 var i,
 	support,
 	Expr,
@@ -702,23 +734,38 @@ var preferredDoc = document,
 
 ( function() {
 
+=======
+>>>>>>> origin_second/لما2
 var i,
+	support,
 	Expr,
+	getText,
+	isXML,
+	tokenize,
+	compile,
+	select,
 	outermostContext,
 	sortInput,
 	hasDuplicate,
-	push = pushNative,
 
 	// Local document vars
+	setDocument,
 	document,
-	documentElement,
+	docElem,
 	documentIsHTML,
 	rbuggyQSA,
+	rbuggyMatches,
 	matches,
+	contains,
 
 	// Instance-specific data
+<<<<<<< HEAD
 	expando = jQuery.expando,
 >>>>>>> origin_second/linaLMversion
+=======
+	expando = "sizzle" + 1 * new Date(),
+	preferredDoc = window.document,
+>>>>>>> origin_second/لما2
 	dirruns = 0,
 	done = 0,
 	classCache = createCache(),
@@ -733,6 +780,9 @@ var i,
 	},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	// Instance methods
 	hasOwn = ( {} ).hasOwnProperty,
 	arr = [],
@@ -756,6 +806,7 @@ var i,
 
 	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|" +
 		"ismap|loop|multiple|open|readonly|required|scoped",
+<<<<<<< HEAD
 
 	// Regular expressions
 
@@ -769,26 +820,43 @@ var i,
 	// Regular expressions
 
 >>>>>>> origin_second/linaLMversion
+=======
+
+	// Regular expressions
+
+	// http://www.w3.org/TR/css3-selectors/#whitespace
+	whitespace = "[\\x20\\t\\r\\n\\f]",
+
+>>>>>>> origin_second/لما2
 	// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
 	identifier = "(?:\\\\[\\da-fA-F]{1,6}" + whitespace +
 		"?|\\\\[^\\r\\n\\f]|[\\w-]|[^\0-\\x7f])+",
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
 =======
 	// Attribute selectors: https://www.w3.org/TR/selectors/#attribute-selectors
 >>>>>>> origin_second/linaLMversion
+=======
+	// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
+>>>>>>> origin_second/لما2
 	attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
 
 		// Operator (capture 2)
 		"*([*^$|!~]?=)" + whitespace +
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// "Attribute values must be CSS identifiers [capture 5]
 		// or strings [capture 3 or capture 4]"
 =======
 		// "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
 >>>>>>> origin_second/linaLMversion
+=======
+		// "Attribute values must be CSS identifiers [capture 5]
+		// or strings [capture 3 or capture 4]"
+>>>>>>> origin_second/لما2
 		"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" +
 		whitespace + "*\\]",
 
@@ -808,6 +876,7 @@ var i,
 	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 	rwhitespace = new RegExp( whitespace + "+", "g" ),
 <<<<<<< HEAD
+<<<<<<< HEAD
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" +
 		whitespace + "+$", "g" ),
 
@@ -820,6 +889,14 @@ var i,
 	rleadingCombinator = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" +
 		whitespace + "*" ),
 >>>>>>> origin_second/linaLMversion
+=======
+	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" +
+		whitespace + "+$", "g" ),
+
+	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace +
+		"*" ),
+>>>>>>> origin_second/لما2
 	rdescend = new RegExp( whitespace + "|>" ),
 
 	rpseudo = new RegExp( pseudos ),
@@ -827,6 +904,9 @@ var i,
 
 	matchExpr = {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 		"ID": new RegExp( "^#(" + identifier + ")" ),
 		"CLASS": new RegExp( "^\\.(" + identifier + ")" ),
 		"TAG": new RegExp( "^(" + identifier + "|[*])" ),
@@ -836,6 +916,7 @@ var i,
 			whitespace + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" +
 			whitespace + "*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 		"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
+<<<<<<< HEAD
 
 		// For use in libraries implementing .is()
 		// We use this for POS matching in `select`
@@ -856,28 +937,41 @@ var i,
 		// We use this for POS matching in `select`
 		needsContext: new RegExp( "^" + whitespace +
 >>>>>>> origin_second/linaLMversion
+=======
+
+		// For use in libraries implementing .is()
+		// We use this for POS matching in `select`
+		"needsContext": new RegExp( "^" + whitespace +
+>>>>>>> origin_second/لما2
 			"*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace +
 			"*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 	},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	rhtml = /HTML$/i,
 	rinputs = /^(?:input|select|textarea|button)$/i,
 	rheader = /^h\d$/i,
 
 	rnative = /^[^{]+\{\s*\[native \w/,
 
+<<<<<<< HEAD
 =======
 	rinputs = /^(?:input|select|textarea|button)$/i,
 	rheader = /^h\d$/i,
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
 
 	rsibling = /[+~]/,
 
 	// CSS escapes
+<<<<<<< HEAD
 <<<<<<< HEAD
 	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 	runescape = new RegExp( "\\\\[\\da-fA-F]{1,6}" + whitespace + "?|\\\\([^\\r\\n\\f])", "g" ),
@@ -926,29 +1020,56 @@ var i,
 	// https://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 	runescape = new RegExp( "\\\\[\\da-fA-F]{1,6}" + whitespace +
 		"?|\\\\([^\\r\\n\\f])", "g" ),
+=======
+	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
+	runescape = new RegExp( "\\\\[\\da-fA-F]{1,6}" + whitespace + "?|\\\\([^\\r\\n\\f])", "g" ),
+>>>>>>> origin_second/لما2
 	funescape = function( escape, nonHex ) {
 		var high = "0x" + escape.slice( 1 ) - 0x10000;
 
-		if ( nonHex ) {
+		return nonHex ?
 
 			// Strip the backslash prefix from a non-hex escape sequence
-			return nonHex;
-		}
+			nonHex :
 
-		// Replace a hexadecimal escape sequence with the encoded Unicode code point
-		// Support: IE <=11+
-		// For values outside the Basic Multilingual Plane (BMP), manually construct a
-		// surrogate pair
-		return high < 0 ?
-			String.fromCharCode( high + 0x10000 ) :
-			String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+			// Replace a hexadecimal escape sequence with the encoded Unicode code point
+			// Support: IE <=11+
+			// For values outside the Basic Multilingual Plane (BMP), manually construct a
+			// surrogate pair
+			high < 0 ?
+				String.fromCharCode( high + 0x10000 ) :
+				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
 	},
 
-	// Used for iframes; see `setDocument`.
-	// Support: IE 9 - 11+, Edge 12 - 18+
+	// CSS string/identifier serialization
+	// https://drafts.csswg.org/cssom/#common-serializing-idioms
+	rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,
+	fcssescape = function( ch, asCodePoint ) {
+		if ( asCodePoint ) {
+
+			// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
+			if ( ch === "\0" ) {
+				return "\uFFFD";
+			}
+
+			// Control characters and (dependent upon position) numbers get escaped as code points
+			return ch.slice( 0, -1 ) + "\\" +
+				ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
+		}
+
+		// Other potentially-special ASCII characters get backslash-escaped
+		return "\\" + ch;
+	},
+
+	// Used for iframes
+	// See setDocument()
 	// Removing the function wrapper causes a "Permission Denied"
+<<<<<<< HEAD
 	// error in IE/Edge.
 >>>>>>> origin_second/linaLMversion
+=======
+	// error in IE
+>>>>>>> origin_second/لما2
 	unloadHandler = function() {
 		setDocument();
 	},
@@ -956,14 +1077,19 @@ var i,
 	inDisabledFieldset = addCombinator(
 		function( elem ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
 =======
 			return elem.disabled === true && nodeName( elem, "fieldset" );
 >>>>>>> origin_second/linaLMversion
+=======
+			return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
+>>>>>>> origin_second/لما2
 		},
 		{ dir: "parentNode", next: "legend" }
 	);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 // Support: IE <=9 only
@@ -976,6 +1102,8 @@ function safeActiveElement() {
 }
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 // Optimize for push.apply( _, NodeList )
 try {
 	push.apply(
@@ -984,19 +1112,27 @@ try {
 	);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Support: Android<4.0
 =======
 	// Support: Android <=4.0
 >>>>>>> origin_second/linaLMversion
+=======
+	// Support: Android<4.0
+>>>>>>> origin_second/لما2
 	// Detect silently failing push.apply
 	// eslint-disable-next-line no-unused-expressions
 	arr[ preferredDoc.childNodes.length ].nodeType;
 } catch ( e ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	push = { apply: arr.length ?
 
 		// Leverage slice if possible
 		function( target, els ) {
+<<<<<<< HEAD
 			pushNative.apply( target, slice.call( els ) );
 		} :
 
@@ -1017,15 +1153,33 @@ try {
 		call: function( target ) {
 			pushNative.apply( target, slice.call( arguments, 1 ) );
 >>>>>>> origin_second/linaLMversion
+=======
+			pushNative.apply( target, slice.call( els ) );
+		} :
+
+		// Support: IE<9
+		// Otherwise append directly
+		function( target, els ) {
+			var j = target.length,
+				i = 0;
+
+			// Can't trust NodeList.length
+			while ( ( target[ j++ ] = els[ i++ ] ) ) {}
+			target.length = j - 1;
+>>>>>>> origin_second/لما2
 		}
 	};
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 function Sizzle( selector, context, results, seed ) {
 =======
 function find( selector, context, results, seed ) {
 >>>>>>> origin_second/linaLMversion
+=======
+function Sizzle( selector, context, results, seed ) {
+>>>>>>> origin_second/لما2
 	var m, i, elem, nid, match, groups, newSelector,
 		newContext = context && context.ownerDocument,
 
@@ -1060,6 +1214,7 @@ function find( selector, context, results, seed ) {
 						if ( ( elem = context.getElementById( m ) ) ) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 							// Support: IE, Opera, Webkit
 							// TODO: identify versions
 							// getElementById can match elements by name instead of ID
@@ -1071,6 +1226,13 @@ function find( selector, context, results, seed ) {
 							if ( elem.id === m ) {
 								push.call( results, elem );
 >>>>>>> origin_second/linaLMversion
+=======
+							// Support: IE, Opera, Webkit
+							// TODO: identify versions
+							// getElementById can match elements by name instead of ID
+							if ( elem.id === m ) {
+								results.push( elem );
+>>>>>>> origin_second/لما2
 								return results;
 							}
 						} else {
@@ -1080,6 +1242,7 @@ function find( selector, context, results, seed ) {
 					// Element context
 					} else {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 						// Support: IE, Opera, Webkit
 						// TODO: identify versions
@@ -1091,13 +1254,21 @@ function find( selector, context, results, seed ) {
 							results.push( elem );
 =======
 						// Support: IE 9 only
+=======
+						// Support: IE, Opera, Webkit
+						// TODO: identify versions
+>>>>>>> origin_second/لما2
 						// getElementById can match elements by name instead of ID
 						if ( newContext && ( elem = newContext.getElementById( m ) ) &&
-							find.contains( context, elem ) &&
+							contains( context, elem ) &&
 							elem.id === m ) {
 
+<<<<<<< HEAD
 							push.call( results, elem );
 >>>>>>> origin_second/linaLMversion
+=======
+							results.push( elem );
+>>>>>>> origin_second/لما2
 							return results;
 						}
 					}
@@ -1109,12 +1280,18 @@ function find( selector, context, results, seed ) {
 
 				// Class selector
 <<<<<<< HEAD
+<<<<<<< HEAD
 				} else if ( ( m = match[ 3 ] ) && support.getElementsByClassName &&
 					context.getElementsByClassName ) {
 
 =======
 				} else if ( ( m = match[ 3 ] ) && context.getElementsByClassName ) {
 >>>>>>> origin_second/linaLMversion
+=======
+				} else if ( ( m = match[ 3 ] ) && support.getElementsByClassName &&
+					context.getElementsByClassName ) {
+
+>>>>>>> origin_second/لما2
 					push.apply( results, context.getElementsByClassName( m ) );
 					return results;
 				}
@@ -1122,6 +1299,9 @@ function find( selector, context, results, seed ) {
 
 			// Take advantage of querySelectorAll
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 			if ( support.qsa &&
 				!nonnativeSelectorCache[ selector + " " ] &&
 				( !rbuggyQSA || !rbuggyQSA.test( selector ) ) &&
@@ -1129,10 +1309,13 @@ function find( selector, context, results, seed ) {
 				// Support: IE 8 only
 				// Exclude object elements
 				( nodeType !== 1 || context.nodeName.toLowerCase() !== "object" ) ) {
+<<<<<<< HEAD
 =======
 			if ( !nonnativeSelectorCache[ selector + " " ] &&
 				( !rbuggyQSA || !rbuggyQSA.test( selector ) ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
 				newSelector = selector;
 				newContext = context;
@@ -1146,10 +1329,14 @@ function find( selector, context, results, seed ) {
 				// Thanks to Andrew Dupont for this technique.
 				if ( nodeType === 1 &&
 <<<<<<< HEAD
+<<<<<<< HEAD
 					( rdescend.test( selector ) || rcombinators.test( selector ) ) ) {
 =======
 					( rdescend.test( selector ) || rleadingCombinator.test( selector ) ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+					( rdescend.test( selector ) || rcombinators.test( selector ) ) ) {
+>>>>>>> origin_second/لما2
 
 					// Expand context for sibling selectors
 					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
@@ -1157,6 +1344,7 @@ function find( selector, context, results, seed ) {
 
 					// We can use :scope instead of the ID hack if the browser
 					// supports it & if we're not changing the context.
+<<<<<<< HEAD
 <<<<<<< HEAD
 					if ( newContext !== context || !support.scope ) {
 
@@ -1174,6 +1362,13 @@ function find( selector, context, results, seed ) {
 						if ( ( nid = context.getAttribute( "id" ) ) ) {
 							nid = jQuery.escapeSelector( nid );
 >>>>>>> origin_second/linaLMversion
+=======
+					if ( newContext !== context || !support.scope ) {
+
+						// Capture the context ID, setting it first if necessary
+						if ( ( nid = context.getAttribute( "id" ) ) ) {
+							nid = nid.replace( rcssescape, fcssescape );
+>>>>>>> origin_second/لما2
 						} else {
 							context.setAttribute( "id", ( nid = expando ) );
 						}
@@ -1207,10 +1402,14 @@ function find( selector, context, results, seed ) {
 
 	// All others
 <<<<<<< HEAD
+<<<<<<< HEAD
 	return select( selector.replace( rtrim, "$1" ), context, results, seed );
 =======
 	return select( selector.replace( rtrimCSS, "$1" ), context, results, seed );
 >>>>>>> origin_second/linaLMversion
+=======
+	return select( selector.replace( rtrim, "$1" ), context, results, seed );
+>>>>>>> origin_second/لما2
 }
 
 /**
@@ -1225,11 +1424,15 @@ function createCache() {
 	function cache( key, value ) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
 =======
 		// Use (key + " ") to avoid collision with native prototype properties
 		// (see https://github.com/jquery/sizzle/issues/157)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
+>>>>>>> origin_second/لما2
 		if ( keys.push( key + " " ) > Expr.cacheLength ) {
 
 			// Only keep the most recent entries
@@ -1242,10 +1445,14 @@ function createCache() {
 
 /**
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Mark a function for special use by Sizzle
 =======
  * Mark a function for special use by jQuery selector module
 >>>>>>> origin_second/linaLMversion
+=======
+ * Mark a function for special use by Sizzle
+>>>>>>> origin_second/لما2
  * @param {Function} fn The function to mark
  */
 function markFunction( fn ) {
@@ -1278,6 +1485,9 @@ function assert( fn ) {
 
 /**
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
  * Adds the same handler for all of the specified attrs
  * @param {String} attrs Pipe-separated list of attributes
  * @param {Function} handler The method that will be applied
@@ -1320,19 +1530,27 @@ function siblingCheck( a, b ) {
 }
 
 /**
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
  * Returns a function to use in pseudos for input types
  * @param {String} type
  */
 function createInputPseudo( type ) {
 	return function( elem ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		var name = elem.nodeName.toLowerCase();
 		return name === "input" && elem.type === type;
 =======
 		return nodeName( elem, "input" ) && elem.type === type;
 >>>>>>> origin_second/linaLMversion
+=======
+		var name = elem.nodeName.toLowerCase();
+		return name === "input" && elem.type === type;
+>>>>>>> origin_second/لما2
 	};
 }
 
@@ -1343,12 +1561,17 @@ function createInputPseudo( type ) {
 function createButtonPseudo( type ) {
 	return function( elem ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		var name = elem.nodeName.toLowerCase();
 		return ( name === "input" || name === "button" ) && elem.type === type;
 =======
 		return ( nodeName( elem, "input" ) || nodeName( elem, "button" ) ) &&
 			elem.type === type;
 >>>>>>> origin_second/linaLMversion
+=======
+		var name = elem.nodeName.toLowerCase();
+		return ( name === "input" || name === "button" ) && elem.type === type;
+>>>>>>> origin_second/لما2
 	};
 }
 
@@ -1385,14 +1608,19 @@ function createDisabledPseudo( disabled ) {
 				}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Support: IE 6 - 11
 =======
 				// Support: IE 6 - 11+
 >>>>>>> origin_second/linaLMversion
+=======
+				// Support: IE 6 - 11
+>>>>>>> origin_second/لما2
 				// Use the isDisabled shortcut property to check for disabled fieldset ancestors
 				return elem.isDisabled === disabled ||
 
 					// Where there is no isDisabled, check manually
+<<<<<<< HEAD
 <<<<<<< HEAD
 					/* jshint -W018 */
 					elem.isDisabled !== !disabled &&
@@ -1401,6 +1629,11 @@ function createDisabledPseudo( disabled ) {
 					elem.isDisabled !== !disabled &&
 						inDisabledFieldset( elem ) === disabled;
 >>>>>>> origin_second/linaLMversion
+=======
+					/* jshint -W018 */
+					elem.isDisabled !== !disabled &&
+					inDisabledFieldset( elem ) === disabled;
+>>>>>>> origin_second/لما2
 			}
 
 			return elem.disabled === disabled;
@@ -1441,10 +1674,14 @@ function createPositionalPseudo( fn ) {
 
 /**
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Checks a node for validity as a Sizzle context
 =======
  * Checks a node for validity as a jQuery selector context
 >>>>>>> origin_second/linaLMversion
+=======
+ * Checks a node for validity as a Sizzle context
+>>>>>>> origin_second/لما2
  * @param {Element|Object=} context
  * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
  */
@@ -1453,6 +1690,9 @@ function testContext( context ) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 // Expose support vars for convenience
 support = Sizzle.support = {};
 
@@ -1471,6 +1711,7 @@ isXML = Sizzle.isXML = function( elem ) {
 	return !rhtml.test( namespace || docElem && docElem.nodeName || "HTML" );
 };
 
+<<<<<<< HEAD
 /**
  * Sets document-related variables once based on the current document
  * @param {Element|Object} [doc] An element or document object to use to set the document
@@ -1479,14 +1720,21 @@ isXML = Sizzle.isXML = function( elem ) {
 setDocument = Sizzle.setDocument = function( node ) {
 	var hasCompare, subWindow,
 =======
+=======
+>>>>>>> origin_second/لما2
 /**
  * Sets document-related variables once based on the current document
- * @param {Element|Object} [node] An element or document object to use to set the document
+ * @param {Element|Object} [doc] An element or document object to use to set the document
  * @returns {Object} Returns the current document
  */
+<<<<<<< HEAD
 function setDocument( node ) {
 	var subWindow,
 >>>>>>> origin_second/linaLMversion
+=======
+setDocument = Sizzle.setDocument = function( node ) {
+	var hasCompare, subWindow,
+>>>>>>> origin_second/لما2
 		doc = node ? node.ownerDocument || node : preferredDoc;
 
 	// Return early if doc is invalid or already selected
@@ -1500,6 +1748,7 @@ function setDocument( node ) {
 
 	// Update global variables
 	document = doc;
+<<<<<<< HEAD
 <<<<<<< HEAD
 	docElem = document.documentElement;
 	documentIsHTML = !isXML( document );
@@ -1567,31 +1816,75 @@ function setDocument( node ) {
 	matches = documentElement.matches ||
 		documentElement.webkitMatchesSelector ||
 		documentElement.msMatchesSelector;
+=======
+	docElem = document.documentElement;
+	documentIsHTML = !isXML( document );
+>>>>>>> origin_second/لما2
 
 	// Support: IE 9 - 11+, Edge 12 - 18+
-	// Accessing iframe documents after unload throws "permission denied" errors
-	// (see trac-13936).
-	// Limit the fix to IE & Edge Legacy; despite Edge 15+ implementing `matches`,
-	// all IE 9+ and Edge Legacy versions implement `msMatchesSelector` as well.
-	if ( documentElement.msMatchesSelector &&
-
-		// Support: IE 11+, Edge 17 - 18+
-		// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
-		// two documents; shallow comparisons work.
-		// eslint-disable-next-line eqeqeq
-		preferredDoc != document &&
+	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
+	// Support: IE 11+, Edge 17 - 18+
+	// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+	// two documents; shallow comparisons work.
+	// eslint-disable-next-line eqeqeq
+	if ( preferredDoc != document &&
 		( subWindow = document.defaultView ) && subWindow.top !== subWindow ) {
 
-		// Support: IE 9 - 11+, Edge 12 - 18+
-		subWindow.addEventListener( "unload", unloadHandler );
+		// Support: IE 11, Edge
+		if ( subWindow.addEventListener ) {
+			subWindow.addEventListener( "unload", unloadHandler, false );
+
+		// Support: IE 9 - 10 only
+		} else if ( subWindow.attachEvent ) {
+			subWindow.attachEvent( "onunload", unloadHandler );
+		}
 	}
 
+<<<<<<< HEAD
 	// Support: IE <10
 >>>>>>> origin_second/linaLMversion
+=======
+	// Support: IE 8 - 11+, Edge 12 - 18+, Chrome <=16 - 25 only, Firefox <=3.6 - 31 only,
+	// Safari 4 - 5 only, Opera <=11.6 - 12.x only
+	// IE/Edge & older browsers don't support the :scope pseudo-class.
+	// Support: Safari 6.0 only
+	// Safari 6.0 supports :scope but it's an alias of :root there.
+	support.scope = assert( function( el ) {
+		docElem.appendChild( el ).appendChild( document.createElement( "div" ) );
+		return typeof el.querySelectorAll !== "undefined" &&
+			!el.querySelectorAll( ":scope fieldset div" ).length;
+	} );
+
+	/* Attributes
+	---------------------------------------------------------------------- */
+
+	// Support: IE<8
+	// Verify that getAttribute really returns attributes and not properties
+	// (excepting IE8 booleans)
+	support.attributes = assert( function( el ) {
+		el.className = "i";
+		return !el.getAttribute( "className" );
+	} );
+
+	/* getElement(s)By*
+	---------------------------------------------------------------------- */
+
+	// Check if getElementsByTagName("*") returns only elements
+	support.getElementsByTagName = assert( function( el ) {
+		el.appendChild( document.createComment( "" ) );
+		return !el.getElementsByTagName( "*" ).length;
+	} );
+
+	// Support: IE<9
+	support.getElementsByClassName = rnative.test( document.getElementsByClassName );
+
+	// Support: IE<10
+>>>>>>> origin_second/لما2
 	// Check if getElementById returns elements by name
 	// The broken getElementById methods don't pick up programmatically-set names,
 	// so use a roundabout getElementsByName test
 	support.getById = assert( function( el ) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 		docElem.appendChild( el ).id = expando;
 		return !document.getElementsByName || !document.getElementsByName( expando ).length;
@@ -1631,25 +1924,37 @@ function setDocument( node ) {
 			return true;
 		}
 >>>>>>> origin_second/linaLMversion
+=======
+		docElem.appendChild( el ).id = expando;
+		return !document.getElementsByName || !document.getElementsByName( expando ).length;
+>>>>>>> origin_second/لما2
 	} );
 
 	// ID filter and find
 	if ( support.getById ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Expr.filter[ "ID" ] = function( id ) {
 =======
 		Expr.filter.ID = function( id ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		Expr.filter[ "ID" ] = function( id ) {
+>>>>>>> origin_second/لما2
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				return elem.getAttribute( "id" ) === attrId;
 			};
 		};
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Expr.find[ "ID" ] = function( id, context ) {
 =======
 		Expr.find.ID = function( id, context ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		Expr.find[ "ID" ] = function( id, context ) {
+>>>>>>> origin_second/لما2
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var elem = context.getElementById( id );
 				return elem ? [ elem ] : [];
@@ -1657,10 +1962,14 @@ function setDocument( node ) {
 		};
 	} else {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Expr.filter[ "ID" ] =  function( id ) {
 =======
 		Expr.filter.ID =  function( id ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		Expr.filter[ "ID" ] =  function( id ) {
+>>>>>>> origin_second/لما2
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				var node = typeof elem.getAttributeNode !== "undefined" &&
@@ -1672,10 +1981,14 @@ function setDocument( node ) {
 		// Support: IE 6 - 7 only
 		// getElementById is not reliable as a find shortcut
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Expr.find[ "ID" ] = function( id, context ) {
 =======
 		Expr.find.ID = function( id, context ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		Expr.find[ "ID" ] = function( id, context ) {
+>>>>>>> origin_second/لما2
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var node, i, elems,
 					elem = context.getElementById( id );
@@ -1706,10 +2019,14 @@ function setDocument( node ) {
 
 	// Tag
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	Expr.find[ "TAG" ] = support.getElementsByTagName ?
 		function( tag, context ) {
 			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
+<<<<<<< HEAD
 
 			// DocumentFragment nodes don't have gEBTN
 			} else if ( support.qsa ) {
@@ -1744,16 +2061,43 @@ function setDocument( node ) {
 	Expr.find.TAG = function( tag, context ) {
 		if ( typeof context.getElementsByTagName !== "undefined" ) {
 			return context.getElementsByTagName( tag );
+=======
+>>>>>>> origin_second/لما2
 
-		// DocumentFragment nodes don't have gEBTN
-		} else {
-			return context.querySelectorAll( tag );
-		}
-	};
+			// DocumentFragment nodes don't have gEBTN
+			} else if ( support.qsa ) {
+				return context.querySelectorAll( tag );
+			}
+		} :
+
+		function( tag, context ) {
+			var elem,
+				tmp = [],
+				i = 0,
+
+				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
+				results = context.getElementsByTagName( tag );
+
+			// Filter out possible comments
+			if ( tag === "*" ) {
+				while ( ( elem = results[ i++ ] ) ) {
+					if ( elem.nodeType === 1 ) {
+						tmp.push( elem );
+					}
+				}
+
+				return tmp;
+			}
+			return results;
+		};
 
 	// Class
+<<<<<<< HEAD
 	Expr.find.CLASS = function( className, context ) {
 >>>>>>> origin_second/linaLMversion
+=======
+	Expr.find[ "CLASS" ] = support.getElementsByClassName && function( className, context ) {
+>>>>>>> origin_second/لما2
 		if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
 			return context.getElementsByClassName( className );
 		}
@@ -1765,6 +2109,9 @@ function setDocument( node ) {
 	// QSA and matchesSelector support
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
 	rbuggyMatches = [];
 
@@ -1773,6 +2120,7 @@ function setDocument( node ) {
 	// whenever `document.activeElement` is accessed on an iframe
 	// So, we allow :focus to pass through QSA all the time to avoid the IE error
 	// See https://bugs.jquery.com/ticket/13378
+<<<<<<< HEAD
 	rbuggyQSA = [];
 
 	if ( ( support.qsa = rnative.test( document.querySelectorAll ) ) ) {
@@ -1930,100 +2278,184 @@ function setDocument( node ) {
 			return false;
 		};
 =======
+=======
+>>>>>>> origin_second/لما2
 	rbuggyQSA = [];
 
-	// Build QSA regex
-	// Regex strategy adopted from Diego Perini
-	assert( function( el ) {
+	if ( ( support.qsa = rnative.test( document.querySelectorAll ) ) ) {
 
-		var input;
+		// Build QSA regex
+		// Regex strategy adopted from Diego Perini
+		assert( function( el ) {
 
-		documentElement.appendChild( el ).innerHTML =
-			"<a id='" + expando + "' href='' disabled='disabled'></a>" +
-			"<select id='" + expando + "-\r\\' disabled='disabled'>" +
-			"<option selected=''></option></select>";
+			var input;
 
-		// Support: iOS <=7 - 8 only
-		// Boolean attributes and "value" are not treated correctly in some XML documents
-		if ( !el.querySelectorAll( "[selected]" ).length ) {
-			rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
-		}
+			// Select is set to empty string on purpose
+			// This is to test IE's treatment of not explicitly
+			// setting a boolean content attribute,
+			// since its presence should be enough
+			// https://bugs.jquery.com/ticket/12359
+			docElem.appendChild( el ).innerHTML = "<a id='" + expando + "'></a>" +
+				"<select id='" + expando + "-\r\\' msallowcapture=''>" +
+				"<option selected=''></option></select>";
 
-		// Support: iOS <=7 - 8 only
-		if ( !el.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
-			rbuggyQSA.push( "~=" );
-		}
+			// Support: IE8, Opera 11-12.16
+			// Nothing should be selected when empty strings follow ^= or $= or *=
+			// The test attribute must be unknown in Opera but "safe" for WinRT
+			// https://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
+			if ( el.querySelectorAll( "[msallowcapture^='']" ).length ) {
+				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
+			}
 
-		// Support: iOS 8 only
-		// https://bugs.webkit.org/show_bug.cgi?id=136851
-		// In-page `selector#id sibling-combinator selector` fails
-		if ( !el.querySelectorAll( "a#" + expando + "+*" ).length ) {
-			rbuggyQSA.push( ".#.+[+~]" );
-		}
+			// Support: IE8
+			// Boolean attributes and "value" are not treated correctly
+			if ( !el.querySelectorAll( "[selected]" ).length ) {
+				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
+			}
 
-		// Support: Chrome <=105+, Firefox <=104+, Safari <=15.4+
-		// In some of the document kinds, these selectors wouldn't work natively.
-		// This is probably OK but for backwards compatibility we want to maintain
-		// handling them through jQuery traversal in jQuery 3.x.
-		if ( !el.querySelectorAll( ":checked" ).length ) {
-			rbuggyQSA.push( ":checked" );
-		}
+			// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
+			if ( !el.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
+				rbuggyQSA.push( "~=" );
+			}
 
-		// Support: Windows 8 Native Apps
-		// The type and name attributes are restricted during .innerHTML assignment
-		input = document.createElement( "input" );
-		input.setAttribute( "type", "hidden" );
-		el.appendChild( input ).setAttribute( "name", "D" );
+			// Support: IE 11+, Edge 15 - 18+
+			// IE 11/Edge don't find elements on a `[name='']` query in some cases.
+			// Adding a temporary attribute to the document before the selection works
+			// around the issue.
+			// Interestingly, IE 10 & older don't seem to have the issue.
+			input = document.createElement( "input" );
+			input.setAttribute( "name", "" );
+			el.appendChild( input );
+			if ( !el.querySelectorAll( "[name='']" ).length ) {
+				rbuggyQSA.push( "\\[" + whitespace + "*name" + whitespace + "*=" +
+					whitespace + "*(?:''|\"\")" );
+			}
 
-		// Support: IE 9 - 11+
-		// IE's :disabled selector does not pick up the children of disabled fieldsets
-		// Support: Chrome <=105+, Firefox <=104+, Safari <=15.4+
-		// In some of the document kinds, these selectors wouldn't work natively.
-		// This is probably OK but for backwards compatibility we want to maintain
-		// handling them through jQuery traversal in jQuery 3.x.
-		documentElement.appendChild( el ).disabled = true;
-		if ( el.querySelectorAll( ":disabled" ).length !== 2 ) {
-			rbuggyQSA.push( ":enabled", ":disabled" );
-		}
+			// Webkit/Opera - :checked should return selected option elements
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			// IE8 throws error here and will not see later tests
+			if ( !el.querySelectorAll( ":checked" ).length ) {
+				rbuggyQSA.push( ":checked" );
+			}
 
-		// Support: IE 11+, Edge 15 - 18+
-		// IE 11/Edge don't find elements on a `[name='']` query in some cases.
-		// Adding a temporary attribute to the document before the selection works
-		// around the issue.
-		// Interestingly, IE 10 & older don't seem to have the issue.
-		input = document.createElement( "input" );
-		input.setAttribute( "name", "" );
-		el.appendChild( input );
-		if ( !el.querySelectorAll( "[name='']" ).length ) {
-			rbuggyQSA.push( "\\[" + whitespace + "*name" + whitespace + "*=" +
-				whitespace + "*(?:''|\"\")" );
-		}
-	} );
+			// Support: Safari 8+, iOS 8+
+			// https://bugs.webkit.org/show_bug.cgi?id=136851
+			// In-page `selector#id sibling-combinator selector` fails
+			if ( !el.querySelectorAll( "a#" + expando + "+*" ).length ) {
+				rbuggyQSA.push( ".#.+[+~]" );
+			}
 
-	if ( !support.cssHas ) {
+			// Support: Firefox <=3.6 - 5 only
+			// Old Firefox doesn't throw on a badly-escaped identifier.
+			el.querySelectorAll( "\\\f" );
+			rbuggyQSA.push( "[\\r\\n\\f]" );
+		} );
 
-		// Support: Chrome 105 - 110+, Safari 15.4 - 16.3+
-		// Our regular `try-catch` mechanism fails to detect natively-unsupported
-		// pseudo-classes inside `:has()` (such as `:has(:contains("Foo"))`)
-		// in browsers that parse the `:has()` argument as a forgiving selector list.
-		// https://drafts.csswg.org/selectors/#relational now requires the argument
-		// to be parsed unforgivingly, but browsers have not yet fully adjusted.
-		rbuggyQSA.push( ":has" );
+		assert( function( el ) {
+			el.innerHTML = "<a href='' disabled='disabled'></a>" +
+				"<select disabled='disabled'><option/></select>";
+
+			// Support: Windows 8 Native Apps
+			// The type and name attributes are restricted during .innerHTML assignment
+			var input = document.createElement( "input" );
+			input.setAttribute( "type", "hidden" );
+			el.appendChild( input ).setAttribute( "name", "D" );
+
+			// Support: IE8
+			// Enforce case-sensitivity of name attribute
+			if ( el.querySelectorAll( "[name=d]" ).length ) {
+				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
+			}
+
+			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+			// IE8 throws error here and will not see later tests
+			if ( el.querySelectorAll( ":enabled" ).length !== 2 ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+
+			// Support: IE9-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			docElem.appendChild( el ).disabled = true;
+			if ( el.querySelectorAll( ":disabled" ).length !== 2 ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+
+			// Support: Opera 10 - 11 only
+			// Opera 10-11 does not throw on post-comma invalid pseudos
+			el.querySelectorAll( "*,:x" );
+			rbuggyQSA.push( ",.*:" );
+		} );
+	}
+
+	if ( ( support.matchesSelector = rnative.test( ( matches = docElem.matches ||
+		docElem.webkitMatchesSelector ||
+		docElem.mozMatchesSelector ||
+		docElem.oMatchesSelector ||
+		docElem.msMatchesSelector ) ) ) ) {
+
+		assert( function( el ) {
+
+			// Check to see if it's possible to do matchesSelector
+			// on a disconnected node (IE 9)
+			support.disconnectedMatch = matches.call( el, "*" );
+
+			// This should fail with an exception
+			// Gecko does not error, returns false instead
+			matches.call( el, "[s!='']:x" );
+			rbuggyMatches.push( "!=", pseudos );
+		} );
 	}
 
 	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join( "|" ) );
+<<<<<<< HEAD
 >>>>>>> origin_second/linaLMversion
+=======
+	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join( "|" ) );
+
+	/* Contains
+	---------------------------------------------------------------------- */
+	hasCompare = rnative.test( docElem.compareDocumentPosition );
+
+	// Element contains another
+	// Purposefully self-exclusive
+	// As in, an element does not contain itself
+	contains = hasCompare || rnative.test( docElem.contains ) ?
+		function( a, b ) {
+			var adown = a.nodeType === 9 ? a.documentElement : a,
+				bup = b && b.parentNode;
+			return a === bup || !!( bup && bup.nodeType === 1 && (
+				adown.contains ?
+					adown.contains( bup ) :
+					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+			) );
+		} :
+		function( a, b ) {
+			if ( b ) {
+				while ( ( b = b.parentNode ) ) {
+					if ( b === a ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		};
+>>>>>>> origin_second/لما2
 
 	/* Sorting
 	---------------------------------------------------------------------- */
 
 	// Document order sorting
 <<<<<<< HEAD
+<<<<<<< HEAD
 	sortOrder = hasCompare ?
 	function( a, b ) {
 =======
 	sortOrder = function( a, b ) {
 >>>>>>> origin_second/linaLMversion
+=======
+	sortOrder = hasCompare ?
+	function( a, b ) {
+>>>>>>> origin_second/لما2
 
 		// Flag for duplicate removal
 		if ( a === b ) {
@@ -2058,12 +2490,17 @@ function setDocument( node ) {
 			// two documents; shallow comparisons work.
 			// eslint-disable-next-line eqeqeq
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if ( a == document || a.ownerDocument == preferredDoc &&
 				contains( preferredDoc, a ) ) {
 =======
 			if ( a === document || a.ownerDocument == preferredDoc &&
 				find.contains( preferredDoc, a ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+			if ( a == document || a.ownerDocument == preferredDoc &&
+				contains( preferredDoc, a ) ) {
+>>>>>>> origin_second/لما2
 				return -1;
 			}
 
@@ -2072,27 +2509,39 @@ function setDocument( node ) {
 			// two documents; shallow comparisons work.
 			// eslint-disable-next-line eqeqeq
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if ( b == document || b.ownerDocument == preferredDoc &&
 				contains( preferredDoc, b ) ) {
 =======
 			if ( b === document || b.ownerDocument == preferredDoc &&
 				find.contains( preferredDoc, b ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+			if ( b == document || b.ownerDocument == preferredDoc &&
+				contains( preferredDoc, b ) ) {
+>>>>>>> origin_second/لما2
 				return 1;
 			}
 
 			// Maintain original order
 			return sortInput ?
 <<<<<<< HEAD
+<<<<<<< HEAD
 				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 =======
 				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
 >>>>>>> origin_second/linaLMversion
+=======
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+>>>>>>> origin_second/لما2
 				0;
 		}
 
 		return compare & 4 ? -1 : 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	} :
 	function( a, b ) {
 
@@ -2159,6 +2608,7 @@ function setDocument( node ) {
 			bp[ i ] == preferredDoc ? 1 :
 			/* eslint-enable eqeqeq */
 			0;
+<<<<<<< HEAD
 	};
 
 	return document;
@@ -2176,22 +2626,29 @@ Sizzle.matchesSelector = function( elem, expr ) {
 		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
 		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 =======
+=======
+>>>>>>> origin_second/لما2
 	};
 
 	return document;
-}
-
-find.matches = function( expr, elements ) {
-	return find( expr, null, null, elements );
 };
 
-find.matchesSelector = function( elem, expr ) {
+Sizzle.matches = function( expr, elements ) {
+	return Sizzle( expr, null, null, elements );
+};
+
+Sizzle.matchesSelector = function( elem, expr ) {
 	setDocument( elem );
 
-	if ( documentIsHTML &&
+	if ( support.matchesSelector && documentIsHTML &&
 		!nonnativeSelectorCache[ expr + " " ] &&
+<<<<<<< HEAD
 		( !rbuggyQSA || !rbuggyQSA.test( expr ) ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
+		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
+>>>>>>> origin_second/لما2
 
 		try {
 			var ret = matches.call( elem, expr );
@@ -2199,6 +2656,7 @@ find.matchesSelector = function( elem, expr ) {
 			// IE 9's matchesSelector returns false on disconnected nodes
 			if ( ret || support.disconnectedMatch ||
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 				// As well, disconnected nodes are said to be in a document
 				// fragment in IE 9
@@ -2208,6 +2666,11 @@ find.matchesSelector = function( elem, expr ) {
 					// fragment in IE 9
 					elem.document && elem.document.nodeType !== 11 ) {
 >>>>>>> origin_second/linaLMversion
+=======
+				// As well, disconnected nodes are said to be in a document
+				// fragment in IE 9
+				elem.document && elem.document.nodeType !== 11 ) {
+>>>>>>> origin_second/لما2
 				return ret;
 			}
 		} catch ( e ) {
@@ -2215,6 +2678,7 @@ find.matchesSelector = function( elem, expr ) {
 		}
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	return Sizzle( expr, document, null, [ elem ] ).length > 0;
 };
@@ -2226,6 +2690,12 @@ Sizzle.contains = function( context, elem ) {
 
 find.contains = function( context, elem ) {
 >>>>>>> origin_second/linaLMversion
+=======
+	return Sizzle( expr, document, null, [ elem ] ).length > 0;
+};
+
+Sizzle.contains = function( context, elem ) {
+>>>>>>> origin_second/لما2
 
 	// Set document vars if needed
 	// Support: IE 11+, Edge 17 - 18+
@@ -2235,6 +2705,7 @@ find.contains = function( context, elem ) {
 	if ( ( context.ownerDocument || context ) != document ) {
 		setDocument( context );
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 	return contains( context, elem );
 };
@@ -2247,6 +2718,12 @@ Sizzle.attr = function( elem, name ) {
 
 find.attr = function( elem, name ) {
 >>>>>>> origin_second/linaLMversion
+=======
+	return contains( context, elem );
+};
+
+Sizzle.attr = function( elem, name ) {
+>>>>>>> origin_second/لما2
 
 	// Set document vars if needed
 	// Support: IE 11+, Edge 17 - 18+
@@ -2260,15 +2737,22 @@ find.attr = function( elem, name ) {
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Don't get fooled by Object.prototype properties (jQuery #13807)
 =======
 		// Don't get fooled by Object.prototype properties (see trac-13807)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Don't get fooled by Object.prototype properties (jQuery #13807)
+>>>>>>> origin_second/لما2
 		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
 			fn( elem, name, !documentIsHTML ) :
 			undefined;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	return val !== undefined ?
 		val :
 		support.attributes || !documentIsHTML ?
@@ -2276,6 +2760,7 @@ find.attr = function( elem, name ) {
 			( val = elem.getAttributeNode( name ) ) && val.specified ?
 				val.value :
 				null;
+<<<<<<< HEAD
 };
 
 Sizzle.escape = function( sel ) {
@@ -2293,6 +2778,15 @@ Sizzle.error = function( msg ) {
 
 find.error = function( msg ) {
 >>>>>>> origin_second/linaLMversion
+=======
+};
+
+Sizzle.escape = function( sel ) {
+	return ( sel + "" ).replace( rcssescape, fcssescape );
+};
+
+Sizzle.error = function( msg ) {
+>>>>>>> origin_second/لما2
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
@@ -2301,16 +2795,21 @@ find.error = function( msg ) {
  * @param {ArrayLike} results
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 Sizzle.uniqueSort = function( results ) {
 =======
 jQuery.uniqueSort = function( results ) {
 >>>>>>> origin_second/linaLMversion
+=======
+Sizzle.uniqueSort = function( results ) {
+>>>>>>> origin_second/لما2
 	var elem,
 		duplicates = [],
 		j = 0,
 		i = 0;
 
 	// Unless we *know* we can detect duplicates, assume their presence
+<<<<<<< HEAD
 <<<<<<< HEAD
 	hasDuplicate = !support.detectDuplicates;
 	sortInput = !support.sortStable && results.slice( 0 );
@@ -2324,6 +2823,11 @@ jQuery.uniqueSort = function( results ) {
 	sortInput = !support.sortStable && slice.call( results, 0 );
 	sort.call( results, sortOrder );
 >>>>>>> origin_second/linaLMversion
+=======
+	hasDuplicate = !support.detectDuplicates;
+	sortInput = !support.sortStable && results.slice( 0 );
+	results.sort( sortOrder );
+>>>>>>> origin_second/لما2
 
 	if ( hasDuplicate ) {
 		while ( ( elem = results[ i++ ] ) ) {
@@ -2333,10 +2837,14 @@ jQuery.uniqueSort = function( results ) {
 		}
 		while ( j-- ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			results.splice( duplicates[ j ], 1 );
 =======
 			splice.call( results, duplicates[ j ], 1 );
 >>>>>>> origin_second/linaLMversion
+=======
+			results.splice( duplicates[ j ], 1 );
+>>>>>>> origin_second/لما2
 		}
 	}
 
@@ -2348,6 +2856,9 @@ jQuery.uniqueSort = function( results ) {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 /**
  * Utility function for retrieving the text value of an array of DOM nodes
  * @param {Array|Element} elem
@@ -2386,6 +2897,7 @@ getText = Sizzle.getText = function( elem ) {
 	// Do not include comment or processing instruction nodes
 
 	return ret;
+<<<<<<< HEAD
 };
 
 Expr = Sizzle.selectors = {
@@ -2396,6 +2908,11 @@ jQuery.fn.uniqueSort = function() {
 
 Expr = jQuery.expr = {
 >>>>>>> origin_second/linaLMversion
+=======
+};
+
+Expr = Sizzle.selectors = {
+>>>>>>> origin_second/لما2
 
 	// Can be adjusted by the user
 	cacheLength: 50,
@@ -2417,6 +2934,7 @@ Expr = jQuery.expr = {
 
 	preFilter: {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"ATTR": function( match ) {
 			match[ 1 ] = match[ 1 ].replace( runescape, funescape );
 
@@ -2431,6 +2949,14 @@ Expr = jQuery.expr = {
 			match[ 3 ] = ( match[ 3 ] || match[ 4 ] || match[ 5 ] || "" )
 				.replace( runescape, funescape );
 >>>>>>> origin_second/linaLMversion
+=======
+		"ATTR": function( match ) {
+			match[ 1 ] = match[ 1 ].replace( runescape, funescape );
+
+			// Move the given value to match[3] whether quoted or unquoted
+			match[ 3 ] = ( match[ 3 ] || match[ 4 ] ||
+				match[ 5 ] || "" ).replace( runescape, funescape );
+>>>>>>> origin_second/لما2
 
 			if ( match[ 2 ] === "~=" ) {
 				match[ 3 ] = " " + match[ 3 ] + " ";
@@ -2440,10 +2966,14 @@ Expr = jQuery.expr = {
 		},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"CHILD": function( match ) {
 =======
 		CHILD: function( match ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"CHILD": function( match ) {
+>>>>>>> origin_second/لما2
 
 			/* matches from matchExpr["CHILD"]
 				1 type (only|nth|...)
@@ -2462,16 +2992,21 @@ Expr = jQuery.expr = {
 				// nth-* requires argument
 				if ( !match[ 3 ] ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 					Sizzle.error( match[ 0 ] );
 =======
 					find.error( match[ 0 ] );
 >>>>>>> origin_second/linaLMversion
+=======
+					Sizzle.error( match[ 0 ] );
+>>>>>>> origin_second/لما2
 				}
 
 				// numeric x and y parameters for Expr.filter.CHILD
 				// remember that false/true cast respectively to 0/1
 				match[ 4 ] = +( match[ 4 ] ?
 					match[ 5 ] + ( match[ 6 ] || 1 ) :
+<<<<<<< HEAD
 <<<<<<< HEAD
 					2 * ( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
 				match[ 5 ] = +( ( match[ 7 ] + match[ 8 ] ) || match[ 3 ] === "odd" );
@@ -2482,17 +3017,25 @@ Expr = jQuery.expr = {
 =======
 					2 * ( match[ 3 ] === "even" || match[ 3 ] === "odd" )
 				);
+=======
+					2 * ( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
+>>>>>>> origin_second/لما2
 				match[ 5 ] = +( ( match[ 7 ] + match[ 8 ] ) || match[ 3 ] === "odd" );
 
-			// other types prohibit arguments
+				// other types prohibit arguments
 			} else if ( match[ 3 ] ) {
+<<<<<<< HEAD
 				find.error( match[ 0 ] );
 >>>>>>> origin_second/linaLMversion
+=======
+				Sizzle.error( match[ 0 ] );
+>>>>>>> origin_second/لما2
 			}
 
 			return match;
 		},
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		"PSEUDO": function( match ) {
 			var excess,
@@ -2506,6 +3049,13 @@ Expr = jQuery.expr = {
 
 			if ( matchExpr.CHILD.test( match[ 0 ] ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"PSEUDO": function( match ) {
+			var excess,
+				unquoted = !match[ 6 ] && match[ 2 ];
+
+			if ( matchExpr[ "CHILD" ].test( match[ 0 ] ) ) {
+>>>>>>> origin_second/لما2
 				return null;
 			}
 
@@ -2535,17 +3085,23 @@ Expr = jQuery.expr = {
 	filter: {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"TAG": function( nodeNameSelector ) {
 			var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
 =======
 		TAG: function( nodeNameSelector ) {
 			var expectedNodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
 >>>>>>> origin_second/linaLMversion
+=======
+		"TAG": function( nodeNameSelector ) {
+			var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
+>>>>>>> origin_second/لما2
 			return nodeNameSelector === "*" ?
 				function() {
 					return true;
 				} :
 				function( elem ) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 					return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
 				};
@@ -2572,29 +3128,36 @@ Expr = jQuery.expr = {
 				var result = Sizzle.attr( elem, name );
 =======
 					return nodeName( elem, expectedNodeName );
+=======
+					return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
+>>>>>>> origin_second/لما2
 				};
 		},
 
-		CLASS: function( className ) {
+		"CLASS": function( className ) {
 			var pattern = classCache[ className + " " ];
 
 			return pattern ||
-				( pattern = new RegExp( "(^|" + whitespace + ")" + className +
-					"(" + whitespace + "|$)" ) ) &&
-				classCache( className, function( elem ) {
-					return pattern.test(
-						typeof elem.className === "string" && elem.className ||
-							typeof elem.getAttribute !== "undefined" &&
-								elem.getAttribute( "class" ) ||
-							""
-					);
+				( pattern = new RegExp( "(^|" + whitespace +
+					")" + className + "(" + whitespace + "|$)" ) ) && classCache(
+						className, function( elem ) {
+							return pattern.test(
+								typeof elem.className === "string" && elem.className ||
+								typeof elem.getAttribute !== "undefined" &&
+									elem.getAttribute( "class" ) ||
+								""
+							);
 				} );
 		},
 
-		ATTR: function( name, operator, check ) {
+		"ATTR": function( name, operator, check ) {
 			return function( elem ) {
+<<<<<<< HEAD
 				var result = find.attr( elem, name );
 >>>>>>> origin_second/linaLMversion
+=======
+				var result = Sizzle.attr( elem, name );
+>>>>>>> origin_second/لما2
 
 				if ( result == null ) {
 					return operator === "!=";
@@ -2606,6 +3169,9 @@ Expr = jQuery.expr = {
 				result += "";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 				/* eslint-disable max-len */
 
 				return operator === "=" ? result === check :
@@ -2617,6 +3183,7 @@ Expr = jQuery.expr = {
 					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 					false;
 				/* eslint-enable max-len */
+<<<<<<< HEAD
 
 			};
 		},
@@ -2645,13 +3212,18 @@ Expr = jQuery.expr = {
 				if ( operator === "|=" ) {
 					return result === check || result.slice( 0, check.length + 1 ) === check + "-";
 				}
+=======
+>>>>>>> origin_second/لما2
 
-				return false;
 			};
 		},
 
+<<<<<<< HEAD
 		CHILD: function( type, what, _argument, first, last ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"CHILD": function( type, what, _argument, first, last ) {
+>>>>>>> origin_second/لما2
 			var simple = type.slice( 0, 3 ) !== "nth",
 				forward = type.slice( -4 ) !== "last",
 				ofType = what === "of-type";
@@ -2665,10 +3237,14 @@ Expr = jQuery.expr = {
 
 				function( elem, _context, xml ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 					var cache, uniqueCache, outerCache, node, nodeIndex, start,
 =======
 					var cache, outerCache, node, nodeIndex, start,
 >>>>>>> origin_second/linaLMversion
+=======
+					var cache, uniqueCache, outerCache, node, nodeIndex, start,
+>>>>>>> origin_second/لما2
 						dir = simple !== forward ? "nextSibling" : "previousSibling",
 						parent = elem.parentNode,
 						name = ofType && elem.nodeName.toLowerCase(),
@@ -2684,10 +3260,14 @@ Expr = jQuery.expr = {
 								while ( ( node = node[ dir ] ) ) {
 									if ( ofType ?
 <<<<<<< HEAD
+<<<<<<< HEAD
 										node.nodeName.toLowerCase() === name :
 =======
 										nodeName( node, name ) :
 >>>>>>> origin_second/linaLMversion
+=======
+										node.nodeName.toLowerCase() === name :
+>>>>>>> origin_second/لما2
 										node.nodeType === 1 ) {
 
 										return false;
@@ -2707,6 +3287,9 @@ Expr = jQuery.expr = {
 
 							// Seek `elem` from a previously-cached index
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 
 							// ...in a gzip-friendly way
 							node = parent;
@@ -2718,10 +3301,13 @@ Expr = jQuery.expr = {
 								( outerCache[ node.uniqueID ] = {} );
 
 							cache = uniqueCache[ type ] || [];
+<<<<<<< HEAD
 =======
 							outerCache = parent[ expando ] || ( parent[ expando ] = {} );
 							cache = outerCache[ type ] || [];
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 							nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
 							diff = nodeIndex && cache[ 2 ];
 							node = nodeIndex && parent.childNodes[ nodeIndex ];
@@ -2734,10 +3320,14 @@ Expr = jQuery.expr = {
 								// When found, cache indexes on `parent` and break
 								if ( node.nodeType === 1 && ++diff && node === elem ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 									uniqueCache[ type ] = [ dirruns, nodeIndex, diff ];
 =======
 									outerCache[ type ] = [ dirruns, nodeIndex, diff ];
 >>>>>>> origin_second/linaLMversion
+=======
+									uniqueCache[ type ] = [ dirruns, nodeIndex, diff ];
+>>>>>>> origin_second/لما2
 									break;
 								}
 							}
@@ -2747,6 +3337,9 @@ Expr = jQuery.expr = {
 							// Use previously-cached element index if available
 							if ( useCache ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 
 								// ...in a gzip-friendly way
 								node = elem;
@@ -2758,10 +3351,13 @@ Expr = jQuery.expr = {
 									( outerCache[ node.uniqueID ] = {} );
 
 								cache = uniqueCache[ type ] || [];
+<<<<<<< HEAD
 =======
 								outerCache = elem[ expando ] || ( elem[ expando ] = {} );
 								cache = outerCache[ type ] || [];
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 								nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
 								diff = nodeIndex;
 							}
@@ -2776,10 +3372,14 @@ Expr = jQuery.expr = {
 
 									if ( ( ofType ?
 <<<<<<< HEAD
+<<<<<<< HEAD
 										node.nodeName.toLowerCase() === name :
 =======
 										nodeName( node, name ) :
 >>>>>>> origin_second/linaLMversion
+=======
+										node.nodeName.toLowerCase() === name :
+>>>>>>> origin_second/لما2
 										node.nodeType === 1 ) &&
 										++diff ) {
 
@@ -2788,6 +3388,9 @@ Expr = jQuery.expr = {
 											outerCache = node[ expando ] ||
 												( node[ expando ] = {} );
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 
 											// Support: IE <9 only
 											// Defend against cloned attroperties (jQuery gh-1709)
@@ -2795,9 +3398,12 @@ Expr = jQuery.expr = {
 												( outerCache[ node.uniqueID ] = {} );
 
 											uniqueCache[ type ] = [ dirruns, diff ];
+<<<<<<< HEAD
 =======
 											outerCache[ type ] = [ dirruns, diff ];
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 										}
 
 										if ( node === elem ) {
@@ -2816,6 +3422,7 @@ Expr = jQuery.expr = {
 		},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"PSEUDO": function( pseudo, argument ) {
 
 			// pseudo-class names are case-insensitive
@@ -2826,10 +3433,17 @@ Expr = jQuery.expr = {
 			// pseudo-class names are case-insensitive
 			// https://www.w3.org/TR/selectors/#pseudo-classes
 >>>>>>> origin_second/linaLMversion
+=======
+		"PSEUDO": function( pseudo, argument ) {
+
+			// pseudo-class names are case-insensitive
+			// http://www.w3.org/TR/selectors/#pseudo-classes
+>>>>>>> origin_second/لما2
 			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
 			// Remember that setFilters inherits from pseudos
 			var args,
 				fn = Expr.pseudos[ pseudo ] || Expr.setFilters[ pseudo.toLowerCase() ] ||
+<<<<<<< HEAD
 <<<<<<< HEAD
 					Sizzle.error( "unsupported pseudo: " + pseudo );
 
@@ -2843,6 +3457,13 @@ Expr = jQuery.expr = {
 			// arguments are needed to create the filter function
 			// just as jQuery does
 >>>>>>> origin_second/linaLMversion
+=======
+					Sizzle.error( "unsupported pseudo: " + pseudo );
+
+			// The user may use createPseudo to indicate that
+			// arguments are needed to create the filter function
+			// just as Sizzle does
+>>>>>>> origin_second/لما2
 			if ( fn[ expando ] ) {
 				return fn( argument );
 			}
@@ -2857,10 +3478,14 @@ Expr = jQuery.expr = {
 							i = matched.length;
 						while ( i-- ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 							idx = indexOf( seed, matched[ i ] );
 =======
 							idx = indexOf.call( seed, matched[ i ] );
 >>>>>>> origin_second/linaLMversion
+=======
+							idx = indexOf( seed, matched[ i ] );
+>>>>>>> origin_second/لما2
 							seed[ idx ] = !( matches[ idx ] = matched[ i ] );
 						}
 					} ) :
@@ -2877,10 +3502,14 @@ Expr = jQuery.expr = {
 
 		// Potentially complex pseudos
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"not": markFunction( function( selector ) {
 =======
 		not: markFunction( function( selector ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"not": markFunction( function( selector ) {
+>>>>>>> origin_second/لما2
 
 			// Trim the selector passed to compile
 			// to avoid treating leading and trailing
@@ -2888,10 +3517,14 @@ Expr = jQuery.expr = {
 			var input = [],
 				results = [],
 <<<<<<< HEAD
+<<<<<<< HEAD
 				matcher = compile( selector.replace( rtrim, "$1" ) );
 =======
 				matcher = compile( selector.replace( rtrimCSS, "$1" ) );
 >>>>>>> origin_second/linaLMversion
+=======
+				matcher = compile( selector.replace( rtrim, "$1" ) );
+>>>>>>> origin_second/لما2
 
 			return matcher[ expando ] ?
 				markFunction( function( seed, matches, _context, xml ) {
@@ -2911,16 +3544,21 @@ Expr = jQuery.expr = {
 					matcher( input, null, xml, results );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 					// Don't keep the element (issue #299)
 =======
 					// Don't keep the element
 					// (see https://github.com/jquery/sizzle/issues/299)
 >>>>>>> origin_second/linaLMversion
+=======
+					// Don't keep the element (issue #299)
+>>>>>>> origin_second/لما2
 					input[ 0 ] = null;
 					return !results.pop();
 				};
 		} ),
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		"has": markFunction( function( selector ) {
 			return function( elem ) {
@@ -2934,16 +3572,23 @@ Expr = jQuery.expr = {
 				return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
 =======
 		has: markFunction( function( selector ) {
+=======
+		"has": markFunction( function( selector ) {
+>>>>>>> origin_second/لما2
 			return function( elem ) {
-				return find( selector, elem ).length > 0;
+				return Sizzle( selector, elem ).length > 0;
 			};
 		} ),
 
-		contains: markFunction( function( text ) {
+		"contains": markFunction( function( text ) {
 			text = text.replace( runescape, funescape );
 			return function( elem ) {
+<<<<<<< HEAD
 				return ( elem.textContent || jQuery.text( elem ) ).indexOf( text ) > -1;
 >>>>>>> origin_second/linaLMversion
+=======
+				return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
+>>>>>>> origin_second/لما2
 			};
 		} ),
 
@@ -2953,6 +3598,7 @@ Expr = jQuery.expr = {
 		// or beginning with the identifier C immediately followed by "-".
 		// The matching of C against the element's language value is performed case-insensitively.
 		// The identifier C does not have to be a valid language name."
+<<<<<<< HEAD
 <<<<<<< HEAD
 		// http://www.w3.org/TR/selectors/#lang-pseudo
 		"lang": markFunction( function( lang ) {
@@ -2968,6 +3614,14 @@ Expr = jQuery.expr = {
 			if ( !ridentifier.test( lang || "" ) ) {
 				find.error( "unsupported lang: " + lang );
 >>>>>>> origin_second/linaLMversion
+=======
+		// http://www.w3.org/TR/selectors/#lang-pseudo
+		"lang": markFunction( function( lang ) {
+
+			// lang value must be a valid identifier
+			if ( !ridentifier.test( lang || "" ) ) {
+				Sizzle.error( "unsupported lang: " + lang );
+>>>>>>> origin_second/لما2
 			}
 			lang = lang.replace( runescape, funescape ).toLowerCase();
 			return function( elem ) {
@@ -2987,14 +3641,19 @@ Expr = jQuery.expr = {
 
 		// Miscellaneous
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"target": function( elem ) {
 =======
 		target: function( elem ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"target": function( elem ) {
+>>>>>>> origin_second/لما2
 			var hash = window.location && window.location.hash;
 			return hash && hash.slice( 1 ) === elem.id;
 		},
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		"root": function( elem ) {
 			return elem === docElem;
@@ -3012,10 +3671,20 @@ Expr = jQuery.expr = {
 			return elem === safeActiveElement() &&
 				document.hasFocus() &&
 >>>>>>> origin_second/linaLMversion
+=======
+		"root": function( elem ) {
+			return elem === docElem;
+		},
+
+		"focus": function( elem ) {
+			return elem === document.activeElement &&
+				( !document.hasFocus || document.hasFocus() ) &&
+>>>>>>> origin_second/لما2
 				!!( elem.type || elem.href || ~elem.tabIndex );
 		},
 
 		// Boolean properties
+<<<<<<< HEAD
 <<<<<<< HEAD
 		"enabled": createDisabledPseudo( false ),
 		"disabled": createDisabledPseudo( true ),
@@ -3036,22 +3705,32 @@ Expr = jQuery.expr = {
 =======
 		enabled: createDisabledPseudo( false ),
 		disabled: createDisabledPseudo( true ),
+=======
+		"enabled": createDisabledPseudo( false ),
+		"disabled": createDisabledPseudo( true ),
+>>>>>>> origin_second/لما2
 
-		checked: function( elem ) {
+		"checked": function( elem ) {
 
 			// In CSS3, :checked should return both checked and selected elements
-			// https://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-			return ( nodeName( elem, "input" ) && !!elem.checked ) ||
-				( nodeName( elem, "option" ) && !!elem.selected );
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			var nodeName = elem.nodeName.toLowerCase();
+			return ( nodeName === "input" && !!elem.checked ) ||
+				( nodeName === "option" && !!elem.selected );
 		},
 
-		selected: function( elem ) {
+		"selected": function( elem ) {
 
+<<<<<<< HEAD
 			// Support: IE <=11+
 			// Accessing the selectedIndex property
 			// forces the browser to treat the default option as
 			// selected when in an optgroup.
 >>>>>>> origin_second/linaLMversion
+=======
+			// Accessing this property makes selected-by-default
+			// options in Safari work properly
+>>>>>>> origin_second/لما2
 			if ( elem.parentNode ) {
 				// eslint-disable-next-line no-unused-expressions
 				elem.parentNode.selectedIndex;
@@ -3062,6 +3741,7 @@ Expr = jQuery.expr = {
 
 		// Contents
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"empty": function( elem ) {
 
 			// http://www.w3.org/TR/selectors/#empty-pseudo
@@ -3070,6 +3750,11 @@ Expr = jQuery.expr = {
 
 			// https://www.w3.org/TR/selectors/#empty-pseudo
 >>>>>>> origin_second/linaLMversion
+=======
+		"empty": function( elem ) {
+
+			// http://www.w3.org/TR/selectors/#empty-pseudo
+>>>>>>> origin_second/لما2
 			// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
 			//   but not by others (comment: 8; processing instruction: 7; etc.)
 			// nodeType < 6 works because attributes (2) do not appear as children
@@ -3081,6 +3766,7 @@ Expr = jQuery.expr = {
 			return true;
 		},
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		"parent": function( elem ) {
 			return !Expr.pseudos[ "empty" ]( elem );
@@ -3110,35 +3796,46 @@ Expr = jQuery.expr = {
 =======
 		parent: function( elem ) {
 			return !Expr.pseudos.empty( elem );
+=======
+		"parent": function( elem ) {
+			return !Expr.pseudos[ "empty" ]( elem );
+>>>>>>> origin_second/لما2
 		},
 
 		// Element/input types
-		header: function( elem ) {
+		"header": function( elem ) {
 			return rheader.test( elem.nodeName );
 		},
 
-		input: function( elem ) {
+		"input": function( elem ) {
 			return rinputs.test( elem.nodeName );
 		},
 
-		button: function( elem ) {
-			return nodeName( elem, "input" ) && elem.type === "button" ||
-				nodeName( elem, "button" );
+		"button": function( elem ) {
+			var name = elem.nodeName.toLowerCase();
+			return name === "input" && elem.type === "button" || name === "button";
 		},
 
-		text: function( elem ) {
+		"text": function( elem ) {
 			var attr;
-			return nodeName( elem, "input" ) && elem.type === "text" &&
+			return elem.nodeName.toLowerCase() === "input" &&
+				elem.type === "text" &&
 
+<<<<<<< HEAD
 				// Support: IE <10 only
 				// New HTML5 attribute values (e.g., "search") appear
 				// with elem.type === "text"
 >>>>>>> origin_second/linaLMversion
+=======
+				// Support: IE<8
+				// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
+>>>>>>> origin_second/لما2
 				( ( attr = elem.getAttribute( "type" ) ) == null ||
 					attr.toLowerCase() === "text" );
 		},
 
 		// Position-in-collection
+<<<<<<< HEAD
 <<<<<<< HEAD
 		"first": createPositionalPseudo( function() {
 			return [ 0 ];
@@ -3155,19 +3852,26 @@ Expr = jQuery.expr = {
 		"even": createPositionalPseudo( function( matchIndexes, length ) {
 =======
 		first: createPositionalPseudo( function() {
+=======
+		"first": createPositionalPseudo( function() {
+>>>>>>> origin_second/لما2
 			return [ 0 ];
 		} ),
 
-		last: createPositionalPseudo( function( _matchIndexes, length ) {
+		"last": createPositionalPseudo( function( _matchIndexes, length ) {
 			return [ length - 1 ];
 		} ),
 
-		eq: createPositionalPseudo( function( _matchIndexes, length, argument ) {
+		"eq": createPositionalPseudo( function( _matchIndexes, length, argument ) {
 			return [ argument < 0 ? argument + length : argument ];
 		} ),
 
+<<<<<<< HEAD
 		even: createPositionalPseudo( function( matchIndexes, length ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"even": createPositionalPseudo( function( matchIndexes, length ) {
+>>>>>>> origin_second/لما2
 			var i = 0;
 			for ( ; i < length; i += 2 ) {
 				matchIndexes.push( i );
@@ -3176,10 +3880,14 @@ Expr = jQuery.expr = {
 		} ),
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"odd": createPositionalPseudo( function( matchIndexes, length ) {
 =======
 		odd: createPositionalPseudo( function( matchIndexes, length ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"odd": createPositionalPseudo( function( matchIndexes, length ) {
+>>>>>>> origin_second/لما2
 			var i = 1;
 			for ( ; i < length; i += 2 ) {
 				matchIndexes.push( i );
@@ -3188,12 +3896,16 @@ Expr = jQuery.expr = {
 		} ),
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 		"lt": createPositionalPseudo( function( matchIndexes, length, argument ) {
 			var i = argument < 0 ?
 				argument + length :
 				argument > length ?
 					length :
 					argument;
+<<<<<<< HEAD
 =======
 		lt: createPositionalPseudo( function( matchIndexes, length, argument ) {
 			var i;
@@ -3207,6 +3919,8 @@ Expr = jQuery.expr = {
 			}
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 			for ( ; --i >= 0; ) {
 				matchIndexes.push( i );
 			}
@@ -3214,10 +3928,14 @@ Expr = jQuery.expr = {
 		} ),
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		"gt": createPositionalPseudo( function( matchIndexes, length, argument ) {
 =======
 		gt: createPositionalPseudo( function( matchIndexes, length, argument ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		"gt": createPositionalPseudo( function( matchIndexes, length, argument ) {
+>>>>>>> origin_second/لما2
 			var i = argument < 0 ? argument + length : argument;
 			for ( ; ++i < length; ) {
 				matchIndexes.push( i );
@@ -3228,10 +3946,14 @@ Expr = jQuery.expr = {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Expr.pseudos[ "nth" ] = Expr.pseudos[ "eq" ];
 =======
 Expr.pseudos.nth = Expr.pseudos.eq;
 >>>>>>> origin_second/linaLMversion
+=======
+Expr.pseudos[ "nth" ] = Expr.pseudos[ "eq" ];
+>>>>>>> origin_second/لما2
 
 // Add button/input type pseudos
 for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
@@ -3247,10 +3969,14 @@ setFilters.prototype = Expr.filters = Expr.pseudos;
 Expr.setFilters = new setFilters();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 =======
 function tokenize( selector, parseOnly ) {
 >>>>>>> origin_second/linaLMversion
+=======
+tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
+>>>>>>> origin_second/لما2
 	var matched, match, tokens, type,
 		soFar, groups, preFilters,
 		cached = tokenCache[ selector + " " ];
@@ -3279,20 +4005,28 @@ function tokenize( selector, parseOnly ) {
 
 		// Combinators
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if ( ( match = rcombinators.exec( soFar ) ) ) {
 =======
 		if ( ( match = rleadingCombinator.exec( soFar ) ) ) {
 >>>>>>> origin_second/linaLMversion
+=======
+		if ( ( match = rcombinators.exec( soFar ) ) ) {
+>>>>>>> origin_second/لما2
 			matched = match.shift();
 			tokens.push( {
 				value: matched,
 
 				// Cast descendant combinators to space
 <<<<<<< HEAD
+<<<<<<< HEAD
 				type: match[ 0 ].replace( rtrim, " " )
 =======
 				type: match[ 0 ].replace( rtrimCSS, " " )
 >>>>>>> origin_second/linaLMversion
+=======
+				type: match[ 0 ].replace( rtrim, " " )
+>>>>>>> origin_second/لما2
 			} );
 			soFar = soFar.slice( matched.length );
 		}
@@ -3320,10 +4054,14 @@ function tokenize( selector, parseOnly ) {
 	// if we're just parsing
 	// Otherwise, throw an error or return tokens
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 	return parseOnly ?
 		soFar.length :
 		soFar ?
 			Sizzle.error( selector ) :
+<<<<<<< HEAD
 
 			// Cache the tokens
 			tokenCache( selector, groups ).slice( 0 );
@@ -3340,6 +4078,12 @@ function tokenize( selector, parseOnly ) {
 		tokenCache( selector, groups ).slice( 0 );
 }
 >>>>>>> origin_second/linaLMversion
+=======
+
+			// Cache the tokens
+			tokenCache( selector, groups ).slice( 0 );
+};
+>>>>>>> origin_second/لما2
 
 function toSelector( tokens ) {
 	var i = 0,
@@ -3373,10 +4117,14 @@ function addCombinator( matcher, combinator, base ) {
 		// Check against all ancestor/preceding elements
 		function( elem, context, xml ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			var oldCache, uniqueCache, outerCache,
 =======
 			var oldCache, outerCache,
 >>>>>>> origin_second/linaLMversion
+=======
+			var oldCache, uniqueCache, outerCache,
+>>>>>>> origin_second/لما2
 				newCache = [ dirruns, doneName ];
 
 			// We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
@@ -3394,12 +4142,16 @@ function addCombinator( matcher, combinator, base ) {
 						outerCache = elem[ expando ] || ( elem[ expando ] = {} );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 						// Support: IE <9 only
 						// Defend against cloned attroperties (jQuery gh-1709)
 						uniqueCache = outerCache[ elem.uniqueID ] ||
 							( outerCache[ elem.uniqueID ] = {} );
 
 						if ( skip && skip === elem.nodeName.toLowerCase() ) {
+<<<<<<< HEAD
 							elem = elem[ dir ] || elem;
 						} else if ( ( oldCache = uniqueCache[ key ] ) &&
 =======
@@ -3407,6 +4159,10 @@ function addCombinator( matcher, combinator, base ) {
 							elem = elem[ dir ] || elem;
 						} else if ( ( oldCache = outerCache[ key ] ) &&
 >>>>>>> origin_second/linaLMversion
+=======
+							elem = elem[ dir ] || elem;
+						} else if ( ( oldCache = uniqueCache[ key ] ) &&
+>>>>>>> origin_second/لما2
 							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
 
 							// Assign to newCache so results back-propagate to previous elements
@@ -3415,10 +4171,14 @@ function addCombinator( matcher, combinator, base ) {
 
 							// Reuse newcache so results back-propagate to previous elements
 <<<<<<< HEAD
+<<<<<<< HEAD
 							uniqueCache[ key ] = newCache;
 =======
 							outerCache[ key ] = newCache;
 >>>>>>> origin_second/linaLMversion
+=======
+							uniqueCache[ key ] = newCache;
+>>>>>>> origin_second/لما2
 
 							// A match means we're done; a fail means we have to keep checking
 							if ( ( newCache[ 2 ] = matcher( elem, context, xml ) ) ) {
@@ -3451,10 +4211,14 @@ function multipleContexts( selector, contexts, results ) {
 		len = contexts.length;
 	for ( ; i < len; i++ ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Sizzle( selector, contexts[ i ], results );
 =======
 		find( selector, contexts[ i ], results );
 >>>>>>> origin_second/linaLMversion
+=======
+		Sizzle( selector, contexts[ i ], results );
+>>>>>>> origin_second/لما2
 	}
 	return results;
 }
@@ -3489,30 +4253,41 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 	}
 	return markFunction( function( seed, results, context, xml ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		var temp, i, elem,
 =======
 		var temp, i, elem, matcherOut,
 >>>>>>> origin_second/linaLMversion
+=======
+		var temp, i, elem,
+>>>>>>> origin_second/لما2
 			preMap = [],
 			postMap = [],
 			preexisting = results.length,
 
 			// Get initial elements from seed or context
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 			elems = seed || multipleContexts(
 				selector || "*",
 				context.nodeType ? [ context ] : context,
 				[]
 			),
+<<<<<<< HEAD
 =======
 			elems = seed ||
 				multipleContexts( selector || "*",
 					context.nodeType ? [ context ] : context, [] ),
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
 			// Prefilter to get matcher input, preserving a map for seed-results synchronization
 			matcherIn = preFilter && ( seed || !selector ) ?
 				condense( elems, preMap, preFilter, context, xml ) :
+<<<<<<< HEAD
 <<<<<<< HEAD
 				elems,
 
@@ -3533,24 +4308,31 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 			matcher( matcherIn, matcherOut, context, xml );
 =======
 				elems;
+=======
+				elems,
+>>>>>>> origin_second/لما2
 
+			matcherOut = matcher ?
+
+				// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
+				postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
+
+					// ...intermediate processing is necessary
+					[] :
+
+					// ...otherwise use results directly
+					results :
+				matcherIn;
+
+		// Find primary matches
 		if ( matcher ) {
-
-			// If we have a postFinder, or filtered seed, or non-seed postFilter
-			// or preexisting results,
-			matcherOut = postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
-
-				// ...intermediate processing is necessary
-				[] :
-
-				// ...otherwise use results directly
-				results;
-
-			// Find primary matches
 			matcher( matcherIn, matcherOut, context, xml );
+<<<<<<< HEAD
 		} else {
 			matcherOut = matcherIn;
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 		}
 
 		// Apply postFilter
@@ -3589,10 +4371,14 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 				while ( i-- ) {
 					if ( ( elem = matcherOut[ i ] ) &&
 <<<<<<< HEAD
+<<<<<<< HEAD
 						( temp = postFinder ? indexOf( seed, elem ) : preMap[ i ] ) > -1 ) {
 =======
 						( temp = postFinder ? indexOf.call( seed, elem ) : preMap[ i ] ) > -1 ) {
 >>>>>>> origin_second/linaLMversion
+=======
+						( temp = postFinder ? indexOf( seed, elem ) : preMap[ i ] ) > -1 ) {
+>>>>>>> origin_second/لما2
 
 						seed[ temp ] = !( results[ temp ] = elem );
 					}
@@ -3628,6 +4414,7 @@ function matcherFromTokens( tokens ) {
 		}, implicitRelative, true ),
 		matchAnyContext = addCombinator( function( elem ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			return indexOf( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
@@ -3643,16 +4430,26 @@ function matcherFromTokens( tokens ) {
 			// eslint-disable-next-line eqeqeq
 			var ret = ( !leadingRelative && ( xml || context != outermostContext ) ) || (
 >>>>>>> origin_second/linaLMversion
+=======
+			return indexOf( checkContext, elem ) > -1;
+		}, implicitRelative, true ),
+		matchers = [ function( elem, context, xml ) {
+			var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+>>>>>>> origin_second/لما2
 				( checkContext = context ).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 			// Avoid hanging onto element (issue #299)
 =======
 			// Avoid hanging onto element
 			// (see https://github.com/jquery/sizzle/issues/299)
 >>>>>>> origin_second/linaLMversion
+=======
+			// Avoid hanging onto element (issue #299)
+>>>>>>> origin_second/لما2
 			checkContext = null;
 			return ret;
 		} ];
@@ -3678,17 +4475,23 @@ function matcherFromTokens( tokens ) {
 					i > 1 && toSelector(
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 					// If the preceding token was a descendant combinator, insert an implicit any-element `*`
 					tokens
 						.slice( 0, i - 1 )
 						.concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } )
 					).replace( rtrim, "$1" ),
+<<<<<<< HEAD
 =======
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
 						tokens.slice( 0, i - 1 )
 							.concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } )
 					).replace( rtrimCSS, "$1" ),
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 					matcher,
 					i < j && matcherFromTokens( tokens.slice( i, j ) ),
 					j < len && matcherFromTokens( ( tokens = tokens.slice( j ) ) ),
@@ -3715,10 +4518,14 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 				// We must always have either seed elements or outermost context
 <<<<<<< HEAD
+<<<<<<< HEAD
 				elems = seed || byElement && Expr.find[ "TAG" ]( "*", outermost ),
 =======
 				elems = seed || byElement && Expr.find.TAG( "*", outermost ),
 >>>>>>> origin_second/linaLMversion
+=======
+				elems = seed || byElement && Expr.find[ "TAG" ]( "*", outermost ),
+>>>>>>> origin_second/لما2
 
 				// Use integer dirruns iff this is the outermost matcher
 				dirrunsUnique = ( dirruns += contextBackup == null ? 1 : Math.random() || 0.1 ),
@@ -3735,6 +4542,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 <<<<<<< HEAD
+<<<<<<< HEAD
 			// Support: IE<9, Safari
 			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
 =======
@@ -3742,6 +4550,10 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching
 			// elements by id. (see trac-14142)
 >>>>>>> origin_second/linaLMversion
+=======
+			// Support: IE<9, Safari
+			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
+>>>>>>> origin_second/لما2
 			for ( ; i !== len && ( elem = elems[ i ] ) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
@@ -3757,10 +4569,14 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					while ( ( matcher = elementMatchers[ j++ ] ) ) {
 						if ( matcher( elem, context || document, xml ) ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 							results.push( elem );
 =======
 							push.call( results, elem );
 >>>>>>> origin_second/linaLMversion
+=======
+							results.push( elem );
+>>>>>>> origin_second/لما2
 							break;
 						}
 					}
@@ -3824,10 +4640,14 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					( matchedCount + setMatchers.length ) > 1 ) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 					Sizzle.uniqueSort( results );
 =======
 					jQuery.uniqueSort( results );
 >>>>>>> origin_second/linaLMversion
+=======
+					Sizzle.uniqueSort( results );
+>>>>>>> origin_second/لما2
 				}
 			}
 
@@ -3846,10 +4666,14 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 =======
 function compile( selector, match /* Internal Use Only */ ) {
 >>>>>>> origin_second/linaLMversion
+=======
+compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
+>>>>>>> origin_second/لما2
 	var i,
 		setMatchers = [],
 		elementMatchers = [],
@@ -3873,19 +4697,26 @@ function compile( selector, match /* Internal Use Only */ ) {
 
 		// Cache the compiled function
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 		cached = compilerCache(
 			selector,
 			matcherFromGroupMatchers( elementMatchers, setMatchers )
 		);
+<<<<<<< HEAD
 =======
 		cached = compilerCache( selector,
 			matcherFromGroupMatchers( elementMatchers, setMatchers ) );
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
 		// Save selector and tokenization
 		cached.selector = selector;
 	}
 	return cached;
+<<<<<<< HEAD
 <<<<<<< HEAD
 };
 
@@ -3896,22 +4727,33 @@ function compile( selector, match /* Internal Use Only */ ) {
  *  selector function built with Sizzle.compile
 =======
 }
+=======
+};
+>>>>>>> origin_second/لما2
 
 /**
- * A low-level selection function that works with jQuery's compiled
+ * A low-level selection function that works with Sizzle's compiled
  *  selector functions
  * @param {String|Function} selector A selector or a pre-compiled
+<<<<<<< HEAD
  *  selector function built with jQuery selector compile
 >>>>>>> origin_second/linaLMversion
+=======
+ *  selector function built with Sizzle.compile
+>>>>>>> origin_second/لما2
  * @param {Element} context
  * @param {Array} [results]
  * @param {Array} [seed] A set of elements to match against
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 select = Sizzle.select = function( selector, context, results, seed ) {
 =======
 function select( selector, context, results, seed ) {
 >>>>>>> origin_second/linaLMversion
+=======
+select = Sizzle.select = function( selector, context, results, seed ) {
+>>>>>>> origin_second/لما2
 	var i, tokens, token, type, find,
 		compiled = typeof selector === "function" && selector,
 		match = !seed && tokenize( ( selector = compiled.selector || selector ) );
@@ -3926,6 +4768,7 @@ function select( selector, context, results, seed ) {
 		tokens = match[ 0 ] = match[ 0 ].slice( 0 );
 		if ( tokens.length > 2 && ( token = tokens[ 0 ] ).type === "ID" &&
 <<<<<<< HEAD
+<<<<<<< HEAD
 			context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[ 1 ].type ] ) {
 
 			context = ( Expr.find[ "ID" ]( token.matches[ 0 ]
@@ -3938,6 +4781,12 @@ function select( selector, context, results, seed ) {
 				context
 			) || [] )[ 0 ];
 >>>>>>> origin_second/linaLMversion
+=======
+			context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[ 1 ].type ] ) {
+
+			context = ( Expr.find[ "ID" ]( token.matches[ 0 ]
+				.replace( runescape, funescape ), context ) || [] )[ 0 ];
+>>>>>>> origin_second/لما2
 			if ( !context ) {
 				return results;
 
@@ -3951,10 +4800,14 @@ function select( selector, context, results, seed ) {
 
 		// Fetch a seed set for right-to-left matching
 <<<<<<< HEAD
+<<<<<<< HEAD
 		i = matchExpr[ "needsContext" ].test( selector ) ? 0 : tokens.length;
 =======
 		i = matchExpr.needsContext.test( selector ) ? 0 : tokens.length;
 >>>>>>> origin_second/linaLMversion
+=======
+		i = matchExpr[ "needsContext" ].test( selector ) ? 0 : tokens.length;
+>>>>>>> origin_second/لما2
 		while ( i-- ) {
 			token = tokens[ i ];
 
@@ -3968,12 +4821,17 @@ function select( selector, context, results, seed ) {
 				if ( ( seed = find(
 					token.matches[ 0 ].replace( runescape, funescape ),
 <<<<<<< HEAD
+<<<<<<< HEAD
 					rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
 						context
 =======
 					rsibling.test( tokens[ 0 ].type ) &&
 						testContext( context.parentNode ) || context
 >>>>>>> origin_second/linaLMversion
+=======
+					rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
+						context
+>>>>>>> origin_second/لما2
 				) ) ) {
 
 					// If seed is empty or no tokens remain, we can return early
@@ -4001,6 +4859,7 @@ function select( selector, context, results, seed ) {
 	);
 	return results;
 <<<<<<< HEAD
+<<<<<<< HEAD
 };
 
 // One-time assignments
@@ -4018,18 +4877,28 @@ setDocument();
 // Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 =======
 }
+=======
+};
+>>>>>>> origin_second/لما2
 
 // One-time assignments
 
-// Support: Android <=4.0 - 4.1+
 // Sort stability
 support.sortStable = expando.split( "" ).sort( sortOrder ).join( "" ) === expando;
+
+// Support: Chrome 14-35+
+// Always assume duplicates if they aren't passed to the comparison function
+support.detectDuplicates = !!hasDuplicate;
 
 // Initialize against the default document
 setDocument();
 
+<<<<<<< HEAD
 // Support: Android <=4.0 - 4.1+
 >>>>>>> origin_second/linaLMversion
+=======
+// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+>>>>>>> origin_second/لما2
 // Detached nodes confoundingly follow *each other*
 support.sortDetached = assert( function( el ) {
 
@@ -4038,6 +4907,9 @@ support.sortDetached = assert( function( el ) {
 } );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 // Support: IE<8
 // Prevent attribute/property "interpolation"
 // https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
@@ -4090,6 +4962,7 @@ return Sizzle;
 
 jQuery.find = Sizzle;
 jQuery.expr = Sizzle.selectors;
+<<<<<<< HEAD
 
 // Deprecated
 jQuery.expr[ ":" ] = jQuery.expr.pseudos;
@@ -4102,18 +4975,19 @@ jQuery.escapeSelector = Sizzle.escape;
 
 =======
 jQuery.find = find;
+=======
+>>>>>>> origin_second/لما2
 
 // Deprecated
 jQuery.expr[ ":" ] = jQuery.expr.pseudos;
-jQuery.unique = jQuery.uniqueSort;
+jQuery.uniqueSort = jQuery.unique = Sizzle.uniqueSort;
+jQuery.text = Sizzle.getText;
+jQuery.isXMLDoc = Sizzle.isXML;
+jQuery.contains = Sizzle.contains;
+jQuery.escapeSelector = Sizzle.escape;
 
-// These have always been private, but they used to be documented as part of
-// Sizzle so let's maintain them for now for backwards compatibility purposes.
-find.compile = compile;
-find.select = select;
-find.setDocument = setDocument;
-find.tokenize = tokenize;
 
+<<<<<<< HEAD
 find.escape = jQuery.escapeSelector;
 find.getText = jQuery.text;
 find.isXML = jQuery.isXMLDoc;
@@ -4125,6 +4999,8 @@ find.uniqueSort = jQuery.uniqueSort;
 
 } )();
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
 
 var dir = function( elem, dir, until ) {
@@ -4159,6 +5035,9 @@ var siblings = function( n, elem ) {
 var rneedsContext = jQuery.expr.match.needsContext;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 
 
 function nodeName( elem, name ) {
@@ -4166,8 +5045,11 @@ function nodeName( elem, name ) {
 	return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 
 }
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i );
 
 
@@ -4267,12 +5149,17 @@ var rootjQuery,
 
 	// A simple way to check for HTML strings
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
 =======
 	// Prioritize #id over <tag> to avoid XSS via location.hash (trac-9521)
 	// Strict HTML recognition (trac-11290: must start with <)
 >>>>>>> origin_second/linaLMversion
+=======
+	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
+	// Strict HTML recognition (#11290: must start with <)
+>>>>>>> origin_second/لما2
 	// Shortcut simple #id case for speed
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,
 
@@ -4424,10 +5311,14 @@ jQuery.fn.extend( {
 						targets.index( cur ) > -1 :
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 						// Don't pass non-elements to Sizzle
 =======
 						// Don't pass non-elements to jQuery#find
 >>>>>>> origin_second/linaLMversion
+=======
+						// Don't pass non-elements to Sizzle
+>>>>>>> origin_second/لما2
 						cur.nodeType === 1 &&
 							jQuery.find.matchesSelector( cur, selectors ) ) ) {
 
@@ -4983,10 +5874,14 @@ jQuery.extend( {
 											if ( jQuery.Deferred.exceptionHook ) {
 												jQuery.Deferred.exceptionHook( e,
 <<<<<<< HEAD
+<<<<<<< HEAD
 													process.stackTrace );
 =======
 													process.error );
 >>>>>>> origin_second/linaLMversion
+=======
+													process.stackTrace );
+>>>>>>> origin_second/لما2
 											}
 
 											// Support: Promises/A+ section 2.3.3.3.4.1
@@ -5015,6 +5910,7 @@ jQuery.extend( {
 							} else {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 								// Call an optional hook to record the stack, in case of exception
 								// since it's otherwise lost when execution goes async
 								if ( jQuery.Deferred.getStackHook ) {
@@ -5032,6 +5928,12 @@ jQuery.extend( {
 								} else if ( jQuery.Deferred.getStackHook ) {
 									process.error = jQuery.Deferred.getStackHook();
 >>>>>>> origin_second/linaLMversion
+=======
+								// Call an optional hook to record the stack, in case of exception
+								// since it's otherwise lost when execution goes async
+								if ( jQuery.Deferred.getStackHook ) {
+									process.stackTrace = jQuery.Deferred.getStackHook();
+>>>>>>> origin_second/لما2
 								}
 								window.setTimeout( process );
 							}
@@ -5207,6 +6109,7 @@ jQuery.extend( {
 var rerrorNames = /^(Eval|Internal|Range|Reference|Syntax|Type|URI)Error$/;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 jQuery.Deferred.exceptionHook = function( error, stack ) {
 =======
 // If `jQuery.Deferred.getErrorHook` is defined, `asyncError` is an error
@@ -5214,16 +6117,23 @@ jQuery.Deferred.exceptionHook = function( error, stack ) {
 // which may otherwise be hidden.
 jQuery.Deferred.exceptionHook = function( error, asyncError ) {
 >>>>>>> origin_second/linaLMversion
+=======
+jQuery.Deferred.exceptionHook = function( error, stack ) {
+>>>>>>> origin_second/لما2
 
 	// Support: IE 8 - 9 only
 	// Console exists when dev tools are open, which can happen at any time
 	if ( window.console && window.console.warn && error && rerrorNames.test( error.name ) ) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 		window.console.warn( "jQuery.Deferred exception: " + error.message, error.stack, stack );
 =======
 		window.console.warn( "jQuery.Deferred exception: " + error.message,
 			error.stack, asyncError );
 >>>>>>> origin_second/linaLMversion
+=======
+		window.console.warn( "jQuery.Deferred exception: " + error.message, error.stack, stack );
+>>>>>>> origin_second/لما2
 	}
 };
 
@@ -5264,10 +6174,14 @@ jQuery.extend( {
 
 	// A counter to track how many items to wait for before
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// the ready event fires. See #6781
 =======
 	// the ready event fires. See trac-6781
 >>>>>>> origin_second/linaLMversion
+=======
+	// the ready event fires. See #6781
+>>>>>>> origin_second/لما2
 	readyWait: 1,
 
 	// Handle when the DOM is ready
@@ -5396,10 +6310,14 @@ function fcamelCase( _all, letter ) {
 // Convert dashed to camelCase; used by the css and data modules
 // Support: IE <=9 - 11, Edge 12 - 15
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Microsoft forgot to hump their vendor prefix (#9572)
 =======
 // Microsoft forgot to hump their vendor prefix (trac-9572)
 >>>>>>> origin_second/linaLMversion
+=======
+// Microsoft forgot to hump their vendor prefix (#9572)
+>>>>>>> origin_second/لما2
 function camelCase( string ) {
 	return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
 }
@@ -5436,10 +6354,14 @@ Data.prototype = {
 
 			// We can accept data for non-element nodes in modern browsers,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			// but we should not, see #8335.
 =======
 			// but we should not, see trac-8335.
 >>>>>>> origin_second/linaLMversion
+=======
+			// but we should not, see #8335.
+>>>>>>> origin_second/لما2
 			// Always return an empty object.
 			if ( acceptData( owner ) ) {
 
@@ -5679,10 +6601,14 @@ jQuery.fn.extend( {
 
 						// Support: IE 11 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 						// The attrs elements can be null (#14894)
 =======
 						// The attrs elements can be null (trac-14894)
 >>>>>>> origin_second/linaLMversion
+=======
+						// The attrs elements can be null (#14894)
+>>>>>>> origin_second/لما2
 						if ( attrs[ i ] ) {
 							name = attrs[ i ].name;
 							if ( name.indexOf( "data-" ) === 0 ) {
@@ -6106,6 +7032,7 @@ var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
 	// Support: Android 4.0 - 4.3 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Check state lost if the name is set (#11217)
 	// Support: Windows Web Apps (WWA)
 	// `name` and `type` must use .setAttribute for WWA (#14901)
@@ -6114,6 +7041,11 @@ var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 	// Support: Windows Web Apps (WWA)
 	// `name` and `type` must use .setAttribute for WWA (trac-14901)
 >>>>>>> origin_second/linaLMversion
+=======
+	// Check state lost if the name is set (#11217)
+	// Support: Windows Web Apps (WWA)
+	// `name` and `type` must use .setAttribute for WWA (#14901)
+>>>>>>> origin_second/لما2
 	input.setAttribute( "type", "radio" );
 	input.setAttribute( "checked", "checked" );
 	input.setAttribute( "name", "t" );
@@ -6138,10 +7070,14 @@ var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // We have to close these tags to support XHTML (#13200)
 =======
 // We have to close these tags to support XHTML (trac-13200)
 >>>>>>> origin_second/linaLMversion
+=======
+// We have to close these tags to support XHTML (#13200)
+>>>>>>> origin_second/لما2
 var wrapMap = {
 
 	// XHTML parsers do not magically insert elements in the
@@ -6168,10 +7104,14 @@ function getAll( context, tag ) {
 
 	// Support: IE <=9 - 11 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Use typeof to avoid zero-argument method invocation on host objects (#15151)
 =======
 	// Use typeof to avoid zero-argument method invocation on host objects (trac-15151)
 >>>>>>> origin_second/linaLMversion
+=======
+	// Use typeof to avoid zero-argument method invocation on host objects (#15151)
+>>>>>>> origin_second/لما2
 	var ret;
 
 	if ( typeof context.getElementsByTagName !== "undefined" ) {
@@ -6255,10 +7195,14 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 				tmp = fragment.firstChild;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Ensure the created nodes are orphaned (#12392)
 =======
 				// Ensure the created nodes are orphaned (trac-12392)
 >>>>>>> origin_second/linaLMversion
+=======
+				// Ensure the created nodes are orphaned (#12392)
+>>>>>>> origin_second/لما2
 				tmp.textContent = "";
 			}
 		}
@@ -6314,6 +7258,9 @@ function returnFalse() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 // Support: IE <=9 - 11+
 // focus() and blur() are asynchronous, except when they are no-op.
 // So expect focus to be synchronous when the element is already active,
@@ -6333,8 +7280,11 @@ function safeActiveElement() {
 	} catch ( err ) { }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 function on( elem, types, selector, data, fn, one ) {
 	var origFn, type;
 
@@ -6683,12 +7633,17 @@ jQuery.event = {
 			for ( ; cur !== this; cur = cur.parentNode || this ) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Don't check non-elements (#13208)
 				// Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
 =======
 				// Don't check non-elements (trac-13208)
 				// Don't process clicks on disabled elements (trac-6911, trac-8165, trac-11382, trac-11764)
 >>>>>>> origin_second/linaLMversion
+=======
+				// Don't check non-elements (#13208)
+				// Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
+>>>>>>> origin_second/لما2
 				if ( cur.nodeType === 1 && !( event.type === "click" && cur.disabled === true ) ) {
 					matchedHandlers = [];
 					matchedSelectors = {};
@@ -6696,10 +7651,14 @@ jQuery.event = {
 						handleObj = handlers[ i ];
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 						// Don't conflict with Object.prototype properties (#13203)
 =======
 						// Don't conflict with Object.prototype properties (trac-13203)
 >>>>>>> origin_second/linaLMversion
+=======
+						// Don't conflict with Object.prototype properties (#13203)
+>>>>>>> origin_second/لما2
 						sel = handleObj.selector + " ";
 
 						if ( matchedSelectors[ sel ] === undefined ) {
@@ -6782,10 +7741,14 @@ jQuery.event = {
 
 					// dataPriv.set( el, "click", ... )
 <<<<<<< HEAD
+<<<<<<< HEAD
 					leverageNative( el, "click", returnTrue );
 =======
 					leverageNative( el, "click", true );
 >>>>>>> origin_second/linaLMversion
+=======
+					leverageNative( el, "click", returnTrue );
+>>>>>>> origin_second/لما2
 				}
 
 				// Return false to allow normal processing in the caller
@@ -6837,6 +7800,7 @@ jQuery.event = {
 // *native* events that it fires directly, ensuring that state changes have
 // already occurred before other listeners are invoked.
 <<<<<<< HEAD
+<<<<<<< HEAD
 function leverageNative( el, type, expectSync ) {
 
 	// Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
@@ -6847,6 +7811,12 @@ function leverageNative( el, type, isSetup ) {
 	// Missing `isSetup` indicates a trigger call, which must force setup through jQuery.event.add
 	if ( !isSetup ) {
 >>>>>>> origin_second/linaLMversion
+=======
+function leverageNative( el, type, expectSync ) {
+
+	// Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
+	if ( !expectSync ) {
+>>>>>>> origin_second/لما2
 		if ( dataPriv.get( el, type ) === undefined ) {
 			jQuery.event.add( el, type, returnTrue );
 		}
@@ -6859,15 +7829,20 @@ function leverageNative( el, type, isSetup ) {
 		namespace: false,
 		handler: function( event ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			var notAsync, result,
 =======
 			var result,
 >>>>>>> origin_second/linaLMversion
+=======
+			var notAsync, result,
+>>>>>>> origin_second/لما2
 				saved = dataPriv.get( this, type );
 
 			if ( ( event.isTrigger & 1 ) && this[ type ] ) {
 
 				// Interrupt processing of the outer synthetic .trigger()ed event
+<<<<<<< HEAD
 <<<<<<< HEAD
 				// Saved data should be false in such cases, but might be a leftover capture object
 				// from an async native handler (gh-4350)
@@ -6875,6 +7850,11 @@ function leverageNative( el, type, isSetup ) {
 =======
 				if ( !saved ) {
 >>>>>>> origin_second/linaLMversion
+=======
+				// Saved data should be false in such cases, but might be a leftover capture object
+				// from an async native handler (gh-4350)
+				if ( !saved.length ) {
+>>>>>>> origin_second/لما2
 
 					// Store arguments for use when handling the inner native event
 					// There will always be at least one argument (an event object), so this array
@@ -6883,6 +7863,7 @@ function leverageNative( el, type, isSetup ) {
 					dataPriv.set( this, type, saved );
 
 					// Trigger the native event and capture its result
+<<<<<<< HEAD
 <<<<<<< HEAD
 					// Support: IE <=9 - 11+
 					// focus() and blur() are asynchronous
@@ -6900,6 +7881,18 @@ function leverageNative( el, type, isSetup ) {
 					dataPriv.set( this, type, false );
 
 >>>>>>> origin_second/linaLMversion
+=======
+					// Support: IE <=9 - 11+
+					// focus() and blur() are asynchronous
+					notAsync = expectSync( this, type );
+					this[ type ]();
+					result = dataPriv.get( this, type );
+					if ( saved !== result || notAsync ) {
+						dataPriv.set( this, type, false );
+					} else {
+						result = {};
+					}
+>>>>>>> origin_second/لما2
 					if ( saved !== result ) {
 
 						// Cancel the outer synthetic event
@@ -6907,12 +7900,16 @@ function leverageNative( el, type, isSetup ) {
 						event.preventDefault();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 						// Support: Chrome 86+
 						// In Chrome, if an element having a focusout handler is blurred by
 						// clicking outside of it, it invokes the handler synchronously. If
 						// that handler calls `.remove()` on the element, the data is cleared,
 						// leaving `result` undefined. We need to guard against this.
 						return result && result.value;
+<<<<<<< HEAD
 					}
 
 				// If this is an inner synthetic event for an event with a bubbling surrogate
@@ -6926,6 +7923,13 @@ function leverageNative( el, type, isSetup ) {
 				// (focus or blur), assume that the surrogate already propagated from triggering
 				// the native event and prevent that from happening again here.
 >>>>>>> origin_second/linaLMversion
+=======
+					}
+
+				// If this is an inner synthetic event for an event with a bubbling surrogate
+				// (focus or blur), assume that the surrogate already propagated from triggering the
+				// native event and prevent that from happening again here.
+>>>>>>> origin_second/لما2
 				// This technically gets the ordering wrong w.r.t. to `.trigger()` (in which the
 				// bubbling surrogate propagates *after* the non-bubbling base), but that seems
 				// less bad than duplication.
@@ -6935,6 +7939,7 @@ function leverageNative( el, type, isSetup ) {
 
 			// If this is a native event triggered above, everything is now in order
 			// Fire an inner synthetic event with the original arguments
+<<<<<<< HEAD
 <<<<<<< HEAD
 			} else if ( saved.length ) {
 
@@ -6954,14 +7959,15 @@ function leverageNative( el, type, isSetup ) {
 				event.stopImmediatePropagation();
 =======
 			} else if ( saved ) {
+=======
+			} else if ( saved.length ) {
+>>>>>>> origin_second/لما2
 
 				// ...and capture the result
-				dataPriv.set( this, type, jQuery.event.trigger(
-					saved[ 0 ],
-					saved.slice( 1 ),
-					this
-				) );
+				dataPriv.set( this, type, {
+					value: jQuery.event.trigger(
 
+<<<<<<< HEAD
 				// Abort handling of the native event by all jQuery handlers while allowing
 				// native handlers on the same element to run. On target, this is achieved
 				// by stopping immediate propagation just on the jQuery event. However,
@@ -6973,6 +7979,18 @@ function leverageNative( el, type, isSetup ) {
 				event.stopPropagation();
 				event.isImmediatePropagationStopped = returnTrue;
 >>>>>>> origin_second/linaLMversion
+=======
+						// Support: IE <=9 - 11+
+						// Extend with the prototype to reset the above stopImmediatePropagation()
+						jQuery.extend( saved[ 0 ], jQuery.Event.prototype ),
+						saved.slice( 1 ),
+						this
+					)
+				} );
+
+				// Abort handling of the native event
+				event.stopImmediatePropagation();
+>>>>>>> origin_second/لما2
 			}
 		}
 	} );
@@ -7011,10 +8029,14 @@ jQuery.Event = function( src, props ) {
 		// Create target properties
 		// Support: Safari <=6 - 7 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Target should not be a text node (#504, #13143)
 =======
 		// Target should not be a text node (trac-504, trac-13143)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Target should not be a text node (#504, #13143)
+>>>>>>> origin_second/لما2
 		this.target = ( src.target && src.target.nodeType === 3 ) ?
 			src.target.parentNode :
 			src.target;
@@ -7116,6 +8138,7 @@ jQuery.each( {
 
 jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateType ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	function focusMappedHandler( nativeEvent ) {
@@ -7157,11 +8180,14 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 	}
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 	jQuery.event.special[ type ] = {
 
 		// Utilize native event if possible so blur/focus sequence is correct
 		setup: function() {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 			// Claim the first handler
 			// dataPriv.set( this, "focus", ... )
@@ -7173,11 +8199,14 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 =======
 			var attaches;
 
+=======
+>>>>>>> origin_second/لما2
 			// Claim the first handler
 			// dataPriv.set( this, "focus", ... )
 			// dataPriv.set( this, "blur", ... )
-			leverageNative( this, type, true );
+			leverageNative( this, type, expectSync );
 
+<<<<<<< HEAD
 			if ( document.documentMode ) {
 
 				// Support: IE 9 - 11+
@@ -7195,6 +8224,10 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 				return false;
 			}
 >>>>>>> origin_second/linaLMversion
+=======
+			// Return false to allow normal processing in the caller
+			return false;
+>>>>>>> origin_second/لما2
 		},
 		trigger: function() {
 
@@ -7206,10 +8239,14 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 		},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 		// Suppress native focus or blur as it's already being fired
 		// in leverageNative.
 		_default: function() {
 			return true;
+<<<<<<< HEAD
 =======
 		teardown: function() {
 			var attaches;
@@ -7234,10 +8271,13 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 		_default: function( event ) {
 			return dataPriv.get( event.target, type );
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 		},
 
 		delegateType: delegateType
 	};
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -7293,6 +8333,8 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 		}
 	};
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 } );
 
 // Create mouseenter/leave events using mouseover/out and event-time checks
@@ -7388,11 +8430,15 @@ var
 	// checked="checked" or checked
 	rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
 <<<<<<< HEAD
+<<<<<<< HEAD
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
 =======
 
 	rcleanScript = /^\s*<!\[CDATA\[|\]\]>\s*$/g;
 >>>>>>> origin_second/linaLMversion
+=======
+	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
+>>>>>>> origin_second/لما2
 
 // Prefer a tbody over its parent table for containing new rows
 function manipulationTarget( elem, content ) {
@@ -7507,10 +8553,14 @@ function domManip( collection, args, callback, ignored ) {
 			// Use the original fragment for the last item
 			// instead of the first because it can end up
 <<<<<<< HEAD
+<<<<<<< HEAD
 			// being emptied incorrectly in certain situations (#8070).
 =======
 			// being emptied incorrectly in certain situations (trac-8070).
 >>>>>>> origin_second/linaLMversion
+=======
+			// being emptied incorrectly in certain situations (#8070).
+>>>>>>> origin_second/لما2
 			for ( ; i < l; i++ ) {
 				node = fragment;
 
@@ -7533,10 +8583,14 @@ function domManip( collection, args, callback, ignored ) {
 				doc = scripts[ scripts.length - 1 ].ownerDocument;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Reenable scripts
 =======
 				// Re-enable scripts
 >>>>>>> origin_second/linaLMversion
+=======
+				// Reenable scripts
+>>>>>>> origin_second/لما2
 				jQuery.map( scripts, restoreScript );
 
 				// Evaluate executable scripts on first document insertion
@@ -7556,6 +8610,7 @@ function domManip( collection, args, callback, ignored ) {
 							}
 						} else {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 							// Unwrap a CDATA section containing script contents. This shouldn't be
@@ -7564,6 +8619,8 @@ function domManip( collection, args, callback, ignored ) {
 							// meaning but we're preserving that logic for backwards compatibility.
 							// This will be removed completely in 4.0. See gh-4904.
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 							DOMEval( node.textContent.replace( rcleanScript, "" ), node, doc );
 						}
 					}
@@ -7611,11 +8668,15 @@ jQuery.extend( {
 				!jQuery.isXMLDoc( elem ) ) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 			// We eschew Sizzle here for performance reasons: https://jsperf.com/getall-vs-sizzle/2
 =======
 			// We eschew jQuery#find here for performance reasons:
 			// https://jsperf.com/getall-vs-sizzle/2
 >>>>>>> origin_second/linaLMversion
+=======
+			// We eschew Sizzle here for performance reasons: https://jsperf.com/getall-vs-sizzle/2
+>>>>>>> origin_second/لما2
 			destElements = getAll( clone );
 			srcElements = getAll( elem );
 
@@ -7852,6 +8913,7 @@ jQuery.each( {
 var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 var getStyles = function( elem ) {
 
 		// Support: IE <=11 only, Firefox <=30 (#15098, #14150)
@@ -7863,6 +8925,11 @@ var getStyles = function( elem ) {
 
 		// Support: IE <=11 only, Firefox <=30 (trac-15098, trac-14150)
 >>>>>>> origin_second/linaLMversion
+=======
+var getStyles = function( elem ) {
+
+		// Support: IE <=11 only, Firefox <=30 (#15098, #14150)
+>>>>>>> origin_second/لما2
 		// IE throws on elements created in popups
 		// FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
 		var view = elem.ownerDocument.defaultView;
@@ -7963,10 +9030,14 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 
 	// Support: IE <=9 - 11 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Style of cloned element affects source element cloned (#8908)
 =======
 	// Style of cloned element affects source element cloned (trac-8908)
 >>>>>>> origin_second/linaLMversion
+=======
+	// Style of cloned element affects source element cloned (#8908)
+>>>>>>> origin_second/لما2
 	div.style.backgroundClip = "content-box";
 	div.cloneNode( true ).style.backgroundClip = "";
 	support.clearCloneStyle = div.style.backgroundClip === "content-box";
@@ -8011,10 +9082,14 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 
 				table.style.cssText = "position:absolute;left:-11111px;border-collapse:separate";
 <<<<<<< HEAD
+<<<<<<< HEAD
 				tr.style.cssText = "border:1px solid";
 =======
 				tr.style.cssText = "box-sizing:content-box;border:1px solid";
 >>>>>>> origin_second/linaLMversion
+=======
+				tr.style.cssText = "border:1px solid";
+>>>>>>> origin_second/لما2
 
 				// Support: Chrome 86+
 				// Height set through cssText does not get applied.
@@ -8027,10 +9102,14 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 				// display for all div elements is set to "inline",
 				// which causes a problem only in Android 8 Chrome 86.
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Ensuring the div is display: block
 =======
 				// Ensuring the div is `display: block`
 >>>>>>> origin_second/linaLMversion
+=======
+				// Ensuring the div is display: block
+>>>>>>> origin_second/لما2
 				// gets around this issue.
 				trChild.style.display = "block";
 
@@ -8055,9 +9134,12 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 function curCSS( elem, name, computed ) {
 	var width, minWidth, maxWidth, ret,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		isCustomProp = rcustomProp.test( name ),
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 
 		// Support: Firefox 51+
 		// Retrieving style before computed somehow
@@ -8069,6 +9151,7 @@ function curCSS( elem, name, computed ) {
 
 	// getPropertyValue is needed for:
 <<<<<<< HEAD
+<<<<<<< HEAD
 	//   .css('filter') (IE 9 only, #12537)
 	//   .css('--customProperty) (#3144)
 	if ( computed ) {
@@ -8077,19 +9160,14 @@ function curCSS( elem, name, computed ) {
 =======
 	//   .css('filter') (IE 9 only, trac-12537)
 	//   .css('--customProperty) (gh-3144)
+=======
+	//   .css('filter') (IE 9 only, #12537)
+	//   .css('--customProperty) (#3144)
+>>>>>>> origin_second/لما2
 	if ( computed ) {
-
-		// Support: IE <=9 - 11+
-		// IE only supports `"float"` in `getPropertyValue`; in computed styles
-		// it's only available as `"cssFloat"`. We no longer modify properties
-		// sent to `.css()` apart from camelCasing, so we need to check both.
-		// Normally, this would create difference in behavior: if
-		// `getPropertyValue` returns an empty string, the value returned
-		// by `.css()` would be `undefined`. This is usually the case for
-		// disconnected elements. However, in IE even disconnected elements
-		// with no styles return `"none"` for `getPropertyValue( "float" )`
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 
+<<<<<<< HEAD
 		if ( isCustomProp && ret ) {
 
 			// Support: Firefox 105+, Chrome <=105+
@@ -8112,6 +9190,8 @@ function curCSS( elem, name, computed ) {
 		}
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 		if ( ret === "" && !isAttached( elem ) ) {
 			ret = jQuery.style( elem, name );
 		}
@@ -8208,9 +9288,13 @@ var
 	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
 	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
 <<<<<<< HEAD
+<<<<<<< HEAD
 	rcustomProp = /^--/,
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+	rcustomProp = /^--/,
+>>>>>>> origin_second/لما2
 	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
 	cssNormalTransform = {
 		letterSpacing: "0",
@@ -8233,11 +9317,15 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 	var i = dimension === "width" ? 1 : 0,
 		extra = 0,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		delta = 0;
 =======
 		delta = 0,
 		marginDelta = 0;
 >>>>>>> origin_second/linaLMversion
+=======
+		delta = 0;
+>>>>>>> origin_second/لما2
 
 	// Adjustment may not be necessary
 	if ( box === ( isBorderBox ? "border" : "content" ) ) {
@@ -8248,6 +9336,7 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 
 		// Both box models exclude margin
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if ( box === "margin" ) {
 			delta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
 =======
@@ -8256,6 +9345,10 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 		if ( box === "margin" ) {
 			marginDelta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
 >>>>>>> origin_second/linaLMversion
+=======
+		if ( box === "margin" ) {
+			delta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
+>>>>>>> origin_second/لما2
 		}
 
 		// If we get here with a content-box, we're seeking "padding" or "border" or "margin"
@@ -8307,10 +9400,14 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	return delta;
 =======
 	return delta + marginDelta;
 >>>>>>> origin_second/linaLMversion
+=======
+	return delta;
+>>>>>>> origin_second/لما2
 }
 
 function getWidthOrHeight( elem, dimension, extra ) {
@@ -8409,6 +9506,9 @@ jQuery.extend( {
 	// Don't automatically add "px" to these possibly-unitless properties
 	cssNumber: {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 		"animationIterationCount": true,
 		"columnCount": true,
 		"fillOpacity": true,
@@ -8429,6 +9529,7 @@ jQuery.extend( {
 		"widows": true,
 		"zIndex": true,
 		"zoom": true
+<<<<<<< HEAD
 =======
 		animationIterationCount: true,
 		aspectRatio: true,
@@ -8460,6 +9561,8 @@ jQuery.extend( {
 		strokeMiterlimit: true,
 		strokeOpacity: true
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 	},
 
 	// Add in properties whose names you wish to fix before
@@ -8495,6 +9598,7 @@ jQuery.extend( {
 			type = typeof value;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 			// Convert "+=" or "-=" to relative numbers (#7345)
 			if ( type === "string" && ( ret = rcssNum.exec( value ) ) && ret[ 1 ] ) {
 				value = adjustCSS( elem, name, ret );
@@ -8506,15 +9610,22 @@ jQuery.extend( {
 			// Make sure that null and NaN values aren't set (#7116)
 =======
 			// Convert "+=" or "-=" to relative numbers (trac-7345)
+=======
+			// Convert "+=" or "-=" to relative numbers (#7345)
+>>>>>>> origin_second/لما2
 			if ( type === "string" && ( ret = rcssNum.exec( value ) ) && ret[ 1 ] ) {
 				value = adjustCSS( elem, name, ret );
 
-				// Fixes bug trac-9237
+				// Fixes bug #9237
 				type = "number";
 			}
 
+<<<<<<< HEAD
 			// Make sure that null and NaN values aren't set (trac-7116)
 >>>>>>> origin_second/linaLMversion
+=======
+			// Make sure that null and NaN values aren't set (#7116)
+>>>>>>> origin_second/لما2
 			if ( value == null || value !== value ) {
 				return;
 			}
@@ -9139,10 +10250,14 @@ function Animation( elem, properties, options ) {
 
 				// Support: Android 2.3 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (#12497)
 =======
 				// Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (trac-12497)
 >>>>>>> origin_second/linaLMversion
+=======
+				// Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (#12497)
+>>>>>>> origin_second/لما2
 				temp = remaining / animation.duration || 0,
 				percent = 1 - temp,
 				index = 0,
@@ -9533,9 +10648,13 @@ jQuery.fx.speeds = {
 
 // Based off of the plugin by Clint Helfers, with permission.
 <<<<<<< HEAD
+<<<<<<< HEAD
 // https://web.archive.org/web/20100324014747/http://blindsignals.com/index.php/2009/07/jquery-delay/
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+// https://web.archive.org/web/20100324014747/http://blindsignals.com/index.php/2009/07/jquery-delay/
+>>>>>>> origin_second/لما2
 jQuery.fn.delay = function( time, type ) {
 	time = jQuery.fx ? jQuery.fx.speeds[ time ] || time : time;
 	type = type || "fx";
@@ -9761,11 +10880,16 @@ jQuery.extend( {
 				// elem.tabIndex doesn't always return the
 				// correct value when it hasn't been explicitly set
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// https://web.archive.org/web/20141116233347/http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
 				// Use proper attribute retrieval(#12072)
 =======
 				// Use proper attribute retrieval (trac-12072)
 >>>>>>> origin_second/linaLMversion
+=======
+				// https://web.archive.org/web/20141116233347/http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
+				// Use proper attribute retrieval(#12072)
+>>>>>>> origin_second/لما2
 				var tabindex = jQuery.find.attr( elem, "tabindex" );
 
 				if ( tabindex ) {
@@ -9870,11 +10994,16 @@ function classesToArray( value ) {
 jQuery.fn.extend( {
 	addClass: function( value ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		var classes, elem, cur, curValue, clazz, j, finalValue,
 			i = 0;
 =======
 		var classNames, cur, curValue, className, i, finalValue;
 >>>>>>> origin_second/linaLMversion
+=======
+		var classes, elem, cur, curValue, clazz, j, finalValue,
+			i = 0;
+>>>>>>> origin_second/لما2
 
 		if ( isFunction( value ) ) {
 			return this.each( function( j ) {
@@ -9882,6 +11011,7 @@ jQuery.fn.extend( {
 			} );
 		}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		classes = classesToArray( value );
 
@@ -9897,24 +11027,35 @@ jQuery.fn.extend( {
 							cur += clazz + " ";
 =======
 		classNames = classesToArray( value );
+=======
+		classes = classesToArray( value );
+>>>>>>> origin_second/لما2
 
-		if ( classNames.length ) {
-			return this.each( function() {
-				curValue = getClass( this );
-				cur = this.nodeType === 1 && ( " " + stripAndCollapse( curValue ) + " " );
+		if ( classes.length ) {
+			while ( ( elem = this[ i++ ] ) ) {
+				curValue = getClass( elem );
+				cur = elem.nodeType === 1 && ( " " + stripAndCollapse( curValue ) + " " );
 
 				if ( cur ) {
+<<<<<<< HEAD
 					for ( i = 0; i < classNames.length; i++ ) {
 						className = classNames[ i ];
 						if ( cur.indexOf( " " + className + " " ) < 0 ) {
 							cur += className + " ";
 >>>>>>> origin_second/linaLMversion
+=======
+					j = 0;
+					while ( ( clazz = classes[ j++ ] ) ) {
+						if ( cur.indexOf( " " + clazz + " " ) < 0 ) {
+							cur += clazz + " ";
+>>>>>>> origin_second/لما2
 						}
 					}
 
 					// Only assign if different to avoid unneeded rendering.
 					finalValue = stripAndCollapse( cur );
 					if ( curValue !== finalValue ) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 						elem.setAttribute( "class", finalValue );
 					}
@@ -9926,6 +11067,12 @@ jQuery.fn.extend( {
 				}
 			} );
 >>>>>>> origin_second/linaLMversion
+=======
+						elem.setAttribute( "class", finalValue );
+					}
+				}
+			}
+>>>>>>> origin_second/لما2
 		}
 
 		return this;
@@ -9933,11 +11080,16 @@ jQuery.fn.extend( {
 
 	removeClass: function( value ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		var classes, elem, cur, curValue, clazz, j, finalValue,
 			i = 0;
 =======
 		var classNames, cur, curValue, className, i, finalValue;
 >>>>>>> origin_second/linaLMversion
+=======
+		var classes, elem, cur, curValue, clazz, j, finalValue,
+			i = 0;
+>>>>>>> origin_second/لما2
 
 		if ( isFunction( value ) ) {
 			return this.each( function( j ) {
@@ -9949,6 +11101,7 @@ jQuery.fn.extend( {
 			return this.attr( "class", "" );
 		}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		classes = classesToArray( value );
 
@@ -9968,28 +11121,37 @@ jQuery.fn.extend( {
 							cur = cur.replace( " " + clazz + " ", " " );
 =======
 		classNames = classesToArray( value );
+=======
+		classes = classesToArray( value );
+>>>>>>> origin_second/لما2
 
-		if ( classNames.length ) {
-			return this.each( function() {
-				curValue = getClass( this );
+		if ( classes.length ) {
+			while ( ( elem = this[ i++ ] ) ) {
+				curValue = getClass( elem );
 
 				// This expression is here for better compressibility (see addClass)
-				cur = this.nodeType === 1 && ( " " + stripAndCollapse( curValue ) + " " );
+				cur = elem.nodeType === 1 && ( " " + stripAndCollapse( curValue ) + " " );
 
 				if ( cur ) {
-					for ( i = 0; i < classNames.length; i++ ) {
-						className = classNames[ i ];
+					j = 0;
+					while ( ( clazz = classes[ j++ ] ) ) {
 
 						// Remove *all* instances
+<<<<<<< HEAD
 						while ( cur.indexOf( " " + className + " " ) > -1 ) {
 							cur = cur.replace( " " + className + " ", " " );
 >>>>>>> origin_second/linaLMversion
+=======
+						while ( cur.indexOf( " " + clazz + " " ) > -1 ) {
+							cur = cur.replace( " " + clazz + " ", " " );
+>>>>>>> origin_second/لما2
 						}
 					}
 
 					// Only assign if different to avoid unneeded rendering.
 					finalValue = stripAndCollapse( cur );
 					if ( curValue !== finalValue ) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 						elem.setAttribute( "class", finalValue );
 					}
@@ -10001,12 +11163,19 @@ jQuery.fn.extend( {
 				}
 			} );
 >>>>>>> origin_second/linaLMversion
+=======
+						elem.setAttribute( "class", finalValue );
+					}
+				}
+			}
+>>>>>>> origin_second/لما2
 		}
 
 		return this;
 	},
 
 	toggleClass: function( value, stateVal ) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 		var type = typeof value,
 			isValidValue = type === "string" || Array.isArray( value );
@@ -10021,6 +11190,15 @@ jQuery.fn.extend( {
 			isValidValue = type === "string" || Array.isArray( value );
 
 >>>>>>> origin_second/linaLMversion
+=======
+		var type = typeof value,
+			isValidValue = type === "string" || Array.isArray( value );
+
+		if ( typeof stateVal === "boolean" && isValidValue ) {
+			return stateVal ? this.addClass( value ) : this.removeClass( value );
+		}
+
+>>>>>>> origin_second/لما2
 		if ( isFunction( value ) ) {
 			return this.each( function( i ) {
 				jQuery( this ).toggleClass(
@@ -10030,6 +11208,7 @@ jQuery.fn.extend( {
 			} );
 		}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		return this.each( function() {
 			var className, i, self, classNames;
@@ -10049,15 +11228,25 @@ jQuery.fn.extend( {
 
 		classNames = classesToArray( value );
 
+=======
+>>>>>>> origin_second/لما2
 		return this.each( function() {
+			var className, i, self, classNames;
+
 			if ( isValidValue ) {
 
 				// Toggle individual class names
+				i = 0;
 				self = jQuery( this );
+				classNames = classesToArray( value );
 
+<<<<<<< HEAD
 				for ( i = 0; i < classNames.length; i++ ) {
 					className = classNames[ i ];
 >>>>>>> origin_second/linaLMversion
+=======
+				while ( ( className = classNames[ i++ ] ) ) {
+>>>>>>> origin_second/لما2
 
 					// Check each className given, space separated list
 					if ( self.hasClass( className ) ) {
@@ -10192,10 +11381,14 @@ jQuery.extend( {
 
 					// Support: IE <=10 - 11 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 					// option.text throws exceptions (#14686, #14858)
 =======
 					// option.text throws exceptions (trac-14686, trac-14858)
 >>>>>>> origin_second/linaLMversion
+=======
+					// option.text throws exceptions (#14686, #14858)
+>>>>>>> origin_second/لما2
 					// Strip and collapse whitespace
 					// https://html.spec.whatwg.org/#strip-and-collapse-whitespace
 					stripAndCollapse( jQuery.text( elem ) );
@@ -10223,10 +11416,14 @@ jQuery.extend( {
 
 					// Support: IE <=9 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 					// IE8-9 doesn't update selected after form reset (#2551)
 =======
 					// IE8-9 doesn't update selected after form reset (trac-2551)
 >>>>>>> origin_second/linaLMversion
+=======
+					// IE8-9 doesn't update selected after form reset (#2551)
+>>>>>>> origin_second/لما2
 					if ( ( option.selected || i === index ) &&
 
 							// Don't return options that are disabled or in a disabled optgroup
@@ -10301,6 +11498,7 @@ jQuery.each( [ "radio", "checkbox" ], function() {
 
 // Return jQuery for attributes-only inclusion
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 support.focusin = "onfocusin" in window;
@@ -10339,6 +11537,11 @@ jQuery.parseXML = function( data ) {
 	return xml;
 };
 >>>>>>> origin_second/linaLMversion
+=======
+
+
+support.focusin = "onfocusin" in window;
+>>>>>>> origin_second/لما2
 
 
 var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
@@ -10406,12 +11609,17 @@ jQuery.extend( jQuery.event, {
 		}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Determine event propagation path in advance, per W3C events spec (#9951)
 		// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
 =======
 		// Determine event propagation path in advance, per W3C events spec (trac-9951)
 		// Bubble up to document, then to window; watch for a global ownerDocument var (trac-9724)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Determine event propagation path in advance, per W3C events spec (#9951)
+		// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
+>>>>>>> origin_second/لما2
 		if ( !onlyHandlers && !special.noBubble && !isWindow( elem ) ) {
 
 			bubbleType = special.delegateType || type;
@@ -10464,10 +11672,14 @@ jQuery.extend( jQuery.event, {
 
 				// Call a native DOM method on the target with the same name as the event.
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// Don't do default actions on window, that's where global variables be (#6170)
 =======
 				// Don't do default actions on window, that's where global variables be (trac-6170)
 >>>>>>> origin_second/linaLMversion
+=======
+				// Don't do default actions on window, that's where global variables be (#6170)
+>>>>>>> origin_second/لما2
 				if ( ontype && isFunction( elem[ type ] ) && !isWindow( elem ) ) {
 
 					// Don't re-trigger an onFOO event when we call its FOO() method
@@ -10536,6 +11748,9 @@ jQuery.fn.extend( {
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 // Support: Firefox <=44
 // Firefox doesn't have focus(in | out) events
 // Related ticket - https://bugzilla.mozilla.org/show_bug.cgi?id=687787
@@ -10615,8 +11830,11 @@ jQuery.parseXML = function( data ) {
 };
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 var
 	rbracket = /\[\]$/,
 	rCRLF = /\r?\n/g,
@@ -10745,10 +11963,14 @@ var
 	rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg,
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// #7653, #8125, #8152: local protocol detection
 =======
 	// trac-7653, trac-8125, trac-8152: local protocol detection
 >>>>>>> origin_second/linaLMversion
+=======
+	// #7653, #8125, #8152: local protocol detection
+>>>>>>> origin_second/لما2
 	rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
 	rnoContent = /^(?:GET|HEAD)$/,
 	rprotocol = /^\/\//,
@@ -10772,10 +11994,14 @@ var
 	transports = {},
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
 =======
 	// Avoid comment-prolog char sequence (trac-10098); must appease lint and evade compression
 >>>>>>> origin_second/linaLMversion
+=======
+	// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
+>>>>>>> origin_second/لما2
 	allTypes = "*/".concat( "*" ),
 
 	// Anchor tag for parsing the document origin
@@ -10847,10 +12073,14 @@ function inspectPrefiltersOrTransports( structure, options, originalOptions, jqX
 // A special extend for ajax options
 // that takes "flat" options (not to be deep extended)
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Fixes #9887
 =======
 // Fixes trac-9887
 >>>>>>> origin_second/linaLMversion
+=======
+// Fixes #9887
+>>>>>>> origin_second/لما2
 function ajaxExtend( target, src ) {
 	var key, deep,
 		flatOptions = jQuery.ajaxSettings.flatOptions || {};
@@ -11262,19 +12492,27 @@ jQuery.extend( {
 
 		// Add protocol if not provided (prefilters might expect it)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Handle falsy url in the settings object (#10093: consistency with old signature)
 =======
 		// Handle falsy url in the settings object (trac-10093: consistency with old signature)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Handle falsy url in the settings object (#10093: consistency with old signature)
+>>>>>>> origin_second/لما2
 		// We also use the url parameter if available
 		s.url = ( ( url || s.url || location.href ) + "" )
 			.replace( rprotocol, location.protocol + "//" );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Alias method option to type as per ticket #12004
 =======
 		// Alias method option to type as per ticket trac-12004
 >>>>>>> origin_second/linaLMversion
+=======
+		// Alias method option to type as per ticket #12004
+>>>>>>> origin_second/لما2
 		s.type = options.method || options.type || s.method || s.type;
 
 		// Extract dataTypes list
@@ -11318,10 +12556,14 @@ jQuery.extend( {
 
 		// We can fire global events as of now if asked to
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Don't fire events if jQuery.event is undefined in an AMD-usage scenario (#15118)
 =======
 		// Don't fire events if jQuery.event is undefined in an AMD-usage scenario (trac-15118)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Don't fire events if jQuery.event is undefined in an AMD-usage scenario (#15118)
+>>>>>>> origin_second/لما2
 		fireGlobals = jQuery.event && s.global;
 
 		// Watch for a new set of requests
@@ -11351,10 +12593,14 @@ jQuery.extend( {
 				cacheURL += ( rquery.test( cacheURL ) ? "&" : "?" ) + s.data;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// #9682: remove data so that it's not used in an eventual retry
 =======
 				// trac-9682: remove data so that it's not used in an eventual retry
 >>>>>>> origin_second/linaLMversion
+=======
+				// #9682: remove data so that it's not used in an eventual retry
+>>>>>>> origin_second/لما2
 				delete s.data;
 			}
 
@@ -11628,10 +12874,14 @@ jQuery._evalUrl = function( url, options, doc ) {
 		url: url,
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Make this explicit, since user can override this through ajaxSetup (#11264)
 =======
 		// Make this explicit, since user can override this through ajaxSetup (trac-11264)
 >>>>>>> origin_second/linaLMversion
+=======
+		// Make this explicit, since user can override this through ajaxSetup (#11264)
+>>>>>>> origin_second/لما2
 		type: "GET",
 		dataType: "script",
 		cache: true,
@@ -11741,10 +12991,14 @@ var xhrSuccessStatus = {
 
 		// Support: IE <=9 only
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// #1450: sometimes IE returns 1223 when it should be 204
 =======
 		// trac-1450: sometimes IE returns 1223 when it should be 204
 >>>>>>> origin_second/linaLMversion
+=======
+		// #1450: sometimes IE returns 1223 when it should be 204
+>>>>>>> origin_second/لما2
 		1223: 204
 	},
 	xhrSupported = jQuery.ajaxSettings.xhr();
@@ -11817,10 +13071,14 @@ jQuery.ajaxTransport( function( options ) {
 									complete(
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 										// File: protocol always yields status 0; see #8605, #14207
 =======
 										// File: protocol always yields status 0; see trac-8605, trac-14207
 >>>>>>> origin_second/linaLMversion
+=======
+										// File: protocol always yields status 0; see #8605, #14207
+>>>>>>> origin_second/لما2
 										xhr.status,
 										xhr.statusText
 									);
@@ -11882,10 +13140,14 @@ jQuery.ajaxTransport( function( options ) {
 				} catch ( e ) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 					// #14683: Only rethrow if this hasn't been notified as an error yet
 =======
 					// trac-14683: Only rethrow if this hasn't been notified as an error yet
 >>>>>>> origin_second/linaLMversion
+=======
+					// #14683: Only rethrow if this hasn't been notified as an error yet
+>>>>>>> origin_second/لما2
 					if ( callback ) {
 						throw e;
 					}
@@ -12506,12 +13768,16 @@ jQuery.fn.extend( {
 
 	hover: function( fnOver, fnOut ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
 =======
 		return this
 			.on( "mouseenter", fnOver )
 			.on( "mouseleave", fnOut || fnOver );
 >>>>>>> origin_second/linaLMversion
+=======
+		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
+>>>>>>> origin_second/لما2
 	}
 } );
 
@@ -12536,12 +13802,16 @@ jQuery.each(
 // Support: Android <=4.0 only
 // Make sure we trim BOM and NBSP
 <<<<<<< HEAD
+<<<<<<< HEAD
 var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 =======
 // Require that the "whitespace run" starts from a non-whitespace
 // to avoid O(N^2) behavior when the engine would try matching "\s+$" at each space position.
 var rtrim = /^[\s\uFEFF\xA0]+|([^\s\uFEFF\xA0])[\s\uFEFF\xA0]+$/g;
 >>>>>>> origin_second/linaLMversion
+=======
+var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+>>>>>>> origin_second/لما2
 
 // Bind a function to a context, optionally partially applying any
 // arguments.
@@ -12609,10 +13879,14 @@ jQuery.trim = function( text ) {
 	return text == null ?
 		"" :
 <<<<<<< HEAD
+<<<<<<< HEAD
 		( text + "" ).replace( rtrim, "" );
 =======
 		( text + "" ).replace( rtrim, "$1" );
 >>>>>>> origin_second/linaLMversion
+=======
+		( text + "" ).replace( rtrim, "" );
+>>>>>>> origin_second/لما2
 };
 
 
@@ -12661,12 +13935,17 @@ jQuery.noConflict = function( deep ) {
 
 // Expose jQuery and $ identifiers, even in AMD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
 // and CommonJS for browser emulators (#13566)
 =======
 // (trac-7102#comment:10, https://github.com/jquery/jquery/pull/557)
 // and CommonJS for browser emulators (trac-13566)
 >>>>>>> origin_second/linaLMversion
+=======
+// (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
+// and CommonJS for browser emulators (#13566)
+>>>>>>> origin_second/لما2
 if ( typeof noGlobal === "undefined" ) {
 	window.jQuery = window.$ = jQuery;
 }

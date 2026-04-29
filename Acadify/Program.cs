@@ -1,5 +1,8 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 ﻿using Acadify.Models;
 using Acadify.Services.AcademicCalendar;
 using Acadify.Services.AcademicCalendar.Interfaces;
@@ -7,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 =======
 using Acadify.Models.Db;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +42,19 @@ using Acadify.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC
+=======
+>>>>>>> origin_second/لما2
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Session
 builder.Services.AddDistributedMemoryCache();
@@ -91,6 +107,7 @@ builder.Services.AddDbContext<AcadifyDbContext>(options =>
         }));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 builder.Services.AddScoped<OpenAiVisionClient>();
 builder.Services.AddScoped<IAcademicCalendarAiExtractor, AcademicCalendarFixedExtractor>();
 =======
@@ -99,6 +116,12 @@ builder.Services.AddHttpClient<AiSummaryService>();
 
 
 >>>>>>> origin_second/linaLMversion
+=======
+builder.Services.AddScoped<IPdfOcrService, PdfOcrService>();
+builder.Services.AddScoped<IPdfTextExtractor, PdfPigTextExtractor>();
+builder.Services.AddScoped<OpenAiVisionClient>();
+builder.Services.AddScoped<IAcademicCalendarAiExtractor, AcademicCalendarAiExtractor>();
+>>>>>>> origin_second/لما2
 
 var app = builder.Build();
 
@@ -110,6 +133,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+<<<<<<< HEAD
 
 app.UseRouting();
 <<<<<<< HEAD
@@ -129,10 +153,15 @@ app.Run();
 
 >>>>>>> origin_second/rahafgh
 =======
+=======
+
+app.UseRouting();
+>>>>>>> origin_second/لما2
 
 app.UseSession();
 
 app.UseAuthorization();
+<<<<<<< HEAD
 
 
 app.MapControllerRoute(
@@ -143,3 +172,11 @@ app.MapControllerRoute(
 
 app.Run();
 >>>>>>> origin_second/linaLMversion
+=======
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}/{id?}");
+
+app.Run();
+>>>>>>> origin_second/لما2

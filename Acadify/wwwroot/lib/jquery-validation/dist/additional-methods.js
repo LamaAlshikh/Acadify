@@ -1,5 +1,6 @@
 /*!
 <<<<<<< HEAD
+<<<<<<< HEAD
  * jQuery Validation Plugin v1.19.5
  *
  * https://jqueryvalidation.org/
@@ -12,6 +13,13 @@
  *
  * Copyright (c) 2024 Jörn Zaefferer
 >>>>>>> origin_second/linaLMversion
+=======
+ * jQuery Validation Plugin v1.19.5
+ *
+ * https://jqueryvalidation.org/
+ *
+ * Copyright (c) 2022 Jörn Zaefferer
+>>>>>>> origin_second/لما2
  * Released under the MIT license
  */
 (function( factory ) {
@@ -1468,6 +1476,7 @@ $.validator.addMethod( "url2", function( value, element ) {
  */
 $.validator.addMethod( "vinUS", function( v ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if ( v.length !== 17 ) {
 		return false;
 	}
@@ -1512,13 +1521,19 @@ $.validator.addMethod( "vinUS", function( v ) {
     if ( v.length !== 17 ) {
         return false;
     }
+=======
+	if ( v.length !== 17 ) {
+		return false;
+	}
+>>>>>>> origin_second/لما2
 
-    var LL = [ "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" ],
-        VL = [ 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 7, 9, 2, 3, 4, 5, 6, 7, 8, 9 ],
-        FL = [ 8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2 ],
-        rs = 0,
-        i, n, d, f, cd, cdv;
+	var LL = [ "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" ],
+		VL = [ 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 7, 9, 2, 3, 4, 5, 6, 7, 8, 9 ],
+		FL = [ 8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2 ],
+		rs = 0,
+		i, n, d, f, cd, cdv;
 
+<<<<<<< HEAD
     for ( i = 0; i < 17; i++ ) {
         f = FL[ i ];
         d = v.slice( i, i + 1 );
@@ -1543,6 +1558,38 @@ $.validator.addMethod( "vinUS", function( v ) {
     }
     return false;
 >>>>>>> origin_second/linaLMversion
+=======
+	for ( i = 0; i < 17; i++ ) {
+		f = FL[ i ];
+		d = v.slice( i, i + 1 );
+		if ( i === 8 ) {
+			cdv = d;
+		}
+		if ( !isNaN( d ) ) {
+			d *= f;
+		} else {
+			for ( n = 0; n < LL.length; n++ ) {
+				if ( d.toUpperCase() === LL[ n ] ) {
+					d = VL[ n ];
+					d *= f;
+					if ( isNaN( cdv ) && n === 8 ) {
+						cdv = LL[ n ];
+					}
+					break;
+				}
+			}
+		}
+		rs += d;
+	}
+	cd = rs % 11;
+	if ( cd === 10 ) {
+		cd = "X";
+	}
+	if ( cd === cdv ) {
+		return true;
+	}
+	return false;
+>>>>>>> origin_second/لما2
 }, "The specified vehicle identification number (VIN) is invalid." );
 
 $.validator.addMethod( "zipcodeUS", function( value, element ) {

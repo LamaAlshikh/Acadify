@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +12,7 @@ namespace Acadify.Models;
 
 [Table("GraduationProjectEligibilityForm")]
 public partial class GraduationProjectEligibilityForm
+<<<<<<< HEAD
 {
     [Key]
     [Column("formID")]
@@ -27,19 +31,22 @@ public partial class GraduationProjectEligibilityForm
     public virtual Form Form { get; set; } = null!;
 =======
 ﻿namespace Acadify.Models
+=======
+>>>>>>> origin_second/لما2
 {
-    public class GraduationProjectEligibilityForm
-    {
-        public int FormId { get; set; }
+    [Key]
+    [Column("formID")]
+    public int FormId { get; set; }
 
-        public string StudentName { get; set; }
-        public string StudentId { get; set; }
+    [Column("eligibility")]
+    [StringLength(50)]
+    public string? Eligibility { get; set; }
 
-        // المواد المكتملة
-        public bool CPIS351 { get; set; }
-        public bool CPIS358 { get; set; }
-        public bool CPIS323 { get; set; }
+    [Column("requiredCoursesStatus")]
+    [StringLength(200)]
+    public string? RequiredCoursesStatus { get; set; }
 
+<<<<<<< HEAD
         // المواد المسجلة أو المتوقعة
         public bool CPIS360 { get; set; }
         public bool CPIS375 { get; set; }
@@ -53,4 +60,9 @@ public partial class GraduationProjectEligibilityForm
         public DateTime CreatedDate { get; set; }
     }
 >>>>>>> origin_second/linaLMversion
+=======
+    [ForeignKey("FormId")]
+    [InverseProperty("GraduationProjectEligibilityForm")]
+    public virtual Form Form { get; set; } = null!;
+>>>>>>> origin_second/لما2
 }

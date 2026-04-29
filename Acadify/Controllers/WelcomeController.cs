@@ -11,10 +11,14 @@ public class WelcomeController : Controller
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
  
 >>>>>>> origin_second/linaLMversion
+=======
+
+>>>>>>> origin_second/لما2
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

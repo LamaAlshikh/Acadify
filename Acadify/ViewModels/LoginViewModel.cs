@@ -4,12 +4,13 @@ namespace Acadify.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Please enter your email.")]
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please enter your password.")]
-        [DataType(DataType.Password)]
+        [Required]
         public string Password { get; set; } = string.Empty;
+
+        public string? Role { get; set; }
     }
 }

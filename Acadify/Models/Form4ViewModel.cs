@@ -4,6 +4,9 @@
     {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
         // ======================
         // Header (البيانات الأساسية)
         // ======================
@@ -35,6 +38,7 @@
         // ======================
         // Notes (ملحوظات إن وجدت)
         // ======================
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin_second/linaLMversion
@@ -57,6 +61,8 @@
 >>>>>>> origin_second/rahafgh
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
         public string Note1 { get; set; } = "";
         public string Note2 { get; set; } = "";
         public string Note3 { get; set; } = "";
@@ -64,6 +70,9 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
         // ======================
         // Advisor Footer
         // ======================
@@ -75,6 +84,7 @@
         // Workflow
         // ======================
         public string Status { get; set; } = "Draft"; // Draft / Sent
+<<<<<<< HEAD
 =======
         public string AdvisorNameLabel { get; set; } = "المرشدة الأكاديمية للطالبة";
         public string AdvisorName { get; set; } = "";
@@ -90,5 +100,8 @@
         public List<Form4CourseDecisionItemVM> PendingCourses { get; set; } = new();
         public List<PlanCourseOptionVM> PlanCourseOptions { get; set; } = new();
 >>>>>>> origin_second/linaLMversion
+=======
+        public string AdvisorNotes { get; set; } = "";
+>>>>>>> origin_second/لما2
     }
 }

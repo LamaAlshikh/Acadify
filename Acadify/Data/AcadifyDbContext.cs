@@ -74,15 +74,20 @@ public partial class AcadifyDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
 <<<<<<< HEAD
+<<<<<<< HEAD
         => optionsBuilder.UseSqlServer("Server=DESKTOP-6CDP97K;Database=AcadifySeniorProject;Trusted_Connection=True;TrustServerCertificate=True");
 =======
         => optionsBuilder.UseSqlServer("Server=RAHAF\\MSSQLSERVER01;Database=AcadifySeniorProject;Trusted_Connection=True;TrustServerCertificate=True;");
 >>>>>>> origin_second/rahafgh
+=======
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-6CDP97K;Database=AcadifySeniorProject;Trusted_Connection=True;TrustServerCertificate=True");
+>>>>>>> origin_second/لما2
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AcademicAdvisingConfirmationForm>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.FormId).HasName("PK__Academic__51BCB7CB6E5C6130");
 
@@ -107,15 +112,39 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_AACF_Forms");
 =======
             entity.HasKey(e => e.FormId).HasName("PK__Academic__51BCB7CB2E2C4B2B");
+=======
+            entity.HasKey(e => e.FormId).HasName("PK__Academic__51BCB7CB6E5C6130");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.FormId).ValueGeneratedNever();
+            entity.ToTable("AcademicAdvisingConfirmationForm");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Form).WithOne(p => p.AcademicAdvisingConfirmationForm).HasConstraintName("FK_AACF_Forms");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.Property(e => e.FormId)
+                .ValueGeneratedNever()
+                .HasColumnName("formID");
+            entity.Property(e => e.CoursesCount).HasColumnName("coursesCount");
+            entity.Property(e => e.CurrentGpa)
+                .HasColumnType("decimal(4, 2)")
+                .HasColumnName("currentGPA");
+            entity.Property(e => e.StudentLevel)
+                .HasMaxLength(50)
+                .HasColumnName("studentLevel");
+            entity.Property(e => e.StudentName)
+                .HasMaxLength(120)
+                .HasColumnName("studentName");
+
+            entity.HasOne(d => d.Form).WithOne(p => p.AcademicAdvisingConfirmationForm)
+                .HasForeignKey<AcademicAdvisingConfirmationForm>(d => d.FormId)
+                .HasConstraintName("FK_AACF_Forms");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<AcademicCalendar>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.CalendarId).HasName("PK__Academic__EE5496D6FF4451B8");
 
@@ -133,10 +162,24 @@ public partial class AcadifyDbContext : DbContext
 
             entity.Property(e => e.UploadedAt).HasDefaultValueSql("(sysdatetime())");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasKey(e => e.CalendarId).HasName("PK__Academic__EE5496D6FF4451B8");
+
+            entity.ToTable("AcademicCalendar");
+
+            entity.Property(e => e.CalendarId).HasColumnName("calendarID");
+            entity.Property(e => e.PdfFile)
+                .HasMaxLength(255)
+                .HasColumnName("pdfFile");
+            entity.Property(e => e.UploadedAt)
+                .HasDefaultValueSql("(sysdatetime())")
+                .HasColumnName("uploadedAt");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Advisor>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.AdvisorId).HasName("PK__Advisor__D0081275C928F858");
 
@@ -154,16 +197,35 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_Advisor_User");
 =======
             entity.HasKey(e => e.AdvisorId).HasName("PK__Advisor__D008127564E6E11D");
+=======
+            entity.HasKey(e => e.AdvisorId).HasName("PK__Advisor__D0081275C928F858");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.AdvisorId).ValueGeneratedNever();
+            entity.ToTable("Advisor");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.AdvisorNavigation).WithOne(p => p.Advisor).HasConstraintName("FK_Advisor_User");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.Property(e => e.AdvisorId)
+                .ValueGeneratedNever()
+                .HasColumnName("advisorID");
+            entity.Property(e => e.Department)
+                .HasMaxLength(120)
+                .HasColumnName("department");
+
+            entity.HasOne(d => d.AdvisorNavigation).WithOne(p => p.Advisor)
+                .HasForeignKey<Advisor>(d => d.AdvisorId)
+                .HasConstraintName("FK_Advisor_User");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Community>(entity =>
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity.HasKey(e => e.CommunityId).HasName("PK__Communit__938137AD008A3538");
 
             entity.ToTable("Community");
@@ -172,13 +234,17 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.CommunityName)
                 .HasMaxLength(100)
                 .HasColumnName("communityName");
+<<<<<<< HEAD
 =======
             entity.HasKey(e => e.CommunityId).HasName("PK__Communit__938137ADBFBCD4A5");
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<CommunityMessage>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.MessageId).HasName("PK__Communit__4808B8739E5C70DA");
 
@@ -197,16 +263,36 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_CommunityMessages_Community");
 =======
             entity.HasKey(e => e.MessageId).HasName("PK__Communit__4808B8731CCA025A");
+=======
+            entity.HasKey(e => e.MessageId).HasName("PK__Communit__4808B8739E5C70DA");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.MessageDate).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.MessageId).HasColumnName("messageID");
+            entity.Property(e => e.CommunityId).HasColumnName("communityID");
+            entity.Property(e => e.MessageDate)
+                .HasDefaultValueSql("(sysdatetime())")
+                .HasColumnName("messageDate");
+            entity.Property(e => e.MessageText).HasColumnName("messageText");
+            entity.Property(e => e.SenderName)
+                .HasMaxLength(120)
+                .HasColumnName("senderName");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Community).WithMany(p => p.CommunityMessages).HasConstraintName("FK_CommunityMessages_Community");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasOne(d => d.Community).WithMany(p => p.CommunityMessages)
+                .HasForeignKey(d => d.CommunityId)
+                .HasConstraintName("FK_CommunityMessages_Community");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Course>(entity =>
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity.HasKey(e => e.CourseId).HasName("PK__Course__2AA84FF1031AEAD5");
 
             entity.ToTable("Course");
@@ -222,13 +308,17 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.Prerequisite)
                 .HasMaxLength(200)
                 .HasColumnName("prerequisite");
+<<<<<<< HEAD
 =======
             entity.HasKey(e => e.CourseId).HasName("PK__Course__2AA84FF1642011F3");
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Form>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.FormId).HasName("PK__Forms__51BCB7CB99F24B2A");
 
@@ -262,20 +352,48 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_Forms_Student");
 =======
             entity.HasKey(e => e.FormId).HasName("PK__Forms__51BCB7CB3905F799");
+=======
+            entity.HasKey(e => e.FormId).HasName("PK__Forms__51BCB7CB99F24B2A");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.FormDate).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.FormStatus).HasDefaultValue("Pending");
+            entity.HasIndex(e => e.AdvisorId, "IX_Forms_AdvisorID");
+
+            entity.HasIndex(e => e.StudentId, "IX_Forms_StudentID");
+
+            entity.Property(e => e.FormId).HasColumnName("formID");
+            entity.Property(e => e.AdvisorId).HasColumnName("advisorID");
+            entity.Property(e => e.AdvisorNotes).HasColumnName("advisorNotes");
+            entity.Property(e => e.AutoFilled).HasColumnName("autoFilled");
+            entity.Property(e => e.FormDate)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("formDate");
+            entity.Property(e => e.FormStatus)
+                .HasMaxLength(60)
+                .HasDefaultValue("Pending")
+                .HasColumnName("formStatus");
+            entity.Property(e => e.FormType)
+                .HasMaxLength(80)
+                .HasColumnName("formType");
+            entity.Property(e => e.StudentId).HasColumnName("studentID");
 
             entity.HasOne(d => d.Advisor).WithMany(p => p.Forms)
+                .HasForeignKey(d => d.AdvisorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Forms_Advisor");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Student).WithMany(p => p.Forms).HasConstraintName("FK_Forms_Student");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasOne(d => d.Student).WithMany(p => p.Forms)
+                .HasForeignKey(d => d.StudentId)
+                .HasConstraintName("FK_Forms_Student");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<GraduationProjectEligibilityForm>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.FormId).HasName("PK__Graduati__51BCB7CB3D2DDA25");
 
@@ -296,15 +414,35 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_GPEF_Forms");
 =======
             entity.HasKey(e => e.FormId).HasName("PK__Graduati__51BCB7CBE8E55720");
+=======
+            entity.HasKey(e => e.FormId).HasName("PK__Graduati__51BCB7CB3D2DDA25");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.FormId).ValueGeneratedNever();
+            entity.ToTable("GraduationProjectEligibilityForm");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Form).WithOne(p => p.GraduationProjectEligibilityForm).HasConstraintName("FK_GPEF_Forms");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.Property(e => e.FormId)
+                .ValueGeneratedNever()
+                .HasColumnName("formID");
+            entity.Property(e => e.Eligibility)
+                .HasMaxLength(50)
+                .HasColumnName("eligibility");
+            entity.Property(e => e.RequiredCoursesStatus)
+                .HasMaxLength(200)
+                .HasColumnName("requiredCoursesStatus");
+
+            entity.HasOne(d => d.Form).WithOne(p => p.GraduationProjectEligibilityForm)
+                .HasForeignKey<GraduationProjectEligibilityForm>(d => d.FormId)
+                .HasConstraintName("FK_GPEF_Forms");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<GraduationStatus>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.StatusId).HasName("PK__Graduati__36257A38301E1DDF");
 
@@ -327,10 +465,29 @@ public partial class AcadifyDbContext : DbContext
 
             entity.HasOne(d => d.Student).WithOne(p => p.GraduationStatus).HasConstraintName("FK_GradStatus_Student");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasKey(e => e.StatusId).HasName("PK__Graduati__36257A38301E1DDF");
+
+            entity.ToTable("GraduationStatus");
+
+            entity.HasIndex(e => e.StudentId, "UQ__Graduati__4D11D65DC07B0AB5").IsUnique();
+
+            entity.Property(e => e.StatusId).HasColumnName("statusID");
+            entity.Property(e => e.RemainingHours).HasColumnName("remainingHours");
+            entity.Property(e => e.Status)
+                .HasMaxLength(80)
+                .HasColumnName("status");
+            entity.Property(e => e.StudentId).HasColumnName("studentID");
+
+            entity.HasOne(d => d.Student).WithOne(p => p.GraduationStatus)
+                .HasForeignKey<GraduationStatus>(d => d.StudentId)
+                .HasConstraintName("FK_GradStatus_Student");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<MatchingStatus>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.StatusId).HasName("PK__Matching__36257A389C0573CC");
 
@@ -352,11 +509,31 @@ public partial class AcadifyDbContext : DbContext
 
             entity.HasOne(d => d.Student).WithOne(p => p.MatchingStatus).HasConstraintName("FK_MatchStatus_Student");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasKey(e => e.StatusId).HasName("PK__Matching__36257A389C0573CC");
+
+            entity.ToTable("MatchingStatus");
+
+            entity.HasIndex(e => e.StudentId, "UQ__Matching__4D11D65D0EC0C3AD").IsUnique();
+
+            entity.Property(e => e.StatusId).HasColumnName("statusID");
+            entity.Property(e => e.Status)
+                .HasMaxLength(80)
+                .HasColumnName("status");
+            entity.Property(e => e.StudentId).HasColumnName("studentID");
+
+            entity.HasOne(d => d.Student).WithOne(p => p.MatchingStatus)
+                .HasForeignKey<MatchingStatus>(d => d.StudentId)
+                .HasConstraintName("FK_MatchStatus_Student");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Meeting>(entity =>
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__5C5E6E64052350D3");
 
             entity.ToTable("Meeting");
@@ -367,6 +544,7 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.EndTime).HasColumnName("endTime");
             entity.Property(e => e.StartTime).HasColumnName("startTime");
             entity.Property(e => e.StudentId).HasColumnName("studentID");
+<<<<<<< HEAD
 
             entity.HasOne(d => d.Advisor).WithMany(p => p.Meetings)
                 .HasForeignKey(d => d.AdvisorId)
@@ -378,17 +556,27 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_Meeting_Student");
 =======
             entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__5C5E6E64C972D919");
+=======
+>>>>>>> origin_second/لما2
 
             entity.HasOne(d => d.Advisor).WithMany(p => p.Meetings)
+                .HasForeignKey(d => d.AdvisorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Meeting_Advisor");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Student).WithMany(p => p.Meetings).HasConstraintName("FK_Meeting_Student");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasOne(d => d.Student).WithMany(p => p.Meetings)
+                .HasForeignKey(d => d.StudentId)
+                .HasConstraintName("FK_Meeting_Student");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<MeetingForm>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.FormId).HasName("PK__MeetingF__51BCB7CB180238FB");
 
@@ -417,15 +605,43 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_MeetingForm_Forms");
 =======
             entity.HasKey(e => e.FormId).HasName("PK__MeetingF__51BCB7CB63440374");
+=======
+            entity.HasKey(e => e.FormId).HasName("PK__MeetingF__51BCB7CB180238FB");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.FormId).ValueGeneratedNever();
+            entity.ToTable("MeetingForm");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Form).WithOne(p => p.MeetingForm).HasConstraintName("FK_MeetingForm_Forms");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.Property(e => e.FormId)
+                .ValueGeneratedNever()
+                .HasColumnName("formID");
+            entity.Property(e => e.AdvisorActions).HasColumnName("advisorActions");
+            entity.Property(e => e.MeetingEnd).HasColumnName("meetingEnd");
+            entity.Property(e => e.MeetingNotes).HasColumnName("meetingNotes");
+            entity.Property(e => e.MeetingPurpose)
+                .HasMaxLength(200)
+                .HasColumnName("meetingPurpose");
+            entity.Property(e => e.MeetingStart).HasColumnName("meetingStart");
+            entity.Property(e => e.ReferralReason)
+                .HasMaxLength(200)
+                .HasColumnName("referralReason");
+            entity.Property(e => e.ReferredTo)
+                .HasMaxLength(200)
+                .HasColumnName("referredTo");
+            entity.Property(e => e.StudentActions).HasColumnName("studentActions");
+
+            entity.HasOne(d => d.Form).WithOne(p => p.MeetingForm)
+                .HasForeignKey<MeetingForm>(d => d.FormId)
+                .HasConstraintName("FK_MeetingForm_Forms");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<MeetingMessage>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.MessageId).HasName("PK__MeetingM__4808B87309EDB2AA");
 
@@ -443,10 +659,24 @@ public partial class AcadifyDbContext : DbContext
 
             entity.Property(e => e.MessageDate).HasDefaultValueSql("(sysdatetime())");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasKey(e => e.MessageId).HasName("PK__MeetingM__4808B87309EDB2AA");
+
+            entity.Property(e => e.MessageId).HasColumnName("messageID");
+            entity.Property(e => e.MeetingId).HasColumnName("meetingID");
+            entity.Property(e => e.MessageDate)
+                .HasDefaultValueSql("(sysdatetime())")
+                .HasColumnName("messageDate");
+            entity.Property(e => e.MessageText).HasColumnName("messageText");
+            entity.Property(e => e.SenderName)
+                .HasMaxLength(120)
+                .HasColumnName("senderName");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<NextSemesterCourseSelectionForm>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.FormId).HasName("PK__NextSeme__51BCB7CB9E364679");
 
@@ -472,15 +702,40 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_NSCSF_Forms");
 =======
             entity.HasKey(e => e.FormId).HasName("PK__NextSeme__51BCB7CB94209A68");
+=======
+            entity.HasKey(e => e.FormId).HasName("PK__NextSeme__51BCB7CB9E364679");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.FormId).ValueGeneratedNever();
+            entity.ToTable("NextSemesterCourseSelectionForm");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Form).WithOne(p => p.NextSemesterCourseSelectionForm).HasConstraintName("FK_NSCSF_Forms");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.Property(e => e.FormId)
+                .ValueGeneratedNever()
+                .HasColumnName("formID");
+            entity.Property(e => e.GpaChange)
+                .HasMaxLength(50)
+                .HasColumnName("gpaChange");
+            entity.Property(e => e.PrerequisiteViolation)
+                .HasMaxLength(200)
+                .HasColumnName("prerequisiteViolation");
+            entity.Property(e => e.RecommendedCourses).HasColumnName("recommendedCourses");
+            entity.Property(e => e.RecommendedHours).HasColumnName("recommendedHours");
+            entity.Property(e => e.TrackChoice)
+                .HasMaxLength(120)
+                .HasColumnName("trackChoice");
+
+            entity.HasOne(d => d.Form).WithOne(p => p.NextSemesterCourseSelectionForm)
+                .HasForeignKey<NextSemesterCourseSelectionForm>(d => d.FormId)
+                .HasConstraintName("FK_NSCSF_Forms");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__4BA5CE894A5EA9FB");
 
@@ -507,19 +762,42 @@ public partial class AcadifyDbContext : DbContext
                 .HasForeignKey(d => d.StudentId)
 =======
             entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__4BA5CE89769D8B41");
+=======
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__4BA5CE894A5EA9FB");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.Date).HasDefaultValueSql("(sysutcdatetime())");
+            entity.ToTable("Notification");
 
-            entity.HasOne(d => d.Advisor).WithMany(p => p.Notifications).HasConstraintName("FK_Notif_Advisor");
+            entity.HasIndex(e => e.StudentId, "IX_Notif_StudentID");
+
+            entity.Property(e => e.NotificationId).HasColumnName("notificationID");
+            entity.Property(e => e.AdvisorId).HasColumnName("advisorID");
+            entity.Property(e => e.Date)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("date");
+            entity.Property(e => e.Message).HasColumnName("message");
+            entity.Property(e => e.StudentId).HasColumnName("studentID");
+            entity.Property(e => e.Type)
+                .HasMaxLength(60)
+                .HasColumnName("type");
+
+            entity.HasOne(d => d.Advisor).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.AdvisorId)
+                .HasConstraintName("FK_Notif_Advisor");
 
             entity.HasOne(d => d.Student).WithMany(p => p.Notifications)
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+                .HasForeignKey(d => d.StudentId)
+>>>>>>> origin_second/لما2
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Notif_Student");
         });
 
         modelBuilder.Entity<Student>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.StudentId).HasName("PK__Student__4D11D65C5268B985");
 
@@ -545,11 +823,34 @@ public partial class AcadifyDbContext : DbContext
                 .HasForeignKey(d => d.AdvisorId)
 =======
             entity.HasKey(e => e.StudentId).HasName("PK__Student__4D11D65CB9252DAC");
+=======
+            entity.HasKey(e => e.StudentId).HasName("PK__Student__4D11D65C5268B985");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.StudentId).ValueGeneratedNever();
+            entity.ToTable("Student");
+
+            entity.HasIndex(e => e.AdvisorId, "IX_Student_AdvisorID");
+
+            entity.Property(e => e.StudentId)
+                .ValueGeneratedNever()
+                .HasColumnName("studentID");
+            entity.Property(e => e.AdvisorId).HasColumnName("advisorID");
+            entity.Property(e => e.CohortYear).HasColumnName("cohortYear");
+            entity.Property(e => e.CompletedHours).HasColumnName("completedHours");
+            entity.Property(e => e.Level)
+                .HasMaxLength(50)
+                .HasColumnName("level");
+            entity.Property(e => e.Major)
+                .HasMaxLength(120)
+                .HasColumnName("major");
+            entity.Property(e => e.Name).HasMaxLength(120);
 
             entity.HasOne(d => d.Advisor).WithMany(p => p.Students)
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+                .HasForeignKey(d => d.AdvisorId)
+>>>>>>> origin_second/لما2
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Student_Advisor");
         });
@@ -557,6 +858,9 @@ public partial class AcadifyDbContext : DbContext
         modelBuilder.Entity<StudyPlan>(entity =>
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity.HasKey(e => e.PlanId).HasName("PK__StudyPla__A2942D18F1FD0385");
 
             entity.ToTable("StudyPlan");
@@ -569,9 +873,12 @@ public partial class AcadifyDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("pdfFile");
             entity.Property(e => e.TotalHours).HasColumnName("totalHours");
+<<<<<<< HEAD
 =======
             entity.HasKey(e => e.PlanId).HasName("PK__StudyPla__A2942D189C87A415");
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/لما2
 
             entity.HasMany(d => d.Courses).WithMany(p => p.Plans)
                 .UsingEntity<Dictionary<string, object>>(
@@ -586,10 +893,14 @@ public partial class AcadifyDbContext : DbContext
                     j =>
                     {
 <<<<<<< HEAD
+<<<<<<< HEAD
                         j.HasKey("PlanId", "CourseId").HasName("PK__StudyPla__A03EA9E751641F9F");
 =======
                         j.HasKey("PlanId", "CourseId").HasName("PK__StudyPla__A03EA9E7CBDDBF21");
 >>>>>>> origin_second/rahafgh
+=======
+                        j.HasKey("PlanId", "CourseId").HasName("PK__StudyPla__A03EA9E751641F9F");
+>>>>>>> origin_second/لما2
                         j.ToTable("StudyPlanCourse");
                         j.IndexerProperty<int>("PlanId").HasColumnName("planID");
                         j.IndexerProperty<string>("CourseId")
@@ -600,6 +911,7 @@ public partial class AcadifyDbContext : DbContext
 
         modelBuilder.Entity<StudyPlanMatchingForm>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.FormId).HasName("PK__StudyPla__51BCB7CBB34A7238");
 
@@ -621,15 +933,36 @@ public partial class AcadifyDbContext : DbContext
                 .HasConstraintName("FK_SPMF_Forms");
 =======
             entity.HasKey(e => e.FormId).HasName("PK__StudyPla__51BCB7CB9BBAF066");
+=======
+            entity.HasKey(e => e.FormId).HasName("PK__StudyPla__51BCB7CBB34A7238");
+>>>>>>> origin_second/لما2
 
-            entity.Property(e => e.FormId).ValueGeneratedNever();
+            entity.ToTable("StudyPlanMatchingForm");
 
+<<<<<<< HEAD
             entity.HasOne(d => d.Form).WithOne(p => p.StudyPlanMatchingForm).HasConstraintName("FK_SPMF_Forms");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.Property(e => e.FormId)
+                .ValueGeneratedNever()
+                .HasColumnName("formID");
+            entity.Property(e => e.EarnedHours).HasColumnName("earnedHours");
+            entity.Property(e => e.GraduationStatus)
+                .HasMaxLength(80)
+                .HasColumnName("graduationStatus");
+            entity.Property(e => e.RegisteredHours).HasColumnName("registeredHours");
+            entity.Property(e => e.RemainingHours).HasColumnName("remainingHours");
+            entity.Property(e => e.RequiredHours).HasColumnName("requiredHours");
+
+            entity.HasOne(d => d.Form).WithOne(p => p.StudyPlanMatchingForm)
+                .HasForeignKey<StudyPlanMatchingForm>(d => d.FormId)
+                .HasConstraintName("FK_SPMF_Forms");
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<Transcript>(entity =>
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             entity.HasKey(e => e.TranscriptId).HasName("PK__Transcri__DF577D86B0C5F5A3");
 
@@ -659,6 +992,31 @@ public partial class AcadifyDbContext : DbContext
 
             entity.HasOne(d => d.Student).WithOne(p => p.Transcript).HasConstraintName("FK_Transcript_Student");
 >>>>>>> origin_second/rahafgh
+=======
+            entity.HasKey(e => e.TranscriptId).HasName("PK__Transcri__DF577D86B0C5F5A3");
+
+            entity.ToTable("Transcript");
+
+            entity.HasIndex(e => e.StudentId, "UQ__Transcri__4D11D65D923B0AED").IsUnique();
+
+            entity.Property(e => e.TranscriptId).HasColumnName("transcriptID");
+            entity.Property(e => e.ExtractedCourses).HasColumnName("extractedCourses");
+            entity.Property(e => e.ExtractedInfo).HasColumnName("extractedInfo");
+            entity.Property(e => e.Gpa)
+                .HasColumnType("decimal(4, 2)")
+                .HasColumnName("GPA");
+            entity.Property(e => e.PdfFile)
+                .HasMaxLength(300)
+                .HasColumnName("pdfFile");
+            entity.Property(e => e.SemesterGpa)
+                .HasColumnType("decimal(4, 2)")
+                .HasColumnName("semesterGPA");
+            entity.Property(e => e.StudentId).HasColumnName("studentID");
+
+            entity.HasOne(d => d.Student).WithOne(p => p.Transcript)
+                .HasForeignKey<Transcript>(d => d.StudentId)
+                .HasConstraintName("FK_Transcript_Student");
+>>>>>>> origin_second/لما2
 
             entity.HasMany(d => d.Courses).WithMany(p => p.Transcripts)
                 .UsingEntity<Dictionary<string, object>>(
@@ -673,10 +1031,14 @@ public partial class AcadifyDbContext : DbContext
                     j =>
                     {
 <<<<<<< HEAD
+<<<<<<< HEAD
                         j.HasKey("TranscriptId", "CourseId").HasName("PK__Transcri__DDFDF97953D4FFD7");
 =======
                         j.HasKey("TranscriptId", "CourseId").HasName("PK__Transcri__DDFDF979D8CBC99C");
 >>>>>>> origin_second/rahafgh
+=======
+                        j.HasKey("TranscriptId", "CourseId").HasName("PK__Transcri__DDFDF97953D4FFD7");
+>>>>>>> origin_second/لما2
                         j.ToTable("TranscriptCourse");
                         j.IndexerProperty<int>("TranscriptId").HasColumnName("transcriptID");
                         j.IndexerProperty<string>("CourseId")
@@ -688,6 +1050,9 @@ public partial class AcadifyDbContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity.HasKey(e => e.UserId).HasName("PK__User__CB9A1CDF08544AC2");
 
             entity.ToTable("User");
@@ -702,14 +1067,20 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .HasColumnName("password");
+<<<<<<< HEAD
 =======
             entity.HasKey(e => e.UserId).HasName("PK__User__CB9A1CDF22B76839");
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/لما2
         });
 
         modelBuilder.Entity<VwMyStudent>(entity =>
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/لما2
             entity
                 .HasNoKey()
                 .ToView("vw_MyStudents");
@@ -726,9 +1097,12 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.StudentName)
                 .HasMaxLength(120)
                 .HasColumnName("studentName");
+<<<<<<< HEAD
 =======
             entity.ToView("vw_MyStudents");
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/لما2
         });
 
         OnModelCreatingPartial(modelBuilder);

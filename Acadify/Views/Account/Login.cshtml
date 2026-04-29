@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"]</title>
 
-    <!-- ✅ هنا مكان الربط -->
     <link rel="stylesheet" href="~/css/login.css" />
 </head>
 <body>
@@ -27,13 +26,29 @@
 
                 <div class="title">login to <span>your account</span></div>
 
-                <form class="form" asp-action="Login" method="post">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div style="color:green; margin-bottom:10px; text-align:center;">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+
+                <form class="form" asp-action="Login" asp-controller="Account" method="post">
                     @Html.AntiForgeryToken()
 
-                    <input class="input" asp-for="Email" placeholder="Email" />
+                    <input class="input" asp-for="Email" type="email" placeholder="Email" id="loginEmailInput" />
                     <span asp-validation-for="Email" class="text-danger"></span>
 
-                    <input class="input" asp-for="Password" placeholder="Password" />
+                    <div id="loginRoleContainer">
+                        <select class="input" asp-for="Role" id="loginRoleSelect">
+                            <option value="">Choose role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Advisor">Advisor</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+
+                    <input class="input" asp-for="Password" type="password" placeholder="Password" />
                     <span asp-validation-for="Password" class="text-danger"></span>
 
                     <div asp-validation-summary="All" class="text-danger"></div>
@@ -43,7 +58,8 @@
                     <div class="section">
                         Do not have account?
                         <div>
-                            <a class="btn btn-secondary" style="display:inline-block;text-decoration:none;line-height:22px;"
+                            <a class="btn btn-secondary"
+                               style="display:inline-block;text-decoration:none;line-height:22px;"
                                href="/Account/SignUp">Sign up</a>
                         </div>
                     </div>
@@ -52,11 +68,27 @@
             </div>
         </div>
     </div>
+    <script>
+            const loginEmailInput = document.getElementById("loginEmailInput");
+            const loginRoleSelect = document.getElementById("loginRoleSelect");
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
+            function handleRoleRequirement() {
+                const email = (loginEmailInput.value || "").toLowerCase().trim();
+                const isStudentEmail = email.endsWith("@@stu.kau.edu.sa");
+
+                if (isStudentEmail) {
+                    loginRoleSelect.value = "";
+                    loginRoleSelect.disabled = true;
+                } else {
+                    loginRoleSelect.disabled = false;
+                }
+            }
+
+            loginEmailInput.addEventListener("input", handleRoleRequirement);
+            window.addEventListener("load", handleRoleRequirement);
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 </body>
 </html>

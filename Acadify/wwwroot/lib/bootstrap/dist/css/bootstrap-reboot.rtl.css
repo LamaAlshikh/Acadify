@@ -1,5 +1,6 @@
 /*!
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Bootstrap Reboot v5.1.0 (https://getbootstrap.com/)
  * Copyright 2011-2021 The Bootstrap Authors
  * Copyright 2011-2021 Twitter, Inc.
@@ -9,8 +10,15 @@
 =======
  * Bootstrap Reboot v5.3.3 (https://getbootstrap.com/)
  * Copyright 2011-2024 The Bootstrap Authors
+=======
+ * Bootstrap Reboot v5.1.0 (https://getbootstrap.com/)
+ * Copyright 2011-2021 The Bootstrap Authors
+ * Copyright 2011-2021 Twitter, Inc.
+>>>>>>> origin_second/لما2
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * Forked from Normalize.css, licensed MIT (https://github.com/necolas/normalize.css/blob/master/LICENSE.md)
  */
+<<<<<<< HEAD
 :root,
 [data-bs-theme=light] {
   --bs-blue: #0d6efd;
@@ -189,6 +197,8 @@
 }
 
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 *,
 *::before,
 *::after {
@@ -218,6 +228,7 @@ hr {
   margin: 1rem 0;
   color: inherit;
 <<<<<<< HEAD
+<<<<<<< HEAD
   background-color: currentColor;
   border: 0;
   opacity: 0.25;
@@ -228,21 +239,33 @@ hr:not([size]) {
 }
 
 =======
+=======
+  background-color: currentColor;
+>>>>>>> origin_second/لما2
   border: 0;
-  border-top: var(--bs-border-width) solid;
   opacity: 0.25;
 }
 
+<<<<<<< HEAD
 >>>>>>> origin_second/linaLMversion
+=======
+hr:not([size]) {
+  height: 1px;
+}
+
+>>>>>>> origin_second/لما2
 h6, h5, h4, h3, h2, h1 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-weight: 500;
   line-height: 1.2;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   color: var(--bs-heading-color);
 >>>>>>> origin_second/linaLMversion
+=======
+>>>>>>> origin_second/لما2
 }
 
 h1 {
@@ -295,11 +318,16 @@ p {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 abbr[title],
 abbr[data-bs-original-title] {
 =======
 abbr[title] {
 >>>>>>> origin_second/linaLMversion
+=======
+abbr[title],
+abbr[data-bs-original-title] {
+>>>>>>> origin_second/لما2
   -webkit-text-decoration: underline dotted;
   text-decoration: underline dotted;
   cursor: help;
@@ -356,6 +384,7 @@ small {
 
 mark {
 <<<<<<< HEAD
+<<<<<<< HEAD
   padding: 0.2em;
   background-color: #fcf8e3;
 =======
@@ -363,6 +392,10 @@ mark {
   color: var(--bs-highlight-color);
   background-color: var(--bs-highlight-bg);
 >>>>>>> origin_second/linaLMversion
+=======
+  padding: 0.2em;
+  background-color: #fcf8e3;
+>>>>>>> origin_second/لما2
 }
 
 sub,
@@ -383,6 +416,7 @@ sup {
 
 a {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #0d6efd;
   text-decoration: underline;
 }
@@ -395,6 +429,13 @@ a:hover {
 a:hover {
   --bs-link-color-rgb: var(--bs-link-hover-color-rgb);
 >>>>>>> origin_second/linaLMversion
+=======
+  color: #0d6efd;
+  text-decoration: underline;
+}
+a:hover {
+  color: #0a58ca;
+>>>>>>> origin_second/لما2
 }
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
@@ -407,6 +448,7 @@ code,
 kbd,
 samp {
 <<<<<<< HEAD
+<<<<<<< HEAD
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 1em;
   direction: ltr ;
@@ -415,6 +457,12 @@ samp {
   font-family: var(--bs-font-monospace);
   font-size: 1em;
 >>>>>>> origin_second/linaLMversion
+=======
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 1em;
+  direction: ltr ;
+  unicode-bidi: bidi-override;
+>>>>>>> origin_second/لما2
 }
 
 pre {
@@ -433,10 +481,14 @@ pre code {
 code {
   font-size: 0.875em;
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #d63384;
 =======
   color: var(--bs-code-color);
 >>>>>>> origin_second/linaLMversion
+=======
+  color: #d63384;
+>>>>>>> origin_second/لما2
   word-wrap: break-word;
 }
 a > code {
@@ -444,6 +496,7 @@ a > code {
 }
 
 kbd {
+<<<<<<< HEAD
 <<<<<<< HEAD
   padding: 0.2rem 0.4rem;
   font-size: 0.875em;
@@ -457,14 +510,25 @@ kbd {
   background-color: var(--bs-body-color);
   border-radius: 0.25rem;
 >>>>>>> origin_second/linaLMversion
+=======
+  padding: 0.2rem 0.4rem;
+  font-size: 0.875em;
+  color: #fff;
+  background-color: #212529;
+  border-radius: 0.2rem;
+>>>>>>> origin_second/لما2
 }
 kbd kbd {
   padding: 0;
   font-size: 1em;
 <<<<<<< HEAD
+<<<<<<< HEAD
   font-weight: 700;
 =======
 >>>>>>> origin_second/linaLMversion
+=======
+  font-weight: 700;
+>>>>>>> origin_second/لما2
 }
 
 figure {
@@ -485,10 +549,14 @@ caption {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #6c757d;
 =======
   color: var(--bs-secondary-color);
 >>>>>>> origin_second/linaLMversion
+=======
+  color: #6c757d;
+>>>>>>> origin_second/لما2
   text-align: right;
 }
 
@@ -548,12 +616,17 @@ select:disabled {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 [list]::-webkit-calendar-picker-indicator {
   display: none;
 =======
 [list]:not([type=date]):not([type=datetime-local]):not([type=month]):not([type=week]):not([type=time])::-webkit-calendar-picker-indicator {
   display: none !important;
 >>>>>>> origin_second/linaLMversion
+=======
+[list]::-webkit-calendar-picker-indicator {
+  display: none;
+>>>>>>> origin_second/لما2
 }
 
 button,
@@ -618,12 +691,17 @@ legend + * {
 
 [type=search] {
 <<<<<<< HEAD
+<<<<<<< HEAD
   outline-offset: -2px;
   -webkit-appearance: textfield;
 =======
   -webkit-appearance: textfield;
   outline-offset: -2px;
 >>>>>>> origin_second/linaLMversion
+=======
+  outline-offset: -2px;
+  -webkit-appearance: textfield;
+>>>>>>> origin_second/لما2
 }
 
 [type="tel"],
@@ -641,6 +719,7 @@ legend + * {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ::file-selector-button {
   font: inherit;
 }
@@ -648,12 +727,18 @@ legend + * {
 ::-webkit-file-upload-button {
 =======
 ::-webkit-file-upload-button {
+=======
+::file-selector-button {
+>>>>>>> origin_second/لما2
   font: inherit;
-  -webkit-appearance: button;
 }
 
+<<<<<<< HEAD
 ::file-selector-button {
 >>>>>>> origin_second/linaLMversion
+=======
+::-webkit-file-upload-button {
+>>>>>>> origin_second/لما2
   font: inherit;
   -webkit-appearance: button;
 }
