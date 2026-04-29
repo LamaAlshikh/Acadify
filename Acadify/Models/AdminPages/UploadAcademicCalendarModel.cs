@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 
 namespace Acadify.Models.AdminPages;
 
@@ -10,5 +9,5 @@ public class UploadAcademicCalendarModel
 
     public string? Message { get; set; }
 
-    public string? SavedFileName { get; set; }
+    public bool IsSuccess { get; set; }
 }

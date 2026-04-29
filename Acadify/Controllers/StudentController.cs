@@ -1,21 +1,15 @@
 ﻿using Acadify.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
 using UglyToad.PdfPig;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Globalization;
-
-
 
 namespace Acadify.Controllers
 {
     public class StudentController : Controller
     {
-
-
-
         private readonly AcadifyDbContext _db;
         private readonly IWebHostEnvironment _env;
 
@@ -28,6 +22,59 @@ namespace Acadify.Controllers
         // =========================
         // Helpers
         // =========================
+
+        private int? GetCurrentStudentId()
+        {
+            return HttpContext.Session.GetInt32("StudentId");
+        }
+
+        private async Task<int?> GetAdvisorIdForStudentAsync(int studentId)
+        {
+            return await _db.Students
+                .Where(s => s.StudentId == studentId)
+                .Select(s => (int?)s.AdvisorId)
+                .FirstOrDefaultAsync();
+        }
+
+        // load student name + email for sidebar
+        private async Task LoadStudentSidebarDataAsync()
+        {
+            int? studentId = GetCurrentStudentId();
+
+            if (!studentId.HasValue)
+            {
+                studentId = 2209009; // temporary for testing
+            }
+
+            var student = await _db.Students
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+            {
+                ViewBag.StudentName = "Student";
+                ViewBag.StudentEmail = "";
+                return;
+            }
+
+            ViewBag.StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName");
+            ViewBag.StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail");
+        }
+
+        private static string GetStringPropertyValue(object obj, params string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                var prop = obj.GetType().GetProperty(propertyName);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(obj)?.ToString();
+                    if (!string.IsNullOrWhiteSpace(value))
+                        return value;
+                }
+            }
+
+            return string.Empty;
+        }
 
         private static string ReadPdfText(string fullPath)
         {
@@ -42,81 +89,6 @@ namespace Acadify.Controllers
             return sb.ToString();
         }
 
-        private sealed class ParsedTranscript
-        {
-            public decimal? CumulativeGpa { get; set; }
-            public decimal? LatestTermGpa { get; set; }
-            public HashSet<string> CourseCodes { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-        }
-
-        private static ParsedTranscript ParseTranscriptText(string text)
-        {
-            var result = new ParsedTranscript();
-
-            if (string.IsNullOrWhiteSpace(text))
-                return result;
-
-            // Normalize spaces
-            var normalized = Regex.Replace(text, @"\s+", " ").Trim();
-
-            // ✅ Cumulative GPA (0-5.xx فقط عشان ما يلقط 131)
-            // يدعم: "Cumulative GPA: 4.89" وأيضًا "4.89Cumulative GPA"
-            var cumMatch = Regex.Match(
-                normalized,
-                @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})",
-                RegexOptions.IgnoreCase);
-
-            if (!cumMatch.Success)
-            {
-                cumMatch = Regex.Match(
-                    normalized,
-                    @"([0-5]\.\d{2})\s*Cumulative\s*GPA",
-                    RegexOptions.IgnoreCase);
-            }
-
-            if (cumMatch.Success)
-                result.CumulativeGpa = TryDec(cumMatch.Groups[1].Value);
-
-            // ✅ Latest Term GPA (نأخذ آخر رقم GPA يظهر بعد كلمة Term)
-            // إذا ما ضبطت مع ملفات ثانية، نعدله بسهولة
-            var termMatches = Regex.Matches(
-                normalized,
-                @"\bTerm\b.*?\b([0-5]\.\d{2})\b",
-                RegexOptions.IgnoreCase);
-
-            if (termMatches.Count > 0)
-                result.LatestTermGpa = TryDec(termMatches[^1].Groups[1].Value);
-
-            // ✅ Course codes (ACCT333, ARAB101, CPIS320, IS321 ... إلخ)
-            // يسمح 2-6 حروف + 3-4 أرقام
-            var allowedPrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-{
-    "CPIS","IS","CPCS","CPIT",
-    "ACCT","BUS","MRKT","ARAB",
-    "STAT","ELIS","MATH","PHYS",
-    "CHEM","BIO","ASTR","COMM","ISLS"
-};
-
-            foreach (Match m in Regex.Matches(normalized, @"\b([A-Z]{2,6})\s?(\d{3,4})\b"))
-            {
-                var prefix = m.Groups[1].Value.ToUpperInvariant();
-                var number = m.Groups[2].Value;
-
-                if (allowedPrefixes.Contains(prefix))
-                {
-                    result.CourseCodes.Add(prefix + number);
-                }
-            }
-
-            return result;
-
-            static decimal? TryDec(string s)
-            {
-                if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
-                    return d;
-                return null;
-            }
-        }
         private static (decimal? cumulativeGpa, decimal? lastTermGpa) ParseGpaFromTranscriptText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -126,32 +98,41 @@ namespace Acadify.Controllers
 
             decimal? cumulative = null;
 
-            var m1 = Regex.Match(normalized, @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})", RegexOptions.IgnoreCase);
-            if (m1.Success) cumulative = TryDec(m1.Groups[1].Value);
+            var m1 = Regex.Match(
+                normalized,
+                @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})",
+                RegexOptions.IgnoreCase);
+
+            if (m1.Success)
+                cumulative = TryDec(m1.Groups[1].Value);
 
             if (!cumulative.HasValue)
             {
-                var m3 = Regex.Match(normalized, @"\b\d+\s+([0-5]\.\d{2})\s*Cumulative\s*Total", RegexOptions.IgnoreCase);
-                if (m3.Success) cumulative = TryDec(m3.Groups[1].Value);
+                var m3 = Regex.Match(
+                    normalized,
+                    @"\b\d+\s+([0-5]\.\d{2})\s*Cumulative\s*Total",
+                    RegexOptions.IgnoreCase);
+
+                if (m3.Success)
+                    cumulative = TryDec(m3.Groups[1].Value);
             }
 
             decimal? term = null;
+
+            var tail = normalized.Length > 2500 ? normalized[^2500..] : normalized;
+            var nums = Regex.Matches(tail, @"\b[0-5]\.\d{2}\b")
+                .Select(x => TryDec(x.Value))
+                .Where(x => x.HasValue)
+                .Select(x => x!.Value)
+                .ToList();
+
+            if (nums.Count > 0)
             {
-                var tail = normalized.Length > 2500 ? normalized[^2500..] : normalized;
-                var nums = Regex.Matches(tail, @"\b[0-5]\.\d{2}\b")
-                    .Select(x => TryDec(x.Value))
-                    .Where(x => x.HasValue)
-                    .Select(x => x!.Value)
-                    .ToList();
+                if (cumulative.HasValue)
+                    nums = nums.Where(x => x != cumulative.Value).ToList();
 
                 if (nums.Count > 0)
-                {
-                    if (cumulative.HasValue)
-                        nums = nums.Where(x => x != cumulative.Value).ToList();
-
-                    if (nums.Count > 0)
-                        term = nums.Max();
-                }
+                    term = nums.Max();
             }
 
             return (cumulative, term);
@@ -160,6 +141,7 @@ namespace Acadify.Controllers
             {
                 if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
                     return d;
+
                 return null;
             }
         }
@@ -167,13 +149,14 @@ namespace Acadify.Controllers
         private static List<string> ExtractCourseCodesFromPdf(string fullPath)
         {
             var prefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        "CPIS","IS","CPCS","CPIT","BUS","ACCT","MRKT","ARAB","STAT","ELIS","MATH","PHYS","CHEM","BIO","ASTR","COMM","ISLS"
-    };
+            {
+                "CPIS","IS","CPCS","CPIT","BUS","ACCT","MRKT","ARAB",
+                "STAT","ELIS","MATH","PHYS","CHEM","BIO","ASTR","COMM","ISLS"
+            };
 
             var results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            using var doc = UglyToad.PdfPig.PdfDocument.Open(fullPath);
+            using var doc = PdfDocument.Open(fullPath);
 
             foreach (var page in doc.GetPages())
             {
@@ -191,7 +174,6 @@ namespace Acadify.Controllers
                         .Where(t => !string.IsNullOrWhiteSpace(t))
                         .ToList();
 
-                    // CPIS320
                     foreach (var t in tokens)
                     {
                         var mm = Regex.Match(t, @"^([A-Z]{2,6})(\d{3,4})$");
@@ -199,16 +181,13 @@ namespace Acadify.Controllers
                             results.Add((mm.Groups[1].Value + mm.Groups[2].Value).ToUpperInvariant());
                     }
 
-                    // CPIS 320
                     for (int i = 0; i < tokens.Count - 1; i++)
                     {
                         var p = tokens[i].ToUpperInvariant();
                         var n = tokens[i + 1];
 
                         if (prefixes.Contains(p) && Regex.IsMatch(n, @"^\d{3,4}$"))
-                        {
                             results.Add(p + n);
-                        }
                     }
                 }
             }
@@ -216,52 +195,124 @@ namespace Acadify.Controllers
             return results.OrderBy(x => x).ToList();
         }
 
-
-
-
-
-
-
-
-
-
-        // Student Home Page
-        public IActionResult StudentHome()
+        private async Task<int> CreateNewForm5ForStudentAsync(int studentId)
         {
+            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
 
-            int progressFromAgent = 80;
+            if (!advisorId.HasValue || advisorId.Value <= 0)
+                throw new InvalidOperationException("No advisor is assigned to this student.");
 
-            var model = new StudentHomeViewModel
+            var newForm5 = new Form
             {
-                StudentName = "lama alshikh",
-                StudentEmail = "lalshikh@stu.kau.edu.sa",
-                ProgressPercentage = progressFromAgent,
-                CurrentStatus = GetStatus(progressFromAgent)
+                StudentId = studentId,
+                AdvisorId = advisorId.Value,
+                FormType = "Form 5",
+                FormDate = DateTime.Now,
+                FormStatus = "Pending",
+                AdvisorNotes = null,
+                AutoFilled = true,
+                AdvisorConfirmation = null
+            };
+
+            _db.Forms.Add(newForm5);
+            await _db.SaveChangesAsync();
+
+            var details = new GraduationProjectEligibilityForm
+            {
+                FormId = newForm5.FormId,
+                Eligibility = null,
+                RequiredCoursesStatus = null
+            };
+
+            _db.GraduationProjectEligibilityForms.Add(details);
+            await _db.SaveChangesAsync();
+
+            return newForm5.FormId;
+        }
+
+        private int CalculateProgressPercentage(int remainingHours, int totalRequiredHours)
+        {
+            if (remainingHours <= 0)
+                return 100;
+
+            if (remainingHours <= 3)
+                return 99;
+
+            int completedHours = totalRequiredHours - remainingHours;
+
+            double percentage = ((double)completedHours / totalRequiredHours) * 100;
+
+            int roundedToTens = ((int)Math.Floor(percentage / 10.0)) * 10;
+
+            if (roundedToTens < 10 && completedHours > 0)
+                roundedToTens = 10;
+
+            if (roundedToTens > 90)
+                roundedToTens = 90;
+
+            return roundedToTens;
+        }
+
+        private string CalculateCurrentStatus(int remainingHours)
+        {
+            if (remainingHours <= 0)
+                return "Graduated";
+
+            if (remainingHours <= 3)
+                return "Near Graduation";
+
+            return "Has Remaining Courses";
+        }
+
+        // =======================
+        // Student Home Page
+        // =======================
+        [HttpGet]
+        public async Task<IActionResult> StudentHome()
+        {
+            ViewData["Title"] = "Student Home";
+            await LoadStudentSidebarDataAsync();
+
+            int? studentId = GetCurrentStudentId();
+
+            if (!studentId.HasValue)
+            {
+                studentId = 2209009; // temporary for testing
+            }
+
+            var student = await _db.Students
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+            {
+                return NotFound("Student not found.");
+            }
+
+            var graduationStatus = await _db.GraduationStatuses
+                .FirstOrDefaultAsync(g => g.StudentId == studentId.Value);
+
+            int totalRequiredHours = 140;
+            int remainingHours = graduationStatus?.RemainingHours ?? 140;
+
+            var model = new StudenthomeViewModel
+            {
+                StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName"),
+                StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail"),
+                ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
+                CurrentStatus = CalculateCurrentStatus(remainingHours)
             };
 
             return View(model);
         }
 
-
-        private string GetStatus(int progress)
-        {
-            if (progress <= 30)
-                return "Beginning";
-
-            if (progress <= 70)
-                return "Has Remaining Courses";
-
-            return "Near Graduation";
-        }
         // =======================
         // Upload Transcript Page
         // =======================
-
-        // GET: Student/UploadTranscript
-        // =========================
         [HttpGet]
-        public IActionResult UploadTranscript()
+        public async Task<IActionResult> UploadTranscript()
         {
+            ViewData["Title"] = "Upload Transcript";
+            await LoadStudentSidebarDataAsync();
             return View();
         }
 
@@ -269,7 +320,9 @@ namespace Acadify.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadTranscript(IFormFile transcriptFile)
         {
-            // 1) Validate file
+            ViewData["Title"] = "Upload Transcript";
+            await LoadStudentSidebarDataAsync();
+
             if (transcriptFile == null || transcriptFile.Length == 0)
             {
                 ViewBag.Error = "Please select a PDF file.";
@@ -283,19 +336,42 @@ namespace Acadify.Controllers
                 return View();
             }
 
-            // 2) Save file
+            var studentIdSession = GetCurrentStudentId();
+
+            if (!studentIdSession.HasValue)
+            {
+                ViewBag.Error = "Student session is not found. Please login again.";
+                return View();
+            }
+
+            int studentId = studentIdSession.Value;
+
+            var student = await _db.Students.FirstOrDefaultAsync(s => s.StudentId == studentId);
+
+            if (student == null)
+            {
+                ViewBag.Error = "Student record is not found in the database.";
+                return View();
+            }
+
+            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
+            if (!advisorId.HasValue || advisorId.Value <= 0)
+            {
+                ViewBag.Error = "No advisor is assigned to this student.";
+                return View();
+            }
+
             var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "transcripts");
             Directory.CreateDirectory(uploadsFolder);
 
-            var fileName = $"{Guid.NewGuid()}{ext}";
-            var fullPath = Path.Combine(uploadsFolder, fileName);
+            var savedFileName = $"{Guid.NewGuid()}{ext}";
+            var fullPath = Path.Combine(uploadsFolder, savedFileName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
             {
                 await transcriptFile.CopyToAsync(stream);
             }
 
-            // 3) Extract text (PdfPig)
             string extractedText;
             try
             {
@@ -307,63 +383,64 @@ namespace Acadify.Controllers
                 return View();
             }
 
-            // 4) Parse GPA فقط من النص
+            ViewBag.DebugStudentId = studentId;
+            ViewBag.DebugOriginalFileName = transcriptFile.FileName;
+            ViewBag.DebugPreview = extractedText.Length > 1000
+                ? extractedText.Substring(0, 1000)
+                : extractedText;
+
             var (cumulativeGpa, latestTermGpa) = ParseGpaFromTranscriptText(extractedText);
 
-            // 5) Extract course codes من PDF layout (أفضل للجداول)
-            var courseCodes = ExtractCourseCodesFromPdf(fullPath); // List<string>
+            var courseCodes = ExtractCourseCodesFromPdf(fullPath);
             var courseCodesSet = courseCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            // ✅ Debug سريع (عشان نعرف ليش فاضي لو صار)
             ViewBag.CodesCount = courseCodesSet.Count;
             ViewBag.CodesPreview = string.Join(", ", courseCodesSet.Take(30));
 
-            // 6) TEMP studentId (مؤقت الآن)
-            int studentId = await _db.Students.Select(s => s.StudentId).FirstAsync();
-
-            // 7) UPSERT transcript + include Courses (عشان الربط)
             var transcript = await _db.Transcripts
                 .Include(t => t.Courses)
                 .FirstOrDefaultAsync(t => t.StudentId == studentId);
 
             if (transcript == null)
             {
-                transcript = new Transcript { StudentId = studentId };
+                transcript = new Transcript
+                {
+                    StudentId = studentId
+                };
+
                 _db.Transcripts.Add(transcript);
-
-                // مهم: عشان ينولد transcriptID لو احتجناه لاحقاً
                 await _db.SaveChangesAsync();
-
-                // تأكدي collection جاهزة
-                _db.Entry(transcript).Collection(t => t.Courses).Load();
+                await _db.Entry(transcript).Collection(t => t.Courses).LoadAsync();
             }
 
-            // 8) Update fields
-            transcript.PdfFile = $"/uploads/transcripts/{fileName}";
+            transcript.PdfFile = $"/uploads/transcripts/{savedFileName}";
             transcript.ExtractedInfo = extractedText;
 
-            // GPA (لا نكتب إلا لو منطقي)
-            if (cumulativeGpa.HasValue) transcript.Gpa = cumulativeGpa.Value;
-            if (latestTermGpa.HasValue) transcript.SemesterGpa = latestTermGpa.Value;
+            if (cumulativeGpa.HasValue)
+                transcript.Gpa = cumulativeGpa.Value;
 
-            // نخزن الأكواد كنص (اختياري)
+            if (latestTermGpa.HasValue)
+                transcript.SemesterGpa = latestTermGpa.Value;
+
             transcript.ExtractedCourses = courseCodesSet.Count == 0
                 ? null
                 : string.Join(", ", courseCodesSet);
 
-            // 9) Fill TranscriptCourse (Many-to-Many)
             transcript.Courses.Clear();
 
             if (courseCodesSet.Count > 0)
             {
-                // جيبي الموجودين
                 var coursesInDb = await _db.Courses
                     .Where(c => courseCodesSet.Contains(c.CourseId))
                     .ToListAsync();
 
-                // ضيفي المفقود كـ placeholder (عشان CourseName NOT NULL عندك)
-                var existingIds = coursesInDb.Select(c => c.CourseId).ToHashSet(StringComparer.OrdinalIgnoreCase);
-                var missingIds = courseCodesSet.Where(id => !existingIds.Contains(id)).ToList();
+                var existingIds = coursesInDb
+                    .Select(c => c.CourseId)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                var missingIds = courseCodesSet
+                    .Where(id => !existingIds.Contains(id))
+                    .ToList();
 
                 foreach (var id in missingIds)
                 {
@@ -373,6 +450,7 @@ namespace Acadify.Controllers
                         CourseName = id,
                         Hours = 0
                     };
+
                     _db.Courses.Add(newCourse);
                     coursesInDb.Add(newCourse);
                 }
@@ -383,73 +461,162 @@ namespace Acadify.Controllers
 
             await _db.SaveChangesAsync();
 
-            ViewBag.Success = $"Uploaded successfully for StudentId = {studentId} (updated if already existed).";
-            ViewBag.DebugPreview = extractedText.Length > 250 ? extractedText.Substring(0, 250) : extractedText;
-
-            return View();
+            return RedirectToAction(nameof(StudentHome));
         }
 
-
-
-
         // =======================
-        // Student Chat (No JS)
+        // Student Chat
         // =======================
-
-        // GET: Student/Chat
         [HttpGet]
-        public IActionResult Chat()
+        public async Task<IActionResult> Chat()
         {
-            // مؤقت: بيانات تجريبية (بعدها تربطينها بالداتابيس)
+            ViewData["Title"] = "Chat";
+            await LoadStudentSidebarDataAsync();
+
             var model = new StudentChatViewModel
             {
                 AdvisorName = "DR. Amina Hasan Gamlo",
                 StudentName = "Lama Alshikh",
-                IsRecordingStarted = true, // <-- تظهر جملة التسجيل
+                IsRecordingStarted = true,
                 Messages = new List<ChatMessageVM>
-        {
-            new ChatMessageVM
-            {
-                SenderName = "Lama Alshikh (me)",
-                Text = "السلام عليكم دكتورة، أبغى اطلب اجتماع بخصوص حذف مادة CPIS-352",
-                IsFromStudent = true
-            },
-            new ChatMessageVM
-            {
-                SenderName = "Amina Gamlo",
-                Text = "وعليكم السلام ورحمة الله وبركاته، تمام. متى تبغي نسوي الاجتماع؟",
-                IsFromStudent = false
-            },
-            new ChatMessageVM
-            {
-                SenderName = "Lama Alshikh (me)",
-                Text = "تمام",
-                IsFromStudent = true
-            },
-            new ChatMessageVM
-            {
-                SenderName = "Amina Gamlo",
-                Text = "ايش السبب اللي خلاك تبغي تحذف المادة هذي؟",
-                IsFromStudent = false
-            }
-        }
+                {
+                    new ChatMessageVM
+                    {
+                        SenderName = "Lama Alshikh (me)",
+                        Text = "السلام عليكم دكتورة، أبغى اطلب اجتماع بخصوص حذف مادة CPIS-352",
+                        IsFromStudent = true
+                    },
+                    new ChatMessageVM
+                    {
+                        SenderName = "Amina Gamlo",
+                        Text = "وعليكم السلام ورحمة الله وبركاته، تمام. متى تبغي نسوي الاجتماع؟",
+                        IsFromStudent = false
+                    },
+                    new ChatMessageVM
+                    {
+                        SenderName = "Lama Alshikh (me)",
+                        Text = "تمام",
+                        IsFromStudent = true
+                    },
+                    new ChatMessageVM
+                    {
+                        SenderName = "Amina Gamlo",
+                        Text = "ايش السبب اللي خلاك تبغي تحذف المادة هذي؟",
+                        IsFromStudent = false
+                    }
+                }
             };
 
             return View(model);
         }
 
-        // POST: Student/SendMessage
         [HttpPost]
         public IActionResult SendMessage(string message)
         {
-            // لاحقاً: نحفظ الرسالة في DB + نخلي Agent يقرأها
-            // حالياً: بس نرجع لصفحة الشات
             return RedirectToAction("Chat");
         }
 
+        /* =========================================================
+                          CommunityStudent
+           ========================================================= */
+        [HttpGet]
+        public async Task<IActionResult> CommunityStudent()
+        {
+            ViewData["Title"] = "Community Student";
+            await LoadStudentSidebarDataAsync();
 
+            var model = new CommunityStudentVM
+            {
+                Messages = new List<CommunityMessageVM>
+                {
+                    new CommunityMessageVM
+                    {
+                        SenderName = "Lina Alrwaily",
+                        SenderInitials = "LA",
+                        MessageText = "السلام عليكم دكتورة أمينة",
+                        IsCurrentUserMessage = false,
+                        BubbleColorClass = "msg-blue"
+                    },
+                    new CommunityMessageVM
+                    {
+                        SenderName = "Lina Alrwaily",
+                        SenderInitials = "LA",
+                        MessageText = "هل اقدر أنزل مادة تطوير برمجيات الترم الجاي؟",
+                        IsCurrentUserMessage = false,
+                        BubbleColorClass = "msg-blue"
+                    },
+                    new CommunityMessageVM
+                    {
+                        SenderName = "Rahaf Alghamdi",
+                        SenderInitials = "RA",
+                        MessageText = "ايوا دكتورة حتى انا",
+                        IsCurrentUserMessage = false,
+                        BubbleColorClass = "msg-pink"
+                    },
+                    new CommunityMessageVM
+                    {
+                        SenderName = "Amina Gamlo",
+                        SenderInitials = "AG",
+                        MessageText = "و عليكم السلام و رحمة الله و بركاته\nليش ما تبغو تنزلوها هذا الترم؟",
+                        IsCurrentUserMessage = false,
+                        BubbleColorClass = "msg-purple"
+                    },
+                    new CommunityMessageVM
+                    {
+                        SenderName = "Lama Alshaikh (me)",
+                        SenderInitials = "LA",
+                        MessageText = "عندي استفسار بخصوص التدريب",
+                        IsCurrentUserMessage = true,
+                        BubbleColorClass = "msg-indigo"
+                    }
+                },
 
+                Members = new List<CommunityMemberVM>
+                {
+                    new CommunityMemberVM
+                    {
+                        Name = "DR.Amina Gamlo",
+                        ImagePath = "~/images/user.png"
+                    },
+                    new CommunityMemberVM
+                    {
+                        Name = "Lina Alrwaily",
+                        ImagePath = "~/images/user.png"
+                    },
+                    new CommunityMemberVM
+                    {
+                        Name = "Rahaf Alghamdi",
+                        ImagePath = "~/images/user.png"
+                    },
+                    new CommunityMemberVM
+                    {
+                        Name = "Rahaf Alzahrani",
+                        ImagePath = "~/images/user.png"
+                    }
+                }
+            };
 
+            return View(model);
+        }
 
+        [HttpPost]
+        public IActionResult SendStudentMessage([FromBody] SendStudentMessageRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Message))
+            {
+                return BadRequest(new { success = false, message = "Message is empty." });
+            }
+
+            return Json(new
+            {
+                success = true,
+                text = request.Message.Trim()
+            });
+        }
+
+        public class SendStudentMessageRequest
+        {
+            public string Message { get; set; } = string.Empty;
+        }
     }
 }

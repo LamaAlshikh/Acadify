@@ -68,8 +68,7 @@ namespace Acadify.Controllers.Admin
 
         // =========================
         // Upload Academic Calendar
-        // =========================
-        [HttpGet]
+        // =========================[HttpGet]
         public IActionResult UploadAcademicCalendar()
         {
             return View(new UploadAcademicCalendarModel());
@@ -80,46 +79,49 @@ namespace Acadify.Controllers.Admin
         public async Task<IActionResult> UploadAcademicCalendar(UploadAcademicCalendarModel model)
         {
             if (!ModelState.IsValid)
+            {
+                model.Message = "Please check the required fields.";
+                model.IsSuccess = false;
                 return View(model);
+            }
 
             if (model.AcademicCalendarFile == null || model.AcademicCalendarFile.Length == 0)
             {
-                ModelState.AddModelError(nameof(model.AcademicCalendarFile), "File is required.");
+                model.Message = "Please choose a PDF file first.";
+                model.IsSuccess = false;
                 return View(model);
             }
 
             var ext = Path.GetExtension(model.AcademicCalendarFile.FileName).ToLower();
             if (ext != ".pdf")
             {
-                ModelState.AddModelError(nameof(model.AcademicCalendarFile), "Only PDF is allowed.");
+                model.Message = "Only PDF files are allowed.";
+                model.IsSuccess = false;
                 return View(model);
             }
 
-            // 1) Save file to wwwroot
-            var folder = Path.Combine(_env.WebRootPath, "uploads", "academic-calendar");
-            Directory.CreateDirectory(folder);
-
-            var savedFileName = $"{Guid.NewGuid():N}.pdf";
-            var savedPath = Path.Combine(folder, savedFileName);
-
-            using (var stream = new FileStream(savedPath, FileMode.Create))
-            {
-                await model.AcademicCalendarFile.CopyToAsync(stream);
-            }
-
-            // 2) Save record in AcademicCalendar table
-            var calendar = new AcademicCalendar
-            {
-                PdfFile = savedFileName,
-                UploadedAt = DateTime.Now
-            };
-
-            _db.AcademicCalendars.Add(calendar);
-            await _db.SaveChangesAsync();
-
-            // 3) Extract + save events
             try
             {
+                var folder = Path.Combine(_env.WebRootPath, "uploads", "academic-calendar");
+                Directory.CreateDirectory(folder);
+
+                var savedFileName = $"{Guid.NewGuid():N}.pdf";
+                var savedPath = Path.Combine(folder, savedFileName);
+
+                using (var stream = new FileStream(savedPath, FileMode.Create))
+                {
+                    await model.AcademicCalendarFile.CopyToAsync(stream);
+                }
+
+                var calendar = new AcademicCalendar
+                {
+                    PdfFile = savedFileName,
+                    UploadedAt = DateTime.Now
+                };
+
+                _db.AcademicCalendars.Add(calendar);
+                await _db.SaveChangesAsync();
+
                 var events = await _ai.ExtractEventsFromPdfAsync(savedPath, calendar.CalendarId);
 
                 if (events != null && events.Count > 0)
@@ -128,15 +130,13 @@ namespace Acadify.Controllers.Admin
                     await _db.SaveChangesAsync();
                 }
 
-                var calendarsCount = await _db.AcademicCalendars.CountAsync();
-
-                model.SavedFileName = savedFileName;
-                model.Message = $"DB Save OK. CalendarsCount Now = {calendarsCount}. Extracted events: {events?.Count ?? 0}";
+                model.Message = "Academic calendar uploaded successfully.";
+                model.IsSuccess = true;
             }
-            catch (Exception ex)
+            catch
             {
-                model.SavedFileName = savedFileName;
-                model.Message = $"Extraction failed: {ex.InnerException?.Message ?? ex.Message}";
+                model.Message = "An error occurred while uploading the academic calendar.";
+                model.IsSuccess = false;
             }
 
             return View(model);

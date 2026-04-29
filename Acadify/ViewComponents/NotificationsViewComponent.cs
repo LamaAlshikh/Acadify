@@ -17,35 +17,23 @@ namespace Acadify.ViewComponents
         {
             var role = GetCurrentRole();
 
-            int? studentId = null;
-            int? advisorId = null;
-            int? adminId = null;
-
-            var sClaim = HttpContext.User.FindFirst("StudentId")?.Value;
-            if (int.TryParse(sClaim, out var sid))
-                studentId = sid;
-
-            var aClaim = HttpContext.User.FindFirst("AdvisorId")?.Value;
-            if (int.TryParse(aClaim, out var aid))
-                advisorId = aid;
-
-            var adminClaim = HttpContext.User.FindFirst("AdminId")?.Value;
-            if (int.TryParse(adminClaim, out var admid))
-                adminId = admid;
+            int? studentId = GetStudentId();
+            int? advisorId = GetAdvisorId();
+            int? adminId = GetAdminId();
 
             var query = _db.Notifications.AsNoTracking().AsQueryable();
 
             if (role == "Student" && studentId.HasValue)
             {
-                query = query.Where(n => n.StudentId == studentId);
+                query = query.Where(n => n.StudentId == studentId.Value);
             }
             else if (role == "Advisor" && advisorId.HasValue)
             {
-                query = query.Where(n => n.AdvisorId == advisorId);
+                query = query.Where(n => n.AdvisorId == advisorId.Value);
             }
             else if (role == "Admin" && adminId.HasValue)
             {
-                query = query.Where(n => n.AdminId == adminId);
+                query = query.Where(n => n.AdminId == adminId.Value);
             }
             else
             {
@@ -71,7 +59,7 @@ namespace Acadify.ViewComponents
                 SourceType = string.IsNullOrWhiteSpace(n.SourceType) ? "General" : n.SourceType!
             }).ToList();
 
-            var calendarNotifications = await BuildAcademicCalendarNotificationsAsync();
+            var calendarNotifications = await BuildAcademicCalendarNotificationsAsync(role);
 
             var all = dbNotifications
                 .Concat(calendarNotifications)
@@ -87,16 +75,39 @@ namespace Acadify.ViewComponents
             if (User.IsInRole("Advisor")) return "Advisor";
             return "Student";
         }
-        private string GetFutureText(int daysLeft)
-{
-    if (daysLeft == 0) return "Today";
-    if (daysLeft == 1) return "Tomorrow";
-    return $"After {daysLeft} days";
-}
 
-        private async Task<List<NotificationViewModel>> BuildAcademicCalendarNotificationsAsync()
+        private int? GetStudentId()
+        {
+            var claim = HttpContext.User.FindFirst("StudentId")?.Value;
+            return int.TryParse(claim, out var id) ? id : null;
+        }
+
+        private int? GetAdvisorId()
+        {
+            var claim = HttpContext.User.FindFirst("AdvisorId")?.Value;
+            return int.TryParse(claim, out var id) ? id : null;
+        }
+
+        private int? GetAdminId()
+        {
+            var claim = HttpContext.User.FindFirst("AdminId")?.Value;
+            return int.TryParse(claim, out var id) ? id : null;
+        }
+
+        private string GetFutureText(int daysLeft)
+        {
+            if (daysLeft == 0) return "Today";
+            if (daysLeft == 1) return "Tomorrow";
+            return $"After {daysLeft} days";
+        }
+
+        private async Task<List<NotificationViewModel>> BuildAcademicCalendarNotificationsAsync(string role)
         {
             var result = new List<NotificationViewModel>();
+
+            // إشعارات الكالندر تظهر فقط للطالبة والمرشد
+            if (role != "Student" && role != "Advisor")
+                return result;
 
             var latestCalendarId = await _db.AcademicCalendars
                 .OrderByDescending(c => c.CalendarId)
@@ -108,15 +119,9 @@ namespace Acadify.ViewComponents
 
             var today = DateTime.Today;
 
-            // بداية الحدث قبل يومين
-            int beforeStartDays = 2;
-
-            // نهاية الحدث قبل 3 أيام
-            int beforeEndDays = 3;
-
             var events = await _db.AcademicCalendarEvents
                 .Where(e => e.CalendarId == latestCalendarId.Value)
-                .OrderByDescending(e => e.GregorianDate)
+                .OrderBy(e => e.GregorianDate)
                 .ToListAsync();
 
             foreach (var e in events)
@@ -124,26 +129,27 @@ namespace Acadify.ViewComponents
                 var eventDate = e.GregorianDate.Date;
                 var daysLeft = (eventDate - today).Days;
 
-                // لا نعرض الأحداث التي انتهت
-                if (daysLeft < 0)
-                    continue;
-
-                var isEndEvent = e.EventName.Contains("نهاية");
-                var allowedDays = isEndEvent ? beforeEndDays : beforeStartDays;
-
-                // لا نعرض إلا إذا دخل الحدث في فترة التنبيه
-                if (daysLeft > allowedDays)
+                // فقط: قبل يومين، قبل يوم، ويوم الحدث نفسه
+                if (daysLeft != 2 && daysLeft != 1 && daysLeft != 0)
                     continue;
 
                 string message;
+                string timeText;
 
-                if (daysLeft == 0)
+                if (daysLeft == 2)
                 {
-                    message = $"اليوم {e.EventName}.";
+                    message = $"يتبقى يومان على {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
+                    timeText = "After 2 days";
+                }
+                else if (daysLeft == 1)
+                {
+                    message = $"غدًا {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
+                    timeText = "Tomorrow";
                 }
                 else
                 {
-                    message = $"يتبقى {daysLeft} يوم على {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
+                    message = $"اليوم {e.EventName}.";
+                    timeText = "Today";
                 }
 
                 result.Add(new NotificationViewModel
@@ -156,7 +162,7 @@ namespace Acadify.ViewComponents
                     SenderName = "System",
                     IsRead = false,
                     TargetUrl = "/Notifications/Panel",
-                    TimeAgo = GetFutureText(daysLeft),
+                    TimeAgo = timeText,
                     SourceType = "Calendar"
                 });
             }
@@ -165,6 +171,7 @@ namespace Acadify.ViewComponents
                 .OrderByDescending(n => n.NotificationDate)
                 .ToList();
         }
+
         private string BuildTitle(string? sourceType)
         {
             return sourceType switch
@@ -191,8 +198,8 @@ namespace Acadify.ViewComponents
                 "Form" => "/Forms",
                 "Transcript" => "/Student/StudentHome",
                 "Calendar" => "/Notifications/Panel",
-                "Request" => role == "Admin" ? "/Admin" : "/Student/StudentHome",
-                "StudyPlan" => "/Admin",
+                "Request" => role == "Admin" ? "/Admin/ManageAdvisorRequests" : "/Student/StudentHome",
+                "StudyPlan" => "/Admin/UploadStudyPlan",
                 _ => "/Notifications/Panel"
             };
         }

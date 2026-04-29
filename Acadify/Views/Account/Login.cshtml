@@ -1,0 +1,62 @@
+﻿@model Acadify.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- ✅ هنا مكان الربط -->
+    <link rel="stylesheet" href="~/css/login.css" />
+</head>
+<body>
+    <div class="login-page">
+        <div class="left-bar"></div>
+
+        <div class="main">
+            <div class="card">
+
+                <div class="logo">
+                    <img src="~/images/newLogo.png" alt="Acadify Logo" class="logo-img" />
+                </div>
+
+                <div class="title">login to <span>your account</span></div>
+
+                <form class="form" asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input class="input" asp-for="Email" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                    <input class="input" asp-for="Password" placeholder="Password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <button class="btn" type="submit">Login</button>
+
+                    <div class="section">
+                        Do not have account?
+                        <div>
+                            <a class="btn btn-secondary" style="display:inline-block;text-decoration:none;line-height:22px;"
+                               href="/Account/SignUp">Sign up</a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

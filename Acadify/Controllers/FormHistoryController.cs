@@ -14,65 +14,151 @@ namespace Acadify.Controllers
             _context = context;
         }
 
-        // GET: /FormHistory/FormHistory?studentId=1&formType=MeetingForm
+        [HttpGet]
         public async Task<IActionResult> FormHistory(int studentId, string formType)
         {
             if (studentId <= 0 || string.IsNullOrWhiteSpace(formType))
-            {
                 return BadRequest();
-            }
 
-            // Note: This returns all stored forms for the same student and the same form type (latest first).
-            var forms = await _context.Forms
-                .Where(f => f.StudentId == studentId && f.FormType == formType)
+            var requestedType = NormalizeFormType(formType);
+
+            var allForms = await _context.Forms
+                .Where(f => f.StudentId == studentId)
                 .OrderByDescending(f => f.FormDate)
-                .Select(f => new FormHistoryItemVM
-                {
-                    FormId = f.FormId,
-                    FormType = f.FormType,
-                    FormStatus = f.FormStatus,
-                    FormDate = f.FormDate
-                })
+                .ThenByDescending(f => f.FormId)
                 .ToListAsync();
+
+            var matchedForms = allForms
+                .Where(f => NormalizeFormType(f.FormType) == requestedType)
+                .ToList();
+
+            if (requestedType == "FORM5" && matchedForms.Any())
+            {
+                var latestCurrentFormId = matchedForms
+                    .OrderByDescending(f => f.FormDate)
+                    .ThenByDescending(f => f.FormId)
+                    .Select(f => f.FormId)
+                    .FirstOrDefault();
+
+                matchedForms = matchedForms
+                    .Where(f => f.FormId != latestCurrentFormId)
+                    .ToList();
+            }
 
             var vm = new FormHistoryVM
             {
                 StudentId = studentId,
                 FormType = formType,
-                PageTitle = GetFormTitle(formType),
-                Forms = forms
+                PageTitle = $"{formType} History",
+                Forms = matchedForms
+                    .OrderByDescending(f => f.FormDate)
+                    .ThenByDescending(f => f.FormId)
+                    .Select(f => new FormHistoryItemVM
+                    {
+                        FormId = f.FormId,
+                        FormType = f.FormType,
+                        FormStatus = f.FormStatus,
+                        FormDate = f.FormDate
+                    })
+                    .ToList()
             };
 
-            return View(vm); // Views/FormHistory/FormHistory.cshtml
+            return View(vm);
         }
 
-        // Note: This is just the page title text based on the selected form type.
-        private string GetFormTitle(string formType)
+        [HttpGet]
+        public async Task<IActionResult> ViewForm(int id, string formType)
         {
-            return formType switch
+            var requestedType = NormalizeFormType(formType);
+
+            if (requestedType == "FORM5")
             {
-                "AcademicAdvisingForm" => "Academic Advising Form History",
-                "CourseSelectionForm" => "Course Selection Form History",
-                "MeetingForm" => "Meeting Form History",
-                "StudyPlanMatchingForm" => "Study Plan Matching Form History",
-                "GraduationProjectEligibilityForm" => "Graduation Project Eligibility Form History",
-                _ => "Form History"
-            };
+                var item = await _context.GraduationProjectEligibilityForms
+                    .Include(x => x.Form)
+                    .ThenInclude(f => f.Student)
+                    .FirstOrDefaultAsync(x => x.FormId == id);
+
+                if (item == null || item.Form == null)
+                    return NotFound();
+
+                var vm = BuildHistoryForm5Vm(item);
+
+                return View("~/Views/GraduationProjectEligibility/Form5.cshtml", vm);
+            }
+
+            return NotFound();
         }
 
-        // Note: This redirects to the correct form details page based on form type.
-        // GET: /FormHistory/ViewForm?id=10&formType=MeetingForm
-        public IActionResult ViewForm(int id, string formType)
+        private static string NormalizeFormType(string value)
         {
-            return formType switch
+            var v = (value ?? string.Empty).Trim().ToUpper().Replace(" ", string.Empty);
+
+            if (v == "FORM5" || v == "GRADUATIONPROJECTELIGIBILITYFORM")
+                return "FORM5";
+
+            return v;
+        }
+
+        private static GraduationProjectEligibilityFormVM BuildHistoryForm5Vm(GraduationProjectEligibilityForm entity)
+        {
+            var vm = new GraduationProjectEligibilityFormVM
             {
-                "AcademicAdvisingForm" => RedirectToAction("AcademicAdvisingFormDetails", "Forms", new { id }),
-                "CourseSelectionForm" => RedirectToAction("CourseSelectionFormDetails", "Forms", new { id }),
-                "MeetingForm" => RedirectToAction("MeetingFormDetails", "Forms", new { id }),
-                "StudyPlanMatchingForm" => RedirectToAction("StudyPlanMatchingFormDetails", "Forms", new { id }),
-                "GraduationProjectEligibilityForm" => RedirectToAction("GraduationProjectEligibilityFormDetails", "Forms", new { id }),
-                _ => RedirectToAction("Index", "Home")
+                FormId = entity.FormId,
+                Form = entity.Form!,
+                StudentName = entity.Form?.Student?.Name ?? "-",
+                StudentId = entity.Form?.StudentId.ToString() ?? "-",
+                Eligibility = entity.Eligibility,
+                RequiredCoursesStatus = entity.RequiredCoursesStatus,
+                IsHistoryView = true,
+                IsEditMode = false
             };
+
+            var map = ParseSnapshot(entity.RequiredCoursesStatus);
+
+            vm.CPIS351 = GetBool(map, "CPIS351");
+            vm.CPIS358 = GetBool(map, "CPIS358");
+            vm.CPIS323 = GetBool(map, "CPIS323");
+            vm.CPIS380 = GetBool(map, "CPIS380");
+            vm.CPIS357 = GetBool(map, "CPIS357");
+            vm.CPIS342 = GetBool(map, "CPIS342");
+
+            vm.IsEligible = string.Equals(entity.Eligibility, "Eligible", StringComparison.OrdinalIgnoreCase);
+
+            return vm;
+        }
+        private static Dictionary<string, string> ParseSnapshot(string? raw)
+        {
+            var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return map;
+
+            var parts = raw.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in parts)
+            {
+                var index = part.IndexOf('=');
+                if (index <= 0)
+                    continue;
+
+                var key = part.Substring(0, index).Trim();
+                var value = part[(index + 1)..].Trim();
+
+                if (!map.ContainsKey(key))
+                    map.Add(key, value);
+            }
+
+            return map;
+        }
+
+        private static bool GetBool(Dictionary<string, string> map, string key)
+        {
+            if (!map.TryGetValue(key, out var value))
+                return false;
+
+            return value == "1" ||
+                   value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                   value.Equals("yes", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

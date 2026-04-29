@@ -1,9 +1,7 @@
 ﻿using Acadify.Models;
+using Acadify.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Acadify.Controllers
 {
@@ -17,9 +15,160 @@ namespace Acadify.Controllers
             _context = context;
         }
 
-        // GET: /GraduationProjectEligibility/Form5?formId=5
+        // =========================
+        // Session helpers
+        // =========================
+        private int? GetCurrentStudentId()
+        {
+            return HttpContext.Session.GetInt32("StudentId");
+        }
+
+        private async Task<int?> GetAdvisorIdForStudentAsync(int studentId)
+        {
+            // مهم: إذا اسم الحقل عندك مختلف، بدليه هنا فقط
+            return await _context.Students
+                .Where(s => s.StudentId == studentId)
+                .Select(s => (int?)s.AdvisorId)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<int> GetOrCreateLatestForm5ForStudentAsync(int studentId)
+        {
+            var latestForm5 = await _context.Forms
+                .Where(f => f.StudentId == studentId && f.FormType == "Form 5")
+                .OrderByDescending(f => f.FormDate)
+                .ThenByDescending(f => f.FormId)
+                .FirstOrDefaultAsync();
+
+            if (latestForm5 == null)
+            {
+                var advisorId = await GetAdvisorIdForStudentAsync(studentId);
+
+                if (!advisorId.HasValue || advisorId.Value <= 0)
+                    throw new InvalidOperationException("No advisor is assigned to this student.");
+
+                latestForm5 = new Form
+                {
+                    StudentId = studentId,
+                    AdvisorId = advisorId.Value,
+                    FormType = "Form 5",
+                    FormDate = DateTime.Now,
+                    FormStatus = "Pending",
+                    AdvisorNotes = null,
+                    AutoFilled = true,
+                    AdvisorConfirmation = null
+                };
+
+                _context.Forms.Add(latestForm5);
+                await _context.SaveChangesAsync();
+
+                var details = new GraduationProjectEligibilityForm
+                {
+                    FormId = latestForm5.FormId,
+                    Eligibility = null,
+                    RequiredCoursesStatus = null
+                };
+
+                _context.GraduationProjectEligibilityForms.Add(details);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var details = await _context.GraduationProjectEligibilityForms
+                    .FirstOrDefaultAsync(g => g.FormId == latestForm5.FormId);
+
+                if (details == null)
+                {
+                    details = new GraduationProjectEligibilityForm
+                    {
+                        FormId = latestForm5.FormId,
+                        Eligibility = null,
+                        RequiredCoursesStatus = null
+                    };
+
+                    _context.GraduationProjectEligibilityForms.Add(details);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return latestForm5.FormId;
+        }
+
+        private static string BuildSnapshot(
+            bool cpis351,
+            bool cpis358,
+            bool cpis323,
+            bool cpis380,
+            bool cpis357,
+            bool cpis342)
+        {
+            return string.Join(";",
+                $"CPIS351={(cpis351 ? 1 : 0)}",
+                $"CPIS358={(cpis358 ? 1 : 0)}",
+                $"CPIS323={(cpis323 ? 1 : 0)}",
+                $"CPIS380={(cpis380 ? 1 : 0)}",
+                $"CPIS357={(cpis357 ? 1 : 0)}",
+                $"CPIS342={(cpis342 ? 1 : 0)}"
+            );
+        }
+
+        private static Dictionary<string, string> ParseSnapshot(string? raw)
+        {
+            var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return map;
+
+            var parts = raw.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in parts)
+            {
+                var index = part.IndexOf('=');
+                if (index <= 0)
+                    continue;
+
+                var key = part.Substring(0, index).Trim();
+                var value = part[(index + 1)..].Trim();
+
+                if (!map.ContainsKey(key))
+                    map.Add(key, value);
+            }
+
+            return map;
+        }
+
+        private static bool GetBool(Dictionary<string, string> map, string key)
+        {
+            if (!map.TryGetValue(key, out var value))
+                return false;
+
+            return value == "1" ||
+                   value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                   value.Equals("yes", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void FillVmFromSnapshot(GraduationProjectEligibilityFormVM vm, string? snapshot)
+        {
+            var map = ParseSnapshot(snapshot);
+
+            vm.CPIS351 = GetBool(map, "CPIS351");
+            vm.CPIS358 = GetBool(map, "CPIS358");
+            vm.CPIS323 = GetBool(map, "CPIS323");
+            vm.CPIS380 = GetBool(map, "CPIS380");
+            vm.CPIS357 = GetBool(map, "CPIS357");
+            vm.CPIS342 = GetBool(map, "CPIS342");
+
+            vm.IsEligible =
+                vm.CPIS351 &&
+                vm.CPIS358 &&
+                vm.CPIS323 &&
+                vm.CPIS380 &&
+                vm.CPIS357 &&
+                vm.CPIS342;
+        }
+
         [HttpGet]
-        public IActionResult Form5(int? formId)
+        public async Task<IActionResult> Form5(int? formId, bool editMode = false)
         {
             int selectedFormId;
 
@@ -29,122 +178,187 @@ namespace Acadify.Controllers
             }
             else
             {
-                // لازم تبقى "Form 5" لأن هذا النص مطابق للقيمة المخزنة في جدول Forms
-                selectedFormId = _context.Forms
-                    .Where(f => f.FormType == "Form 5")
-                    .OrderByDescending(f => f.FormId)
-                    .Select(f => f.FormId)
-                    .FirstOrDefault();
+                var currentStudentId = GetCurrentStudentId();
 
-                if (selectedFormId == 0)
-                    return NotFound("No Form 5 record found in Forms table.");
+                if (!currentStudentId.HasValue || currentStudentId.Value <= 0)
+                    return BadRequest("Student session is not found. Please login again.");
+
+                selectedFormId = await GetOrCreateLatestForm5ForStudentAsync(currentStudentId.Value);
             }
 
-            // جلب سجل الفورم 5 مع بيانات الفورم والطالبة
-            var form5 = _context.GraduationProjectEligibilityForms
+            var form5Entity = await _context.GraduationProjectEligibilityForms
                 .Include(x => x.Form)
                 .ThenInclude(f => f.Student)
-                .FirstOrDefault(x => x.FormId == selectedFormId);
+                .FirstOrDefaultAsync(x => x.FormId == selectedFormId);
 
-            if (form5 == null)
-                return NotFound("Form5 not found in GraduationProjectEligibilityForm table.");
+            if (form5Entity == null || form5Entity.Form == null)
+                return NotFound();
 
-            if (form5.Form == null)
-                return NotFound("Related Form record was not found.");
+            // حماية: الطالبة لا تفتح فورم لطالبة ثانية إذا كان الاعتماد على السشن
+            var sessionStudentId = GetCurrentStudentId();
+            if (sessionStudentId.HasValue && form5Entity.Form.StudentId != sessionStudentId.Value)
+                return Forbid();
 
-            int studentId = form5.Form.StudentId;
+            int currentStudentIdForForm = form5Entity.Form.StudentId;
 
-            // جلب الترانسكربت مع المواد المرتبطة به
-            var transcript = _context.Transcripts
+            var transcript = await _context.Transcripts
                 .Include(t => t.Courses)
-                .FirstOrDefault(t => t.StudentId == studentId);
+                .FirstOrDefaultAsync(t => t.StudentId == currentStudentIdForForm);
 
-            // تعبئة بيانات الطالبة للعرض
-            form5.StudentName = form5.Form.Student?.Name ?? "-";
-            form5.StudentId = studentId.ToString();
+            var vm = new GraduationProjectEligibilityFormVM
+            {
+                FormId = form5Entity.FormId,
+                Form = form5Entity.Form,
+                StudentName = form5Entity.Form.Student?.Name ?? "-",
+                StudentId = currentStudentIdForForm.ToString(),
+                IsHistoryView = false,
+                IsEditMode = editMode
+            };
 
-            // إذا لم يوجد ترانسكربت
+            if (!string.IsNullOrWhiteSpace(form5Entity.RequiredCoursesStatus) &&
+                form5Entity.RequiredCoursesStatus.Contains("CPIS351=", StringComparison.OrdinalIgnoreCase))
+            {
+                FillVmFromSnapshot(vm, form5Entity.RequiredCoursesStatus);
+                vm.Eligibility = vm.IsEligible ? "Eligible" : "Not Eligible";
+                return View(vm);
+            }
+
             if (transcript == null)
             {
-                form5.CPIS351 = false;
-                form5.CPIS358 = false;
-                form5.CPIS323 = false;
-                form5.CPIS360 = false;
-                form5.CPIS375 = false;
-                form5.CPIS342 = false;
-
-                form5.IsEligible = false;
-                form5.Eligibility = "Not Eligible";
-                form5.RequiredCoursesStatus = "Transcript not uploaded.";
-
-                _context.SaveChanges();
-                return View(form5);
+                vm.CPIS351 = false;
+                vm.CPIS358 = false;
+                vm.CPIS323 = false;
+                vm.CPIS380 = false;
+                vm.CPIS357 = false;
+                vm.CPIS342 = false;
             }
-
-            // دالة فحص وجود المادة في TranscriptCourse
-            bool HasCourse(string code)
+            else
             {
-                string Normalize(string s) => (s ?? "").Replace(" ", "").Trim().ToUpper();
-                string target = Normalize(code);
+                bool HasCourse(string code)
+                {
+                    string Normalize(string s) => (s ?? "").Replace(" ", "").Trim().ToUpper();
+                    string target = Normalize(code);
 
-                return transcript.Courses.Any(c => Normalize(c.CourseId) == target);
+                    return transcript.Courses.Any(c => Normalize(c.CourseId) == target);
+                }
+
+                vm.CPIS351 = HasCourse("CPIS351");
+                vm.CPIS358 = HasCourse("CPIS358");
+                vm.CPIS323 = HasCourse("CPIS323");
+                vm.CPIS380 = HasCourse("CPIS380");
+                vm.CPIS357 = HasCourse("CPIS357");
+                vm.CPIS342 = HasCourse("CPIS342");
             }
 
-            // تعبئة حالة المواد المطلوبة
-            form5.CPIS351 = HasCourse("CPIS351");
-            form5.CPIS358 = HasCourse("CPIS358");
-            form5.CPIS323 = HasCourse("CPIS323");
-            form5.CPIS360 = HasCourse("CPIS360");
-            form5.CPIS375 = HasCourse("CPIS375");
-            form5.CPIS342 = HasCourse("CPIS342");
+            vm.IsEligible =
+                vm.CPIS351 &&
+                vm.CPIS358 &&
+                vm.CPIS323 &&
+                vm.CPIS380 &&
+                vm.CPIS357 &&
+                vm.CPIS342;
 
-            // حساب الأهلية
-            form5.IsEligible =
-                form5.CPIS351 &&
-                form5.CPIS358 &&
-                form5.CPIS323 &&
-                form5.CPIS360 &&
-                form5.CPIS375 &&
-                form5.CPIS342;
+            vm.Eligibility = vm.IsEligible ? "Eligible" : "Not Eligible";
 
-            // تجهيز قائمة المواد الناقصة
-            var missing = new List<string>();
+            form5Entity.Eligibility = vm.Eligibility;
+            form5Entity.RequiredCoursesStatus = BuildSnapshot(
+                vm.CPIS351,
+                vm.CPIS358,
+                vm.CPIS323,
+                vm.CPIS380,
+                vm.CPIS357,
+                vm.CPIS342);
 
-            if (!form5.CPIS351) missing.Add("CPIS 351");
-            if (!form5.CPIS358) missing.Add("CPIS 358");
-            if (!form5.CPIS323) missing.Add("CPIS 323");
-            if (!form5.CPIS360) missing.Add("CPIS 360");
-            if (!form5.CPIS375) missing.Add("CPIS 375");
-            if (!form5.CPIS342) missing.Add("CPIS 342");
+            await _context.SaveChangesAsync();
 
-            // تحديث حقول قاعدة البيانات
-            form5.Eligibility = form5.IsEligible ? "Eligible" : "Not Eligible";
-            form5.RequiredCoursesStatus = missing.Any()
-                ? "Missing: " + string.Join(", ", missing)
-                : "All required courses are completed/registered.";
-
-            _context.SaveChanges();
-
-            return View(form5);
+            return View(vm);
         }
 
-        // POST: /GraduationProjectEligibility/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateStatus(int formId, string status)
+        public async Task<IActionResult> SaveUpdate(GraduationProjectEligibilityFormVM vm)
         {
-            var form = _context.Forms.FirstOrDefault(f => f.FormId == formId);
+            var entity = await _context.GraduationProjectEligibilityForms
+                .Include(x => x.Form)
+                .ThenInclude(f => f.Student)
+                .FirstOrDefaultAsync(x => x.FormId == vm.FormId);
+
+            if (entity == null || entity.Form == null)
+                return NotFound();
+
+            var sessionStudentId = GetCurrentStudentId();
+            if (sessionStudentId.HasValue && entity.Form.StudentId != sessionStudentId.Value)
+                return Forbid();
+
+            vm.IsEligible =
+                vm.CPIS351 &&
+                vm.CPIS358 &&
+                vm.CPIS323 &&
+                vm.CPIS380 &&
+                vm.CPIS357 &&
+                vm.CPIS342;
+
+            entity.Eligibility = vm.IsEligible ? "Eligible" : "Not Eligible";
+            entity.RequiredCoursesStatus = BuildSnapshot(
+                vm.CPIS351,
+                vm.CPIS358,
+                vm.CPIS323,
+                vm.CPIS380,
+                vm.CPIS357,
+                vm.CPIS342);
+
+            entity.Form.FormStatus = "Updated";
+            entity.Form.FormDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            TempData["ActionMessage"] = "The form is updated successfully.";
+
+            return RedirectToAction("Form5", new { formId = vm.FormId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int formId, string status)
+        {
+            var form = await _context.Forms.FirstOrDefaultAsync(f => f.FormId == formId);
 
             if (form == null)
                 return NotFound("Form record not found.");
 
-            // تحديث حالة الفورم في جدول Forms
             form.FormStatus = status;
             form.FormDate = DateTime.Now;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return RedirectToAction("Form5", new { formId = formId });
+            TempData["ActionMessage"] = status switch
+            {
+                "Accepted" => "The form is accepted successfully.",
+                "Rejected" => "The form is rejected successfully.",
+                "Updated" => "The form is updated successfully.",
+                _ => "The form status is updated successfully."
+            };
+
+            return RedirectToAction("Form5", new { formId });
+        }
+    
+[HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendToAdvisingCommittee(int formId)
+        {
+            var form = await _context.Forms.FirstOrDefaultAsync(f => f.FormId == formId);
+
+            if (form == null)
+                return NotFound("Form record not found.");
+
+            form.FormStatus = "Sent to Advising Committee";
+            form.FormDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            TempData["ActionMessage"] = "The form is sent to the Advising Committee successfully.";
+
+            return RedirectToAction("Form5", new { formId });
         }
     }
 }

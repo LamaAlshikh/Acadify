@@ -1,53 +1,66 @@
 ﻿@model Acadify.Models.AdminPages.UploadAcademicCalendarModel
-
 @{
-    ViewData["Title"] = "Upload Academic Calendar";
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/Site2.css" />
+<link rel="stylesheet" href="~/css/upload-academic-calendar.css" />
 
 <div class="upload-page">
     <div class="upload-card">
-        <h2 class="upload-title">Upload <span class="accent">Academic Calendar</span></h2>
+        <h2>Upload <span>Academic Calendar</span></h2>
 
-        <form asp-action="UploadAcademicCalendar" method="post" enctype="multipart/form-data">
+        <form id="uploadForm" asp-action="UploadAcademicCalendar" asp-controller="Admin" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
-            <div class="drop-zone">
-                <div class="drop-icon">☁</div>
-                <p class="drop-text">
-                    drag and drop file or
-                    <label class="browse">
-                        <input asp-for="AcademicCalendarFile" type="file" accept=".pdf" hidden />
-                        browse
-                    </label>
-                </p>
+            <div class="upload-box">
+                <input asp-for="AcademicCalendarFile" type="file" id="academicCalendarFile" accept=".pdf" hidden />
+
+                <label for="academicCalendarFile" class="upload-label">
+                    <div class="upload-icon">☁</div>
+                    <p>drag and drop file or <span>browse</span></p>
+                    <p id="fileNameText" class="file-name">No file selected</p>
+                </label>
             </div>
 
-            <span class="hint">Supported format: PDF</span>
+            <p class="format-text">Supported format: PDF</p>
 
-            <div class="actions">
-                <button type="submit" class="btn-upload">Upload</button>
-            </div>
-
-            <div class="validation">
-                <span asp-validation-for="AcademicCalendarFile"></span>
-            </div>
-
-            @if (!string.IsNullOrWhiteSpace(Model.Message))
-            {
-                <div class="success-msg">@Model.Message</div>
-            }
-
-            @if (!string.IsNullOrWhiteSpace(Model.SavedFileName))
-            {
-                <div class="file-info">Saved as: <b>@Model.SavedFileName</b></div>
-            }
+            <button type="submit" id="uploadBtn" class="upload-btn">Upload</button>
         </form>
+
+        @if (!string.IsNullOrWhiteSpace(Model?.Message))
+        {
+            <div class="upload-message @(Model.IsSuccess ? "success" : "error")">
+                @Model.Message
+            </div>
+        }
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <p>Uploading academic calendar, please wait...</p>
+        </div>
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<script>
+    const form = document.getElementById("uploadForm");
+    const fileInput = document.getElementById("academicCalendarFile");
+    const fileNameText = document.getElementById("fileNameText");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const loadingOverlay = document.getElementById("loadingOverlay");
+
+    fileInput.addEventListener("change", function () {
+        if (fileInput.files.length > 0) {
+            fileNameText.textContent = "File: " + fileInput.files[0].name;
+        } else {
+            fileNameText.textContent = "No file selected";
+        }
+    });
+
+    form.addEventListener("submit", function () {
+        loadingOverlay.classList.add("show");
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "Uploading...";
+    });
+</script>

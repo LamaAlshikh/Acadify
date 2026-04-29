@@ -1,4 +1,5 @@
-﻿using System;
+﻿// ViewModels/FormHistoryVM.cs
+using System;
 using System.Collections.Generic;
 
 namespace Acadify.ViewModels
@@ -8,7 +9,6 @@ namespace Acadify.ViewModels
         public string FormType { get; set; } = string.Empty;
         public int StudentId { get; set; }
         public string PageTitle { get; set; } = string.Empty;
-
         public List<FormHistoryItemVM> Forms { get; set; } = new();
     }
 

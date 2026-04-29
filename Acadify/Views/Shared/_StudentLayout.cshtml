@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/css/UploadTranscript.css" />
     <link rel="stylesheet" href="~/css/StudentChat.css" />
-
 
     <!-- Font Awesome -->
     <link rel="stylesheet"
@@ -18,10 +18,10 @@
 
     <!-- Main CSS -->
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/RahafZh.css" />
 </head>
 
 <body class="@ViewBag.BodyClass">
-
 
     <div class="student-layout">
 
@@ -31,7 +31,7 @@
             <!-- Profile -->
             <div class="student-profile">
                 <div class="profile-top">
-                    <img src="~/images/user.png" class="student-avatar" />
+                    <img src="~/images/user.png" class="student-avatar" alt="Student" />
 
                     <!-- Notifications -->
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
@@ -39,30 +39,40 @@
                     </button>
                 </div>
 
+                <!-- student name + email under profile -->
                 <h4>@ViewBag.StudentName</h4>
                 <p>@ViewBag.StudentEmail</p>
             </div>
 
             <!-- Menu -->
             <ul class="student-menu">
-                <li class="active">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Homepage</span>
+                <li class="@(ViewData["Title"]?.ToString() == "Student Home" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="StudentHome">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Homepage</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-users"></i>
-                    <span>Community</span>
+                <li class="@(ViewData["Title"]?.ToString() == "Community Student" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="CommunityStudent">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Community</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>Meeting</span>
+                <!-- name stays Meeting, but opens Chat page -->
+                <li class="@(ViewData["Title"]?.ToString() == "Chat" ? "active" : "")">
+                    <a asp-controller="Student" asp-action="Chat">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Meeting</span>
+                    </a>
                 </li>
 
-                <li>
-                    <i class="fa-solid fa-book"></i>
-                    <span>Course Recommendation</span>
+                <li class="@(ViewData["Title"]?.ToString() == "Course Recommendation" ? "active" : "")">
+                    <a asp-controller="Recommendation" asp-action="Index">
+                        <i class="fa-solid fa-book"></i>
+                        <span>Course Recommendation</span>
+                    </a>
                 </li>
             </ul>
 

@@ -31,6 +31,21 @@ namespace Acadify.Controllers
             return Ok();
         }
 
+        private int? GetCurrentStudentId()
+        {
+            return HttpContext.Session.GetInt32("StudentId");
+        }
+
+        private int? GetCurrentAdvisorId()
+        {
+            return HttpContext.Session.GetInt32("AdvisorId");
+        }
+
+        private int? GetCurrentAdminId()
+        {
+            return HttpContext.Session.GetInt32("AdminId");
+        }
+
         private async Task AddNotificationAsync(
             string senderRole,
             string sourceType,
@@ -62,35 +77,43 @@ namespace Acadify.Controllers
 
         // النظام -> الطالبة
         [HttpPost]
-        public async Task<IActionResult> RecommendationToStudent(int studentId, string message)
+        public async Task<IActionResult> RecommendationToStudent(string message)
         {
+            var studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return BadRequest("Student session not found.");
+
             await AddNotificationAsync(
                 senderRole: "System",
                 sourceType: "Recommendation",
                 type: "system recommendation",
                 message: message,
-                studentId: studentId);
+                studentId: studentId.Value);
 
             return Ok();
         }
 
-        // الطالبة -> المرشد (قبول / رفض / تعديل)
+        // الطالبة -> المرشد
         [HttpPost]
-        public async Task<IActionResult> RecommendationStudentActionToAdvisor(int advisorId, int studentId, string message)
+        public async Task<IActionResult> RecommendationStudentActionToAdvisor(string message)
         {
+            var advisorId = GetCurrentAdvisorId();
+            if (!advisorId.HasValue)
+                return BadRequest("Advisor session not found.");
+
             await AddNotificationAsync(
                 senderRole: "Student",
                 sourceType: "Recommendation",
                 type: "student recommendation action",
                 message: message,
-                advisorId: advisorId);
+                advisorId: advisorId.Value);
 
             return Ok();
         }
 
-        // المرشد -> الطالبة (رفض / تعديل / قرار)
+        // المرشد -> الطالبة
         [HttpPost]
-        public async Task<IActionResult> RecommendationAdvisorActionToStudent(int studentId, int advisorId, string message)
+        public async Task<IActionResult> RecommendationAdvisorActionToStudent(int studentId, string message)
         {
             await AddNotificationAsync(
                 senderRole: "Advisor",
@@ -108,21 +131,25 @@ namespace Acadify.Controllers
 
         // الطالبة -> المرشد
         [HttpPost]
-        public async Task<IActionResult> MeetingStudentToAdvisor(int advisorId, int studentId, string message)
+        public async Task<IActionResult> MeetingStudentToAdvisor(string message)
         {
+            var advisorId = GetCurrentAdvisorId();
+            if (!advisorId.HasValue)
+                return BadRequest("Advisor session not found.");
+
             await AddNotificationAsync(
                 senderRole: "Student",
                 sourceType: "Meeting",
                 type: "meeting request",
                 message: message,
-                advisorId: advisorId);
+                advisorId: advisorId.Value);
 
             return Ok();
         }
 
         // المرشد -> الطالبة
         [HttpPost]
-        public async Task<IActionResult> MeetingAdvisorToStudent(int studentId, int advisorId, string message)
+        public async Task<IActionResult> MeetingAdvisorToStudent(int studentId, string message)
         {
             await AddNotificationAsync(
                 senderRole: "Advisor",
@@ -138,7 +165,6 @@ namespace Acadify.Controllers
         // CHAT
         // =========================
 
-        // إشعار محادثة يظهر للطالبة وللمرشد
         [HttpPost]
         public async Task<IActionResult> ChatToStudentAndAdvisor(int studentId, int advisorId, string senderRole, string message)
         {
@@ -163,16 +189,19 @@ namespace Acadify.Controllers
         // FORM
         // =========================
 
-        // النظام -> المرشد عند اكتمال الفورم
         [HttpPost]
-        public async Task<IActionResult> FormCompletedToAdvisor(int advisorId, string message)
+        public async Task<IActionResult> FormCompletedToAdvisor(string message)
         {
+            var advisorId = GetCurrentAdvisorId();
+            if (!advisorId.HasValue)
+                return BadRequest("Advisor session not found.");
+
             await AddNotificationAsync(
                 senderRole: "System",
                 sourceType: "Form",
                 type: "form completed",
                 message: message,
-                advisorId: advisorId);
+                advisorId: advisorId.Value);
 
             return Ok();
         }
@@ -181,16 +210,19 @@ namespace Acadify.Controllers
         // TRANSCRIPT
         // =========================
 
-        // النظام -> الطالبة
         [HttpPost]
-        public async Task<IActionResult> TranscriptUploadedToStudent(int studentId, string message)
+        public async Task<IActionResult> TranscriptUploadedToStudent(string message)
         {
+            var studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return BadRequest("Student session not found.");
+
             await AddNotificationAsync(
                 senderRole: "System",
                 sourceType: "Transcript",
                 type: "transcript uploaded",
                 message: message,
-                studentId: studentId);
+                studentId: studentId.Value);
 
             return Ok();
         }
@@ -199,16 +231,19 @@ namespace Acadify.Controllers
         // CALENDAR
         // =========================
 
-        // النظام -> الأدمن عند رفع الكالندر
         [HttpPost]
-        public async Task<IActionResult> CalendarUploadedToAdmin(int adminId, string message)
+        public async Task<IActionResult> CalendarUploadedToAdmin(string message)
         {
+            var adminId = GetCurrentAdminId();
+            if (!adminId.HasValue)
+                return BadRequest("Admin session not found.");
+
             await AddNotificationAsync(
                 senderRole: "System",
                 sourceType: "Calendar",
                 type: "calendar uploaded",
                 message: message,
-                adminId: adminId);
+                adminId: adminId.Value);
 
             return Ok();
         }
@@ -217,23 +252,27 @@ namespace Acadify.Controllers
         // REQUEST
         // =========================
 
-        // الطالبة -> الأدمن عند اختيار المرشدة
+        // الطالبة -> الأدمن
         [HttpPost]
-        public async Task<IActionResult> RequestToAdmin(int studentId, int adminId, string message)
+        public async Task<IActionResult> RequestToAdmin(string message)
         {
+            var adminId = GetCurrentAdminId();
+            if (!adminId.HasValue)
+                return BadRequest("Admin session not found.");
+
             await AddNotificationAsync(
                 senderRole: "Student",
                 sourceType: "Request",
                 type: "advisor request",
                 message: message,
-                adminId: adminId);
+                adminId: adminId.Value);
 
             return Ok();
         }
 
-        // الأدمن -> الطالبة بقرار الطلب
+        // الأدمن -> الطالبة
         [HttpPost]
-        public async Task<IActionResult> RequestDecisionToStudent(int studentId, int adminId, string message)
+        public async Task<IActionResult> RequestDecisionToStudent(int studentId, string message)
         {
             await AddNotificationAsync(
                 senderRole: "Admin",
@@ -249,16 +288,19 @@ namespace Acadify.Controllers
         // STUDY PLAN
         // =========================
 
-        // النظام -> الأدمن عند رفع الخطة
         [HttpPost]
-        public async Task<IActionResult> StudyPlanUploadedToAdmin(int adminId, string message)
+        public async Task<IActionResult> StudyPlanUploadedToAdmin(string message)
         {
+            var adminId = GetCurrentAdminId();
+            if (!adminId.HasValue)
+                return BadRequest("Admin session not found.");
+
             await AddNotificationAsync(
                 senderRole: "System",
                 sourceType: "StudyPlan",
                 type: "study plan uploaded",
                 message: message,
-                adminId: adminId);
+                adminId: adminId.Value);
 
             return Ok();
         }
@@ -271,11 +313,12 @@ namespace Acadify.Controllers
         public async Task<IActionResult> AddSystem(
             string sourceType,
             string type,
-            string message,
-            int? studentId,
-            int? advisorId,
-            int? adminId)
+            string message)
         {
+            var studentId = GetCurrentStudentId();
+            var advisorId = GetCurrentAdvisorId();
+            var adminId = GetCurrentAdminId();
+
             await AddNotificationAsync(
                 senderRole: "System",
                 sourceType: sourceType,

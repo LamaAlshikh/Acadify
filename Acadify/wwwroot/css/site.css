@@ -19,12 +19,14 @@ body.welcome-body {
 .welcome-left {
     width: 50%;
 }
+
     .welcome-left h1 {
         font-size: 38px;
         font-weight: bold;
         line-height: 1.3;
         margin: 0;
     }
+
     .welcome-left p {
         font-size: 14px;
         color: #444;
@@ -64,6 +66,7 @@ body.welcome-body {
     justify-content: center;
     align-items: center;
 }
+
 .welcome-logo-box {
     padding: 35px 45px;
     border-radius: 35px;
@@ -72,6 +75,7 @@ body.welcome-body {
     box-shadow: 0 0 12px rgba(0,0,0,0.05);
     margin-top: 35px; /* تنزل شوي تحت */
 }
+
 .welcome-logo {
     width: 350px;
     display: block;
@@ -220,7 +224,7 @@ body.welcome-body {
    MAIN CONTENT AREA
    ========================= */
 .main-background-box {
-    margin-left: 260px; 
+    margin-left: 260px;
     margin-top: 30px;
     margin-right: 30px;
     margin-bottom: 30px;
@@ -229,6 +233,7 @@ body.welcome-body {
     padding: 60px;
     flex: 1;
 }
+
 .main-layout {
     min-height: 100vh;
     padding: 20px;
@@ -339,9 +344,8 @@ html, body {
 
     .student-profile h4 {
         color: #ffffff; /* الاسم أبيض */
-        font-size: 15px;
-        font-weight: 600;
-        margin: 8px 0 4px;
+        font-size:11px;
+        margin: 20px 0 4px;
     }
 
     .student-profile p {
@@ -408,6 +412,7 @@ html, body {
         color: #ffffff;
         border: 2px dashed rgba(255,255,255,0.6);
     }
+
 .begin {
     color: #1db954;
 }
@@ -441,7 +446,7 @@ html, body {
     -webkit-text-fill-color: transparent;
     font-weight: 600;
     margin-bottom: 40px;
-    margin-left: 80px; 
+    margin-left: 80px;
 }
 /* =========================
    Cards Section
@@ -737,6 +742,7 @@ body {
     background: #f1c40f;
     color: #000;
 }
+
 .btn-history {
     background: #e0e0e0;
     color: #333;
@@ -772,11 +778,11 @@ html, body {
 .advisor-profile {
     text-align: center;
     margin-bottom: 40px;
-   
+
 }
 
 
-   
+
 .advisor-avatar {
     width: 70px;
     height: 70px;
@@ -812,13 +818,13 @@ html, body {
         align-items: center;
         gap: 12px;
         padding: 12px;
-       
+
         border-radius: 10px;
         cursor: pointer;
         font-size: 14px;
         color: #ffffff;
         padding-top: 15px;
-    margin-top: 30px;
+        margin-top: 30px;
     }
 
         .advisor-menu li i {
@@ -855,6 +861,7 @@ html, body {
     margin: 30px;
     overflow-y: hidden;
 }
+
 .advisor-content {
     flex: 1;
     background: #f7f7f7;
@@ -863,6 +870,7 @@ html, body {
     /* ⬅️ احذفي أي shadow هنا */
     box-shadow: none;
 }
+
 .form5-container {
     max-width: 900px;
     margin: 0 auto;
@@ -871,6 +879,7 @@ html, body {
     padding: 30px 40px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
+
 .form5-header {
     display: flex;
     justify-content: space-between;
@@ -1065,4 +1074,89 @@ html, body {
     border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     overflow: hidden;
+}
+.form-alert-success {
+    background: #eaf7ef;
+    color: #1f7a3d;
+    border: 1px solid #b9e2c7;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.form-alert-info {
+    background: #eef5ff;
+    color: #245b9e;
+    border: 1px solid #c8dbfb;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.btn-update {
+    background: #f2c94c;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-update:hover {
+        opacity: 0.9;
+    }
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .form5-container,
+    .form5-container * {
+        visibility: visible;
+    }
+
+    .form5-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        background: #fff;
+    }
+
+    .form5-header-actions,
+    .form5-actions,
+    .sidebar,
+    .side-nav,
+    .main-sidebar,
+    .advisor-sidebar,
+    .student-sidebar,
+    .navbar,
+    .topbar,
+    .header,
+    .layout-sidebar {
+        display: none !important;
+    }
+}
+.btn-send-committee {
+    background:#317FAB;
+    color: #fff;
+}
+.btn-white,
+.btn-white:link,
+.btn-white:visited,
+.btn-outline,
+.btn-outline:link,
+.btn-outline:visited {
+    text-decoration: none;
 }
