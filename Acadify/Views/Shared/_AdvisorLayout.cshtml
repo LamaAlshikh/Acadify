@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 
 <head>
     <meta charset="utf-8" />
@@ -16,6 +17,12 @@
     <link rel="stylesheet" href="~/css/AdvisorForm4.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
 =======
+=======
+<head>
+    <meta charset="utf-8" />
+    <title>Acadify – Advisor</title>
+
+>>>>>>> origin_second/linaLMversion
    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
@@ -24,29 +31,48 @@
     <link rel="stylesheet" href="~/css/AdvisorForm3.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/AdvisorForm4.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/advisor-layout.css" asp-append-version="true" />
+<<<<<<< HEAD
     <link rel="stylesheet" href="~/css/AdvisorLayout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/AdvisorChat.css" />
 >>>>>>> origin_second/rahafgh
+=======
+    <link rel="stylesheet" href="~/css/AdvisorChat.css" />
+>>>>>>> origin_second/linaLMversion
 </head>
 
 <body>
 
     <div class="advisor-layout">
 
+<<<<<<< HEAD
+=======
+        <!-- Sidebar -->
+>>>>>>> origin_second/linaLMversion
         <aside class="advisor-sidebar">
 
             <div class="advisor-profile">
                 <div class="profile-top">
+<<<<<<< HEAD
                     <img src="~/images/user.png" class="advisor-avatar" alt="Advisor" />
 
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
                         <i class="fa-regular fa-bell"></i>
                     </button>
                     </div> 
+=======
+                    <img src="~/images/user.png" class="advisor-avatar" />
+
+                    <!-- Notifications (SAME AS STUDENT) -->
+                    <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
+                        <i class="fa-regular fa-bell"></i>
+                    </button>
+                </div>
+>>>>>>> origin_second/linaLMversion
 
                 <h4>Dr. Amina Gamlo</h4>
                 <p>agamlo@kau.edu.sa</p>
             </div>
+<<<<<<< HEAD
             @{
                 var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
             }
@@ -109,6 +135,31 @@
 
 
 
+=======
+
+            <ul class="advisor-menu">
+                <li class="active">
+                    <i class="fa-solid fa-house"></i>
+                    Homepage
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-file-circle-check"></i>
+                    Forms
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-users"></i>
+                    Community
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Meetings
+                </li>
+            </ul>
+
+>>>>>>> origin_second/linaLMversion
             <div class="advisor-logout">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 Logout
@@ -116,12 +167,20 @@
 
         </aside>
 
+<<<<<<< HEAD
+=======
+        <!-- Main Content -->
+>>>>>>> origin_second/linaLMversion
         <main class="advisor-content">
             @RenderBody()
         </main>
 
     </div>
 
+<<<<<<< HEAD
+=======
+    <!-- Notifications ViewComponent -->
+>>>>>>> origin_second/linaLMversion
     @await Component.InvokeAsync("Notifications")
 
     <script>
@@ -136,7 +195,14 @@
             const overlay = document.getElementById('notifOverlay');
             if (overlay) overlay.classList.remove('show');
         }
+<<<<<<< HEAD
     </script> 
 
 </body>
 </html>
+=======
+    </script>
+
+</body>
+</html>
+>>>>>>> origin_second/linaLMversion

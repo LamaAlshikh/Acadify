@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿/* =========================
    Form 4 Page Wrapper
 ========================= */
@@ -19,6 +20,8 @@
     justify-content: space-between;
     align-items: center;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 ﻿/*************************************************
    FORM 4 - Study Plan Matching
 *************************************************/
@@ -44,12 +47,16 @@
     align-items: flex-start;
     margin-bottom: 25px;
     gap: 16px;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 }
 
 .form4-title {
     display: flex;
     align-items: center;
+<<<<<<< HEAD
 <<<<<<< HEAD
     gap: 12px;
 }
@@ -73,6 +80,8 @@
     margin: 0;
     font-size: 18px;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     gap: 10px;
 }
 
@@ -84,13 +93,17 @@
 .form4-title h2 {
     font-size: 20px;
     margin: 0;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
     font-weight: 700;
 }
 
 .form4-title p {
     margin: 0;
     color: #777;
+<<<<<<< HEAD
 <<<<<<< HEAD
     font-size: 13px;
 }
@@ -158,6 +171,8 @@
     text-align: center;
     margin: 0 0 18px;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     font-size: 14px;
 }
 
@@ -216,11 +231,15 @@
 .f4-title {
     text-align: center;
     margin: 0 0 20px;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
     font-size: 18px;
     font-weight: 700;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 /* Paragraph text */
 .f4-paragraph {
@@ -231,6 +250,8 @@
 
 /* Underline fields (like Word) */
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 /* Paragraphs */
 .f4-paragraph {
     font-size: 14px;
@@ -239,7 +260,10 @@
 }
 
 /* Lines */
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 .f4-line {
     display: inline-block;
     min-width: 140px;
@@ -248,9 +272,12 @@
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* Number underline */
 =======
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 .f4-num {
     display: inline-block;
     min-width: 40px;
@@ -259,6 +286,7 @@
     padding: 0 6px 2px;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 /* Hours list */
 .f4-list {
@@ -295,6 +323,8 @@
 .f4-sign {
     margin-top: 28px;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 /* List */
 .f4-list {
     margin: 14px 0 18px;
@@ -348,17 +378,24 @@
 /* Signature */
 .f4-sign {
     margin-top: 30px;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
     font-size: 14px;
 }
 
 .f4-sign-label {
     text-align: right;
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin-bottom: 12px;
 =======
     margin-bottom: 14px;
 >>>>>>> origin_second/rahafgh
+=======
+    margin-bottom: 14px;
+>>>>>>> origin_second/linaLMversion
     font-weight: 600;
 }
 
@@ -367,10 +404,14 @@
     gap: 12px;
     align-items: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin-top: 12px;
 =======
     margin-top: 14px;
 >>>>>>> origin_second/rahafgh
+=======
+    margin-top: 14px;
+>>>>>>> origin_second/linaLMversion
 }
 
 .f4-sign-input {
@@ -378,6 +419,7 @@
     border: none;
     border-bottom: 1px solid #000;
     outline: none;
+<<<<<<< HEAD
 <<<<<<< HEAD
     padding: 6px;
     font-size: 14px;
@@ -430,6 +472,8 @@
     box-sizing: border-box;
 }
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     padding: 8px 6px;
     font-size: 14px;
     background: transparent;
@@ -600,4 +644,151 @@
         margin: 10mm;
     }
 }
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+
+/* ==============================
+   Form 4 - Equivalency Section
+============================== */
+.form4-equivalency-box {
+    width: 100%;
+    max-width: 620px;
+    margin: 28px auto 0;
+    padding: 18px 18px;
+    background: #f9fbfd;
+    border: 1px solid #d9e3ea;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+
+.form4-equivalency-title {
+    margin: 0 0 16px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2d3d;
+}
+
+.form4-equivalency-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.course-decision-card {
+    background: #ffffff;
+    border: 1px solid #e4e9ee;
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+}
+
+.course-decision-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.course-code {
+    font-size: 20px;
+    font-weight: 700;
+    color: #000;
+}
+
+.course-name {
+    font-size: 20px;
+    font-weight: 500;
+    color: #222;
+}
+
+.course-hours {
+    font-size: 15px;
+    color: #444;
+}
+
+.course-decision-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.decision-type-select,
+.equivalent-course-select {
+    min-width: 180px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid #cfd8df;
+    border-radius: 9px;
+    background: #fff;
+    font-size: 14px;
+    color: #222;
+    outline: none;
+}
+
+    .decision-type-select:focus,
+    .equivalent-course-select:focus {
+        border-color: #4d8fb3;
+        box-shadow: 0 0 0 2px rgba(77, 143, 179, 0.12);
+    }
+
+.course-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2d3d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form4-equivalency-box {
+        padding: 18px 14px;
+    }
+
+    .course-code,
+    .course-name {
+        font-size: 22px;
+    }
+
+    .course-hours {
+        font-size: 19px;
+    }
+
+    .decision-type-select,
+    .equivalent-course-select {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .course-decision-controls {
+        flex-direction: column;
+    }
+}
+
+.form4-equivalency-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-approve-free {
+    border: none;
+    background: #2f84b0;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .btn-approve-free:hover {
+        background: #246b90;
+    }
+>>>>>>> origin_second/linaLMversion

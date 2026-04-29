@@ -10,7 +10,11 @@ public class WelcomeController : Controller
         return View();
     }
 
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> origin_second/linaLMversion
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

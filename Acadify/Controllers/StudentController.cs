@@ -1,4 +1,5 @@
 ﻿using Acadify.Models;
+<<<<<<< HEAD
 using Acadify.Services;
 using Microsoft.AspNetCore.Mvc;
 <<<<<<< HEAD
@@ -8,6 +9,9 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 =======
+=======
+using Microsoft.AspNetCore.Mvc;
+>>>>>>> origin_second/linaLMversion
 using System.IO;
 using Acadify.Models.Db;
 using Microsoft.EntityFrameworkCore;
@@ -16,17 +20,23 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text.RegularExpressions;
+<<<<<<< HEAD
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
 >>>>>>> origin_second/rahafgh
+=======
+
+
+>>>>>>> origin_second/linaLMversion
 
 namespace Acadify.Controllers
 {
     public class StudentController : Controller
     {
+<<<<<<< HEAD
 <<<<<<< HEAD
         private readonly AcadifyDbContext _db;
         private readonly IWebHostEnvironment _env;
@@ -40,23 +50,36 @@ namespace Acadify.Controllers
         private readonly AcadifyDbContext _context;
 
 
+=======
+
+        private readonly AcadifyDbContext _context;
+
+       
+>>>>>>> origin_second/linaLMversion
 
 
         private readonly AcadifyDbContext _db;
         private readonly IWebHostEnvironment _env;
 
+<<<<<<< HEAD
         public StudentController(AcadifyDbContext db, IWebHostEnvironment env, AcadifyDbContext context,
             ITranscriptParserService transcriptParserService,
             IRecommendationEngineService recommendationEngineService,
             ITranscriptAiParserService transcriptAiParserService
             )
+=======
+        public StudentController(AcadifyDbContext db, IWebHostEnvironment env , AcadifyDbContext context)
+>>>>>>> origin_second/linaLMversion
         {
             _db = db;
             _env = env;
             _context = context;
+<<<<<<< HEAD
             _transcriptParserService = transcriptParserService;
             _recommendationEngineService = recommendationEngineService;
             _transcriptAiParserService = transcriptAiParserService;
+=======
+>>>>>>> origin_second/linaLMversion
         }
 
         // =========================
@@ -292,6 +315,173 @@ namespace Acadify.Controllers
 
 
 
+<<<<<<< HEAD
+=======
+        private static Dictionary<string, int> ExtractCourseHoursMapFromPdf(string fullPath, List<string>? targetCourseIds)
+        {
+            var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+            using var doc = UglyToad.PdfPig.PdfDocument.Open(fullPath);
+
+            foreach (var page in doc.GetPages())
+            {
+                var words = page.GetWords()
+                    .OrderByDescending(w => w.BoundingBox.Bottom)
+                    .ThenBy(w => w.BoundingBox.Left)
+                    .ToList();
+
+                var lines = GroupWordsIntoLines(words);
+
+                foreach (var line in lines)
+                {
+                    var tokens = line
+                        .OrderBy(w => w.BoundingBox.Left)
+                        .Select(w => w.Text.Trim().ToUpperInvariant())
+                        .Where(t => !string.IsNullOrWhiteSpace(t))
+                        .ToList();
+
+                    if (tokens.Count == 0)
+                        continue;
+
+                    var lineCourseIds = ExtractCourseIdsFromTokens(tokens);
+
+                    foreach (var courseId in lineCourseIds)
+                    {
+                        if (targetCourseIds != null && !targetCourseIds.Contains(courseId, StringComparer.OrdinalIgnoreCase))
+                            continue;
+
+                        if (result.ContainsKey(courseId))
+                            continue;
+
+                        if (!TryFindCourseOnLine(tokens, courseId, out var codeIndex))
+                            continue;
+
+                        if (TryExtractHourNearCourse(tokens, codeIndex, out var hours))
+                            result[courseId] = hours;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static List<List<UglyToad.PdfPig.Content.Word>> GroupWordsIntoLines(List<UglyToad.PdfPig.Content.Word> words)
+        {
+            var lines = new List<List<UglyToad.PdfPig.Content.Word>>();
+
+            foreach (var word in words)
+            {
+                var existingLine = lines.FirstOrDefault(line =>
+                    Math.Abs(line[0].BoundingBox.Bottom - word.BoundingBox.Bottom) <= 3.5);
+
+                if (existingLine == null)
+                {
+                    lines.Add(new List<UglyToad.PdfPig.Content.Word> { word });
+                }
+                else
+                {
+                    existingLine.Add(word);
+                }
+            }
+
+            return lines;
+        }
+
+        private static List<string> ExtractCourseIdsFromTokens(List<string> tokens)
+        {
+            var result = new List<string>();
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
+                if (m.Success)
+                {
+                    result.Add((m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant());
+                    continue;
+                }
+
+                if (i < tokens.Count - 1 &&
+                    Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
+                    Regex.IsMatch(tokens[i + 1], @"^\d{3}$"))
+                {
+                    result.Add((tokens[i] + tokens[i + 1]).ToUpperInvariant());
+                }
+            }
+
+            return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static bool TryFindCourseOnLine(List<string> tokens, string courseId, out int codeIndex)
+        {
+            codeIndex = -1;
+
+            var upperCourseId = courseId.ToUpperInvariant();
+            var prefix = new string(upperCourseId.TakeWhile(char.IsLetter).ToArray());
+            var number = new string(upperCourseId.SkipWhile(char.IsLetter).ToArray());
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
+                if (m.Success)
+                {
+                    var code = (m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant();
+                    if (code == upperCourseId)
+                    {
+                        codeIndex = i;
+                        return true;
+                    }
+                }
+
+                if (i < tokens.Count - 1 &&
+                    Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
+                    tokens[i] == prefix &&
+                    tokens[i + 1] == number)
+                {
+                    codeIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool TryExtractHourNearCourse(List<string> tokens, int codeIndex, out int hours)
+        {
+            hours = 0;
+
+            var candidates = new List<(int Distance, int Value, bool IsBefore)>();
+
+            for (int i = Math.Max(0, codeIndex - 10); i <= Math.Min(tokens.Count - 1, codeIndex + 10); i++)
+            {
+                if (i == codeIndex)
+                    continue;
+
+                if (Regex.IsMatch(tokens[i], @"^[0-5]$"))
+                {
+                    int value = int.Parse(tokens[i]);
+                    int distance = Math.Abs(i - codeIndex);
+                    bool isBefore = i < codeIndex;
+
+                    candidates.Add((distance, value, isBefore));
+                }
+            }
+
+            if (candidates.Count == 0)
+                return false;
+
+            var best = candidates
+                .OrderBy(c => c.Distance)
+                .ThenBy(c => c.IsBefore ? 0 : 1)
+                .ThenBy(c => c.Value == 0 ? 1 : 0)
+                .First();
+
+            hours = best.Value;
+            return true;
+        }
+
+
+
+>>>>>>> origin_second/linaLMversion
 
 
 
@@ -305,6 +495,7 @@ namespace Acadify.Controllers
             // مؤقتًا: القيمة جاية من الإيجنت
             // لاحقًا: تستبدل بقيمة من Database
             int progressFromAgent = 80;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
 
         public StudentController(AcadifyDbContext db, IWebHostEnvironment env)
@@ -594,11 +785,21 @@ namespace Acadify.Controllers
                 StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail"),
                 ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
                 CurrentStatus = CalculateCurrentStatus(remainingHours)
+=======
+
+            var model = new StudentHomeViewModel
+            {
+                StudentName = "lama alshikh",
+                StudentEmail = "lalshikh@stu.kau.edu.sa",
+                ProgressPercentage = progressFromAgent,
+                CurrentStatus = GetStatus(progressFromAgent)
+>>>>>>> origin_second/linaLMversion
             };
 
             return View(model);
         }
 
+<<<<<<< HEAD
         // =======================
         // Upload Transcript Page
         // =======================
@@ -911,6 +1112,18 @@ namespace Acadify.Controllers
         public class SendStudentMessageRequest
         {
             public string Message { get; set; } = string.Empty;
+=======
+        // تحديد حالة الطالبة بناءً على نسبة التقدم
+        private string GetStatus(int progress)
+        {
+            if (progress <= 30)
+                return "Beginning";
+
+            if (progress <= 70)
+                return "Has Remaining Courses";
+
+            return "Near Graduation";
+>>>>>>> origin_second/linaLMversion
         }
         // =======================
         // Upload Transcript Page
@@ -975,6 +1188,7 @@ namespace Acadify.Controllers
             var titleBasedCodes = ExtractCourseCodesByKnownTitles(extractedText);
 
             // 6) دمج الأكواد
+<<<<<<< HEAD
 
 
 
@@ -1014,6 +1228,18 @@ namespace Acadify.Controllers
                     courseCodesSet.Add(cleanCode);
             }
 
+=======
+            var courseCodesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var code in parsedTranscript.CourseCodes)
+                courseCodesSet.Add(code);
+
+            foreach (var code in pdfCourseCodes)
+                courseCodesSet.Add(code);
+
+            foreach (var code in titleBasedCodes)
+                courseCodesSet.Add(code);
+>>>>>>> origin_second/linaLMversion
 
             // 7) تنظيف الأكواد غير الصحيحة
             courseCodesSet.RemoveWhere(code =>
@@ -1023,6 +1249,12 @@ namespace Acadify.Controllers
                 code.StartsWith("SUMMER", StringComparison.OrdinalIgnoreCase) ||
                 code.StartsWith("WINTER", StringComparison.OrdinalIgnoreCase));
 
+<<<<<<< HEAD
+=======
+            // اقرأ ساعات المواد من الترانسكربت
+            var transcriptHourMap = ExtractCourseHoursMapFromPdf(fullPath, courseCodesSet.ToList());
+
+>>>>>>> origin_second/linaLMversion
             // ✅ Debug
             ViewBag.CodesCount = courseCodesSet.Count;
             ViewBag.CodesPreview = string.Join(", ", courseCodesSet.OrderBy(x => x));
@@ -1060,6 +1292,7 @@ namespace Acadify.Controllers
 
             if (courseCodesSet.Count > 0)
             {
+<<<<<<< HEAD
 
                 /*
                  * var coursesInDb = await _db.Courses
@@ -1079,12 +1312,37 @@ namespace Acadify.Controllers
                 var existingIds = coursesInDb
                    .Select(c => c.CourseId.Trim().ToUpper())
                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+=======
+                var coursesInDb = await _db.Courses
+                    .Where(c => courseCodesSet.Contains(c.CourseId))
+                    .ToListAsync();
+
+                foreach (var course in coursesInDb)
+                {
+                    bool isUnclassified = string.IsNullOrWhiteSpace(course.RequirementCategory);
+                    bool hasZeroHours = course.Hours <= 0;
+
+                    if ((isUnclassified || hasZeroHours) &&
+                        transcriptHourMap.TryGetValue(course.CourseId, out var extractedHours) &&
+                        extractedHours > 0)
+                    {
+                        course.Hours = extractedHours;
+                    }
+                }
+
+                var existingIds = coursesInDb
+                    .Select(c => c.CourseId)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+>>>>>>> origin_second/linaLMversion
 
                 var missingIds = courseCodesSet
                     .Where(id => !existingIds.Contains(id))
                     .ToList();
 
+<<<<<<< HEAD
                 /*
+=======
+>>>>>>> origin_second/linaLMversion
                 foreach (var id in missingIds)
                 {
                     if (id.StartsWith("FALL", StringComparison.OrdinalIgnoreCase) ||
@@ -1099,12 +1357,17 @@ namespace Acadify.Controllers
                     {
                         CourseId = id,
                         CourseName = id,
+<<<<<<< HEAD
                         Hours = 0
+=======
+                        Hours = transcriptHourMap.TryGetValue(id, out var extractedHours) ? extractedHours : 0
+>>>>>>> origin_second/linaLMversion
                     };
 
                     _db.Courses.Add(newCourse);
                     coursesInDb.Add(newCourse);
                 }
+<<<<<<< HEAD
                 */
 
                 foreach (var id in missingIds)
@@ -1120,6 +1383,8 @@ namespace Acadify.Controllers
                     // ممكن تحطين هذا للديبغ فقط
                     Console.WriteLine($"Course not found in DB: {id}");
                 }
+=======
+>>>>>>> origin_second/linaLMversion
 
                 foreach (var c in coursesInDb)
                     transcript.Courses.Add(c);
@@ -1222,6 +1487,7 @@ namespace Acadify.Controllers
         }
 
 
+<<<<<<< HEAD
         private string ExtractLastAcademicTerm(string? extractedInfo)
         {
             if (string.IsNullOrWhiteSpace(extractedInfo))
@@ -1804,3 +2070,9 @@ namespace Acadify.Controllers
 
 
 >>>>>>> origin_second/rahafgh
+=======
+
+
+    }
+}
+>>>>>>> origin_second/linaLMversion

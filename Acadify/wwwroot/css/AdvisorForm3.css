@@ -1,10 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿.advisor-form3-page {
     height: calc(100vh - 60px);
     display: flex;
     flex-direction: column;
     gap: 16px;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 ﻿.form3-container {
     max-width: 1100px;
     margin-left: 60px;
@@ -16,11 +19,15 @@
     overflow: visible;
     height: auto;
     min-height: auto;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 }
 
 /* Top */
 .form3-top {
+<<<<<<< HEAD
 <<<<<<< HEAD
     background: #ffffff;
     border-radius: 18px;
@@ -29,6 +36,8 @@
     justify-content: space-between;
     align-items: center;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     background: transparent;
     border-radius: 0;
     padding: 0;
@@ -36,7 +45,10 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 }
 
 .form3-title {
@@ -63,6 +75,7 @@
 .form3-title h2 {
     margin: 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
     font-size: 18px;
     font-weight: 700;
 }
@@ -88,6 +101,8 @@
     border-radius: 12px;
     font-size: 14px;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     font-size: 20px;
     font-weight: 700;
 }
@@ -125,11 +140,15 @@
     border-radius: 6px;
     font-size: 14px;
     margin-bottom: 18px;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 }
 
 /* Card */
 .form3-card {
+<<<<<<< HEAD
 <<<<<<< HEAD
     flex: none;
     height: 560px; /* ✅ مهم عشان الأزرار تظهر */
@@ -209,6 +228,8 @@
     padding: 22px;
     border: 1px solid #e6e6e6;
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     margin-bottom: 24px;
     background: transparent;
     padding: 0;
@@ -225,17 +246,24 @@
     border-radius: 12px;
     padding: 28px 34px;
     overflow-x: auto;
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 }
 
 .form3-title-center h3 {
     text-align: center;
     margin: 0 0 18px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     font-size: 16px;
 =======
     font-size: 18px;
 >>>>>>> origin_second/rahafgh
+=======
+    font-size: 18px;
+>>>>>>> origin_second/linaLMversion
     font-weight: 700;
 }
 
@@ -244,11 +272,16 @@
     justify-content: space-between;
     gap: 20px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin-bottom: 14px;
 =======
     margin-bottom: 18px;
     flex-wrap: wrap;
 >>>>>>> origin_second/rahafgh
+=======
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+>>>>>>> origin_second/linaLMversion
 }
 
     .form3-student-line label {
@@ -264,9 +297,13 @@
     width: 220px;
     padding: 4px 6px;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     background: transparent;
 >>>>>>> origin_second/rahafgh
+=======
+    background: transparent;
+>>>>>>> origin_second/linaLMversion
 }
 
 .form3-table {
@@ -296,9 +333,13 @@
     outline: none;
     margin-top: 6px;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     box-sizing: border-box;
 >>>>>>> origin_second/rahafgh
+=======
+    box-sizing: border-box;
+>>>>>>> origin_second/linaLMversion
 }
 
 .cell-textarea {
@@ -309,9 +350,13 @@
     outline: none;
     resize: vertical;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     box-sizing: border-box;
 >>>>>>> origin_second/rahafgh
+=======
+    box-sizing: border-box;
+>>>>>>> origin_second/linaLMversion
 }
 
 .check-row {
@@ -339,12 +384,15 @@
     color: #444;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 .form3-table input,
 .form3-table textarea {
     width: 100%;
     box-sizing: border-box; /* 👈 هذا المهم */
 }
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 
 .form3-table input,
 .form3-table textarea {
@@ -487,4 +535,7 @@
         margin: 12mm;
     }
 }
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion

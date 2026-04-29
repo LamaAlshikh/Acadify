@@ -15,11 +15,15 @@ public partial class AcadifyDbContext : DbContext
     {
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
     public virtual DbSet<StudyPlanCourse> StudyPlanCourses { get; set; }
     public virtual DbSet<CourseChoiceMonitoringForm> CourseChoiceMonitoringForms { get; set; }
 >>>>>>> origin_second/rahafgh
+=======
+
+>>>>>>> origin_second/linaLMversion
     public virtual DbSet<AcademicAdvisingConfirmationForm> AcademicAdvisingConfirmationForms { get; set; }
 
     public virtual DbSet<AcademicCalendar> AcademicCalendars { get; set; }
@@ -62,12 +66,19 @@ public partial class AcadifyDbContext : DbContext
 
     public virtual DbSet<VwMyStudent> VwMyStudents { get; set; }
 
+<<<<<<< HEAD
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 <<<<<<< HEAD
+=======
+    public virtual DbSet<TranscriptCourseDecision> TranscriptCourseDecisions { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+>>>>>>> origin_second/linaLMversion
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:AcadifyDb");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+<<<<<<< HEAD
 =======
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
@@ -85,6 +96,8 @@ public partial class AcadifyDbContext : DbContext
         });
 
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
         modelBuilder.Entity<AcademicAdvisingConfirmationForm>(entity =>
         {
             entity.HasKey(e => e.FormId).HasName("PK__Academic__51BCB7CBD5B24476");
@@ -184,12 +197,15 @@ public partial class AcadifyDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("courseID");
 <<<<<<< HEAD
+<<<<<<< HEAD
             entity.Property(e => e.CourseName)
                 .HasMaxLength(200)
                 .HasColumnName("courseName");
             entity.Property(e => e.GraduationRequirement).HasMaxLength(200);
             entity.Property(e => e.Hours).HasColumnName("hours");
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 
             entity.Property(e => e.CourseName)
                 .HasMaxLength(200)
@@ -205,7 +221,10 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.Hours)
                 .HasColumnName("hours");
 
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
             entity.Property(e => e.Prerequisite)
                 .HasMaxLength(200)
                 .HasColumnName("prerequisite");
@@ -475,6 +494,9 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.TotalHours).HasColumnName("totalHours");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin_second/linaLMversion
             entity.HasMany(d => d.Courses).WithMany(p => p.Plans)
                 .UsingEntity<Dictionary<string, object>>(
                     "StudyPlanCourse",
@@ -494,9 +516,12 @@ public partial class AcadifyDbContext : DbContext
                             .HasMaxLength(30)
                             .HasColumnName("courseID");
                     });
+<<<<<<< HEAD
 =======
             
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
         });
 
         modelBuilder.Entity<StudyPlanMatchingForm>(entity =>
@@ -509,9 +534,13 @@ public partial class AcadifyDbContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("formID");
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin_second/rahafgh
+=======
+
+>>>>>>> origin_second/linaLMversion
             entity.Property(e => e.EarnedHours).HasColumnName("earnedHours");
             entity.Property(e => e.GraduationStatus)
                 .HasMaxLength(80)
@@ -521,7 +550,10 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.RequiredHours).HasColumnName("requiredHours");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin_second/linaLMversion
             entity.Property(e => e.UniversityHours).HasColumnName("universityHours");
             entity.Property(e => e.PrepYearHours).HasColumnName("prepYearHours");
             entity.Property(e => e.FreeCoursesHours).HasColumnName("freeCoursesHours");
@@ -530,7 +562,10 @@ public partial class AcadifyDbContext : DbContext
             entity.Property(e => e.DeptElectiveHours).HasColumnName("deptElectiveHours");
             entity.Property(e => e.TotalHours).HasColumnName("totalHours");
 
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
             entity.HasOne(d => d.Form).WithOne(p => p.StudyPlanMatchingForm)
                 .HasForeignKey<StudyPlanMatchingForm>(d => d.FormId)
                 .HasConstraintName("FK_SPMF_Forms");
@@ -626,6 +661,7 @@ public partial class AcadifyDbContext : DbContext
         });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -677,6 +713,45 @@ public partial class AcadifyDbContext : DbContext
         });
 
 >>>>>>> origin_second/rahafgh
+=======
+
+
+
+        modelBuilder.Entity<TranscriptCourseDecision>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.TranscriptCourseId)
+                .HasMaxLength(30);
+
+            entity.Property(e => e.DecisionType)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.EquivalentCourseId)
+                .HasMaxLength(30);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Student)
+                .WithMany(p => p.TranscriptCourseDecisions)
+                .HasForeignKey(d => d.StudentId);
+
+            entity.HasOne(d => d.TranscriptCourse)
+                .WithMany()
+                .HasForeignKey(d => d.TranscriptCourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(d => d.EquivalentCourse)
+                .WithMany()
+                .HasForeignKey(d => d.EquivalentCourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+>>>>>>> origin_second/linaLMversion
         OnModelCreatingPartial(modelBuilder);
     }
 

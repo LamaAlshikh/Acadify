@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿using Acadify.Models;
 using Acadify.Services.AcademicCalendar;
 using Acadify.Services.AcademicCalendar.Interfaces;
@@ -26,6 +27,23 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
 builder.Services.AddDistributedMemoryCache();
+=======
+﻿using Acadify.Models.Db;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Acadify.Services;
+
+
+
+var builder = WebApplication.CreateBuilder(args);
+
+// MVC
+builder.Services.AddControllersWithViews();
+
+// Session
+builder.Services.AddDistributedMemoryCache();
+
+>>>>>>> origin_second/linaLMversion
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -33,6 +51,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+<<<<<<< HEAD
 // Register DbContext
 builder.Services.AddDbContext<Acadify.Models.Db.AcadifyDbContext>(options =>
     options.UseSqlServer(
@@ -57,6 +76,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+=======
+
+
+// ✅ Register DbContext
+>>>>>>> origin_second/linaLMversion
 builder.Services.AddDbContext<AcadifyDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("AcadifyDb"),
@@ -66,8 +90,15 @@ builder.Services.AddDbContext<AcadifyDbContext>(options =>
             sql.EnableRetryOnFailure();
         }));
 
+<<<<<<< HEAD
 builder.Services.AddScoped<OpenAiVisionClient>();
 builder.Services.AddScoped<IAcademicCalendarAiExtractor, AcademicCalendarFixedExtractor>();
+=======
+builder.Services.AddHttpClient<AiSummaryService>();
+
+
+
+>>>>>>> origin_second/linaLMversion
 
 var app = builder.Build();
 
@@ -81,6 +112,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+<<<<<<< HEAD
 app.UseSession();
 app.UseAuthorization();
 
@@ -96,3 +128,18 @@ app.Run();
 app.Run();
 
 >>>>>>> origin_second/rahafgh
+=======
+
+app.UseSession();
+
+app.UseAuthorization();
+
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Welcome}/{id?}");
+
+
+
+app.Run();
+>>>>>>> origin_second/linaLMversion

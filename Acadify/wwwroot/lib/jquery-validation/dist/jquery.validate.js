@@ -1,9 +1,17 @@
 /*!
+<<<<<<< HEAD
  * jQuery Validation Plugin v1.19.5
  *
  * https://jqueryvalidation.org/
  *
  * Copyright (c) 2022 Jörn Zaefferer
+=======
+ * jQuery Validation Plugin v1.21.0
+ *
+ * https://jqueryvalidation.org/
+ *
+ * Copyright (c) 2024 Jörn Zaefferer
+>>>>>>> origin_second/linaLMversion
  * Released under the MIT license
  */
 (function( factory ) {
@@ -293,6 +301,10 @@ $.extend( $.validator, {
 		onsubmit: true,
 		ignore: ":hidden",
 		ignoreTitle: false,
+<<<<<<< HEAD
+=======
+		customElements: [],
+>>>>>>> origin_second/linaLMversion
 		onfocusin: function( element ) {
 			this.lastActive = element;
 
@@ -440,6 +452,7 @@ $.extend( $.validator, {
 					settings[ eventType ].call( validator, this, event );
 				}
 			}
+<<<<<<< HEAD
 
 			$( this.currentForm )
 				.on( "focusin.validate focusout.validate keyup.validate",
@@ -451,6 +464,19 @@ $.extend( $.validator, {
 				// Support: Chrome, oldIE
 				// "select" is provided as event.target when clicking a option
 				.on( "click.validate", "select, option, [type='radio'], [type='checkbox']", delegate );
+=======
+			var focusListeners = [ ":text", "[type='password']", "[type='file']", "select", "textarea", "[type='number']", "[type='search']",
+								"[type='tel']", "[type='url']", "[type='email']", "[type='datetime']", "[type='date']", "[type='month']",
+								"[type='week']", "[type='time']", "[type='datetime-local']", "[type='range']", "[type='color']",
+								"[type='radio']", "[type='checkbox']", "[contenteditable]", "[type='button']" ];
+			var clickListeners = [ "select", "option", "[type='radio']", "[type='checkbox']" ];
+			$( this.currentForm )
+				.on( "focusin.validate focusout.validate keyup.validate", focusListeners.concat( this.settings.customElements ).join( ", " ), delegate )
+
+				// Support: Chrome, oldIE
+				// "select" is provided as event.target when clicking a option
+				.on( "click.validate", clickListeners.concat( this.settings.customElements ).join( ", " ), delegate );
+>>>>>>> origin_second/linaLMversion
 
 			if ( this.settings.invalidHandler ) {
 				$( this.currentForm ).on( "invalid-form.validate", this.settings.invalidHandler );
@@ -647,11 +673,20 @@ $.extend( $.validator, {
 
 		elements: function() {
 			var validator = this,
+<<<<<<< HEAD
 				rulesCache = {};
 
 			// Select all valid inputs inside the form (no submit or reset buttons)
 			return $( this.currentForm )
 			.find( "input, select, textarea, [contenteditable]" )
+=======
+				rulesCache = {},
+				selectors = [ "input", "select", "textarea", "[contenteditable]" ];
+
+			// Select all valid inputs inside the form (no submit or reset buttons)
+			return $( this.currentForm )
+			.find( selectors.concat( this.settings.customElements ).join( ", " ) )
+>>>>>>> origin_second/linaLMversion
 			.not( ":submit, :reset, :image, :disabled" )
 			.not( this.settings.ignore )
 			.filter( function() {
@@ -774,6 +809,12 @@ $.extend( $.validator, {
 				val = this.elementValue( element ),
 				result, method, rule, normalizer;
 
+<<<<<<< HEAD
+=======
+			// Abort any pending Ajax request from a previous call to this method.
+			this.abortRequest( element );
+
+>>>>>>> origin_second/linaLMversion
 			// Prioritize the local normalizer defined for this element over the global one
 			// if the former exists, otherwise user the global one in case it exists.
 			if ( typeof rules.normalizer === "function" ) {
@@ -960,14 +1001,32 @@ $.extend( $.validator, {
 				error.removeClass( this.settings.validClass ).addClass( this.settings.errorClass );
 
 				// Replace message on existing label
+<<<<<<< HEAD
 				error.html( message );
+=======
+				if ( this.settings && this.settings.escapeHtml ) {
+					error.text( message || "" );
+				} else {
+					error.html( message || "" );
+				}
+>>>>>>> origin_second/linaLMversion
 			} else {
 
 				// Create error element
 				error = $( "<" + this.settings.errorElement + ">" )
 					.attr( "id", elementID + "-error" )
+<<<<<<< HEAD
 					.addClass( this.settings.errorClass )
 					.html( message || "" );
+=======
+					.addClass( this.settings.errorClass );
+
+				if ( this.settings && this.settings.escapeHtml ) {
+					error.text( message || "" );
+				} else {
+					error.html( message || "" );
+				}
+>>>>>>> origin_second/linaLMversion
 
 				// Maintain reference to the element to be placed into the DOM
 				place = error;
@@ -1113,6 +1172,13 @@ $.extend( $.validator, {
 			return !$.validator.methods.required.call( this, val, element ) && "dependency-mismatch";
 		},
 
+<<<<<<< HEAD
+=======
+		elementAjaxPort: function( element ) {
+			return "validate" + element.name;
+		},
+
+>>>>>>> origin_second/linaLMversion
 		startRequest: function( element ) {
 			if ( !this.pending[ element.name ] ) {
 				this.pendingRequest++;
@@ -1148,6 +1214,28 @@ $.extend( $.validator, {
 			}
 		},
 
+<<<<<<< HEAD
+=======
+		abortRequest: function( element ) {
+			var port;
+
+			if ( this.pending[ element.name ] ) {
+				port = this.elementAjaxPort( element );
+				$.ajaxAbort( port );
+
+				this.pendingRequest--;
+
+				// Sometimes synchronization fails, make sure pendingRequest is never < 0
+				if ( this.pendingRequest < 0 ) {
+					this.pendingRequest = 0;
+				}
+
+				delete this.pending[ element.name ];
+				$( element ).removeClass( this.settings.pendingClass );
+			}
+		},
+
+>>>>>>> origin_second/linaLMversion
 		previousValue: function( element, method ) {
 			method = typeof method === "string" && method || "remote";
 
@@ -1466,7 +1554,11 @@ $.extend( $.validator, {
 
 		// https://jqueryvalidation.org/number-method/
 		number: function( value, element ) {
+<<<<<<< HEAD
 			return this.optional( element ) || /^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test( value );
+=======
+			return this.optional( element ) || /^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:-?\.\d+)?$/.test( value );
+>>>>>>> origin_second/linaLMversion
 		},
 
 		// https://jqueryvalidation.org/digits-method/
@@ -1577,18 +1669,30 @@ $.extend( $.validator, {
 
 			param = typeof param === "string" && { url: param } || param;
 			optionDataString = $.param( $.extend( { data: value }, param.data ) );
+<<<<<<< HEAD
 			if ( previous.old === optionDataString ) {
+=======
+			if ( previous.valid !== null && previous.old === optionDataString ) {
+>>>>>>> origin_second/linaLMversion
 				return previous.valid;
 			}
 
 			previous.old = optionDataString;
+<<<<<<< HEAD
+=======
+			previous.valid = null;
+>>>>>>> origin_second/linaLMversion
 			validator = this;
 			this.startRequest( element );
 			data = {};
 			data[ element.name ] = value;
 			$.ajax( $.extend( true, {
 				mode: "abort",
+<<<<<<< HEAD
 				port: "validate" + element.name,
+=======
+				port: this.elementAjaxPort( element ),
+>>>>>>> origin_second/linaLMversion
 				dataType: "json",
 				data: data,
 				context: validator.currentForm,
@@ -1599,7 +1703,10 @@ $.extend( $.validator, {
 					validator.settings.messages[ element.name ][ method ] = previous.originalMessage;
 					if ( valid ) {
 						submitted = validator.formSubmitted;
+<<<<<<< HEAD
 						validator.resetInternals();
+=======
+>>>>>>> origin_second/linaLMversion
 						validator.toHide = validator.errorsFor( element );
 						validator.formSubmitted = submitted;
 						validator.successList.push( element );
@@ -1624,6 +1731,10 @@ $.extend( $.validator, {
 
 // Ajax mode: abort
 // usage: $.ajax({ mode: "abort"[, port: "uniqueport"]});
+<<<<<<< HEAD
+=======
+//        $.ajaxAbort( port );
+>>>>>>> origin_second/linaLMversion
 // if mode:"abort" is used, the previous request on that port (port can be undefined) is aborted via XMLHttpRequest.abort()
 
 var pendingRequests = {},
@@ -1634,9 +1745,13 @@ if ( $.ajaxPrefilter ) {
 	$.ajaxPrefilter( function( settings, _, xhr ) {
 		var port = settings.port;
 		if ( settings.mode === "abort" ) {
+<<<<<<< HEAD
 			if ( pendingRequests[ port ] ) {
 				pendingRequests[ port ].abort();
 			}
+=======
+			$.ajaxAbort( port );
+>>>>>>> origin_second/linaLMversion
 			pendingRequests[ port ] = xhr;
 		}
 	} );
@@ -1648,14 +1763,29 @@ if ( $.ajaxPrefilter ) {
 		var mode = ( "mode" in settings ? settings : $.ajaxSettings ).mode,
 			port = ( "port" in settings ? settings : $.ajaxSettings ).port;
 		if ( mode === "abort" ) {
+<<<<<<< HEAD
 			if ( pendingRequests[ port ] ) {
 				pendingRequests[ port ].abort();
 			}
+=======
+			$.ajaxAbort( port );
+>>>>>>> origin_second/linaLMversion
 			pendingRequests[ port ] = ajax.apply( this, arguments );
 			return pendingRequests[ port ];
 		}
 		return ajax.apply( this, arguments );
 	};
 }
+<<<<<<< HEAD
+=======
+
+// Abort the previous request without sending a new one
+$.ajaxAbort = function( port ) {
+	if ( pendingRequests[ port ] ) {
+		pendingRequests[ port ].abort();
+		delete pendingRequests[ port ];
+	}
+};
+>>>>>>> origin_second/linaLMversion
 return $;
 }));

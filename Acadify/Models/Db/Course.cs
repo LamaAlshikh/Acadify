@@ -14,11 +14,16 @@ public partial class Course
     public string? Prerequisite { get; set; }
 
     public string? GraduationRequirement { get; set; }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 =======
     public string? RequirementCategory { get; set; }
 >>>>>>> origin_second/rahafgh
+=======
+    public string? RequirementCategory { get; set; }
+
+>>>>>>> origin_second/linaLMversion
     public virtual ICollection<StudyPlan> Plans { get; set; } = new List<StudyPlan>();
 
     public virtual ICollection<Transcript> Transcripts { get; set; } = new List<Transcript>();

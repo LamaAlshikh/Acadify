@@ -19,14 +19,20 @@ body.welcome-body {
 .welcome-left {
     width: 50%;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
     .welcome-left h1 {
         font-size: 38px;
         font-weight: bold;
         line-height: 1.3;
         margin: 0;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
     .welcome-left p {
         font-size: 14px;
         color: #444;
@@ -66,7 +72,10 @@ body.welcome-body {
     justify-content: center;
     align-items: center;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
 .welcome-logo-box {
     padding: 35px 45px;
     border-radius: 35px;
@@ -75,7 +84,10 @@ body.welcome-body {
     box-shadow: 0 0 12px rgba(0,0,0,0.05);
     margin-top: 35px; /* تنزل شوي تحت */
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
 .welcome-logo {
     width: 350px;
     display: block;
@@ -207,6 +219,7 @@ body.welcome-body {
 /* =========================
    SIDEBAR (مطابق للتصميم)
    ========================= */
+<<<<<<< HEAD
 
 /* =========================
    MAIN CONTENT AREA
@@ -214,6 +227,26 @@ body.welcome-body {
 <<<<<<< HEAD
 .main-background-box {
     margin-left: 260px;
+=======
+.student-sidebar {
+    width: 240px;
+    background: linear-gradient(to bottom, #76BAA5, #2272AD);
+    color: #ffffff;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-radius: 0 26px 26px 0;
+}
+/* =========================
+   MAIN CONTENT AREA
+   ========================= */
+.main-background-box {
+    margin-left: 260px; 
+>>>>>>> origin_second/linaLMversion
     margin-top: 30px;
     margin-right: 30px;
     margin-bottom: 30px;
@@ -222,20 +255,35 @@ body.welcome-body {
     padding: 60px;
     flex: 1;
 }
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/rahafgh
 
+=======
+>>>>>>> origin_second/linaLMversion
 .main-layout {
     min-height: 100vh;
     padding: 20px;
     overflow: hidden;
 }
 
+<<<<<<< HEAD
 
 /* =========================
    Sidebar
 ========================= */
 
+=======
+.student-layout {
+    display: flex;
+    height: calc(100vh - 40px);
+    gap: 24px;
+}
+/* =========================
+   Sidebar
+========================= */
+.student-sidebar,
+>>>>>>> origin_second/linaLMversion
 .advisor-sidebar {
     width: 210px;
     border-radius: 1px;
@@ -263,6 +311,7 @@ html, body {
 /***************************
    Sidebar (مطابق للبروتوتايب)
 ****************************/
+<<<<<<< HEAD
 
 
 
@@ -289,6 +338,79 @@ html, body {
         color: #ffffff; /* الاسم أبيض */
         font-size:11px;
         margin: 20px 0 4px;
+=======
+.student-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 15px;
+}
+
+.student-menu {
+    list-style: none;
+    padding: 0;
+    flex: 1;
+}
+
+    .student-menu li {
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+        .student-menu li.active {
+            background-color: rgba(255,255,255,0.25);
+        }
+/* =========================
+   Main Background Box
+========================= */
+.main-background-box {
+    flex: 1;
+    background: #f7f7f7;
+    border-radius: 36px;
+    padding: 36px 42px;
+    min-height: calc(100vh - 60px); /* يوصل لنهاية الشاشة */
+    margin-top: 50px; /* عدّلي الرقم حسب اللي يريحك */
+    background: #f7f7f7;
+}
+
+/* =========================
+   Sidebar Menu Items
+========================= */
+.student-menu li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 15px;
+    margin-top: 30px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+}
+
+    .student-menu li i {
+        font-size: 16px;
+    }
+    /* العنصر النشط */
+    .student-menu li.active {
+        background: rgba(255,255,255,0.15);
+    }
+/* =========================
+   Student Profile
+========================= */
+.student-profile {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+    .student-profile h4 {
+        color: #ffffff; /* الاسم أبيض */
+        font-size: 15px;
+        font-weight: 600;
+        margin: 8px 0 4px;
+>>>>>>> origin_second/linaLMversion
     }
 
     .student-profile p {
@@ -328,8 +450,11 @@ html, body {
     .logout i {
         font-size: 16px;
     }
+<<<<<<< HEAD
 =======
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
 /*************************** -----------------------**************************************
                               صفحة الطالب الرئيسية
  *************************** -----------------------************************************** */
@@ -357,7 +482,10 @@ html, body {
         color: #ffffff;
         border: 2px dashed rgba(255,255,255,0.6);
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
 .begin {
     color: #1db954;
 }
@@ -391,7 +519,11 @@ html, body {
     -webkit-text-fill-color: transparent;
     font-weight: 600;
     margin-bottom: 40px;
+<<<<<<< HEAD
     margin-left: 80px;
+=======
+    margin-left: 80px; 
+>>>>>>> origin_second/linaLMversion
 }
 /* =========================
    Cards Section
@@ -659,7 +791,11 @@ body {
 
 /* Actions */
 .form5-actions {
+<<<<<<< HEAD
     margin-top: 13px;
+=======
+    margin-top: 20px;
+>>>>>>> origin_second/linaLMversion
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -687,7 +823,10 @@ body {
     background: #f1c40f;
     color: #000;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
 .btn-history {
     background: #e0e0e0;
     color: #333;
@@ -732,11 +871,19 @@ html, body {
 .advisor-profile {
     text-align: center;
     margin-bottom: 40px;
+<<<<<<< HEAD
 
 }
 
 
 
+=======
+   
+}
+
+
+   
+>>>>>>> origin_second/linaLMversion
 .advisor-avatar {
     width: 70px;
     height: 70px;
@@ -772,13 +919,21 @@ html, body {
         align-items: center;
         gap: 12px;
         padding: 12px;
+<<<<<<< HEAD
 
+=======
+       
+>>>>>>> origin_second/linaLMversion
         border-radius: 10px;
         cursor: pointer;
         font-size: 14px;
         color: #ffffff;
         padding-top: 15px;
+<<<<<<< HEAD
         margin-top: 30px;
+=======
+    margin-top: 30px;
+>>>>>>> origin_second/linaLMversion
     }
 
         .advisor-menu li i {
@@ -807,6 +962,7 @@ html, body {
 /* =========================
    Main Content
 ========================= */
+<<<<<<< HEAD
 .advisor-content {
     flex: 1;
     background: #f7f7f7;
@@ -829,6 +985,10 @@ html, body {
 =======
 
 >>>>>>> origin_second/rahafgh
+=======
+
+
+>>>>>>> origin_second/linaLMversion
 .form5-container {
     max-width: 900px;
     margin: 0 auto;
@@ -837,7 +997,10 @@ html, body {
     padding: 30px 40px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin_second/linaLMversion
 .form5-header {
     display: flex;
     justify-content: space-between;
@@ -1034,6 +1197,7 @@ html, body {
     overflow: hidden;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 .form-alert-success {
     background: #eaf7ef;
     color: #1f7a3d;
@@ -1044,6 +1208,8 @@ html, body {
     font-weight: 600;
 }
 =======
+=======
+>>>>>>> origin_second/linaLMversion
 /* =========================
    Advisor Layout Root
 ========================= */
@@ -1141,6 +1307,7 @@ html, body {
 
 
 
+<<<<<<< HEAD
                 /* -----------------------
    Global Settings
 -------------------------*/
@@ -2299,3 +2466,131 @@ html, body {
 .btn-outline:visited {
     text-decoration: none;
 }
+=======
+
+
+.history-page {
+    padding: 28px 32px;
+}
+
+.history-header {
+    margin-bottom: 18px;
+}
+
+.history-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #4ca8b8;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #dff3f5;
+    box-shadow: 0 0 0 2px #7cc6cf inset;
+    font-size: 18px;
+}
+
+.history-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+}
+
+.history-shell {
+    background: #f7f7f7;
+    border-radius: 30px;
+    padding: 28px;
+    min-height: 70vh;
+}
+
+.history-empty {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+    padding: 40px 0;
+}
+
+.history-card {
+    background: #fff;
+    border: 1px solid #a9c9ef;
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.history-card-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.history-doc-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #48a8b8;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #dff3f5;
+    font-size: 18px;
+}
+
+.history-form-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 4px;
+}
+
+.history-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.history-status-label,
+.history-date-label {
+    color: #999;
+}
+
+.history-status {
+    color: #46b96d;
+}
+
+.history-date {
+    color: #f39a4a;
+}
+
+.history-view-btn {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #f3f6f7;
+    border: 1px solid #a9c9ef;
+    color: #6e9bb0;
+    text-decoration: none;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+    .history-view-btn:hover {
+        background: #eaf3f7;
+    }
+>>>>>>> origin_second/linaLMversion

@@ -3,6 +3,7 @@
     public class Form4ViewModel
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         // ======================
         // Header (البيانات الأساسية)
         // ======================
@@ -35,6 +36,8 @@
         // Notes (ملحوظات إن وجدت)
         // ======================
 =======
+=======
+>>>>>>> origin_second/linaLMversion
         public string StudentName { get; set; } = "";
         public string StudentId { get; set; } = "";
         public string AcademicYear { get; set; } = "";
@@ -50,12 +53,16 @@
 
         public int TotalHours { get; set; } = 0;
 
+<<<<<<< HEAD
 >>>>>>> origin_second/rahafgh
+=======
+>>>>>>> origin_second/linaLMversion
         public string Note1 { get; set; } = "";
         public string Note2 { get; set; } = "";
         public string Note3 { get; set; } = "";
         public string Note4 { get; set; } = "";
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         // ======================
         // Advisor Footer
@@ -74,5 +81,14 @@
 
 >>>>>>> origin_second/rahafgh
         public string AdvisorNotes { get; set; } = "";
+=======
+        public string AdvisorNameLabel { get; set; } = "المرشدة الأكاديمية للطالبة";
+        public string AdvisorName { get; set; } = "";
+
+        public string AdvisorNotes { get; set; } = "";
+
+        public List<Form4CourseDecisionItemVM> PendingCourses { get; set; } = new();
+        public List<PlanCourseOptionVM> PlanCourseOptions { get; set; } = new();
+>>>>>>> origin_second/linaLMversion
     }
 }

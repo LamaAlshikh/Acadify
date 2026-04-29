@@ -18,9 +18,12 @@ public partial class StudyPlanMatchingForm
     public int? RegisteredHours { get; set; }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public virtual Form Form { get; set; } = null!;
 }
 =======
+=======
+>>>>>>> origin_second/linaLMversion
     public int? UniversityHours { get; set; }
 
     public int? PrepYearHours { get; set; }
@@ -36,5 +39,9 @@ public partial class StudyPlanMatchingForm
     public int? TotalHours { get; set; }
 
     public virtual Form Form { get; set; } = null!;
+<<<<<<< HEAD
 }
 >>>>>>> origin_second/rahafgh
+=======
+}
+>>>>>>> origin_second/linaLMversion

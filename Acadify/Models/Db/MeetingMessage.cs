@@ -15,7 +15,11 @@ public partial class MeetingMessage
 
     public DateTime? MessageDate { get; set; }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     public bool IsRecorded { get; set; }
 >>>>>>> origin_second/rahafgh
+=======
+    public bool IsRecorded { get; set; }
+>>>>>>> origin_second/linaLMversion
 }

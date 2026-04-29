@@ -7,9 +7,13 @@ public partial class MeetingForm
 {
     public int FormId { get; set; }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     public int? MeetingId { get; set; }
 >>>>>>> origin_second/rahafgh
+=======
+    public int? MeetingId { get; set; }
+>>>>>>> origin_second/linaLMversion
 
     public DateTime? MeetingStart { get; set; }
 

@@ -20,6 +20,18 @@ namespace Acadify.Services
             if (string.IsNullOrWhiteSpace(chatRecord))
                 return "";
 
+<<<<<<< HEAD
+=======
+            var apiKey = _configuration["OpenAI:ApiKey"];
+            var model = _configuration["OpenAI:Model"] ?? "gpt-4.1-mini";
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new Exception("OpenAI API key not found in configuration.");
+
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", apiKey);
+
+>>>>>>> origin_second/linaLMversion
             var prompt = $"""
 لخص المحادثة التالية باللغة العربية الفصحى، بصياغة رسمية ومختصرة مناسبة تمامًا لوضعها في خانة:
 "Proposed Solutions / Advise / Brief notes"
@@ -40,6 +52,7 @@ namespace Acadify.Services
 {chatRecord}
 """;
 
+<<<<<<< HEAD
             return await GetRawResponseAsync(
                 prompt,
                 "أنت مساعد متخصص في تلخيص محادثات الإرشاد الأكاديمي بصياغة عربية رسمية وواضحة.",
@@ -60,13 +73,21 @@ namespace Acadify.Services
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
 
+=======
+>>>>>>> origin_second/linaLMversion
             var body = new
             {
                 model = model,
                 input = prompt,
+<<<<<<< HEAD
                 instructions = instructions,
                 temperature = 0.1,
                 max_output_tokens = maxOutputTokens
+=======
+                instructions = "أنت مساعد متخصص في تلخيص محادثات الإرشاد الأكاديمي بصياغة عربية رسمية وواضحة.",
+                temperature = 0.2,
+                max_output_tokens = 250
+>>>>>>> origin_second/linaLMversion
             };
 
             var json = JsonSerializer.Serialize(body);
@@ -80,6 +101,10 @@ namespace Acadify.Services
 
             using var doc = JsonDocument.Parse(responseText);
 
+<<<<<<< HEAD
+=======
+            // نحاول استخراج النص من output[...].content[...].text
+>>>>>>> origin_second/linaLMversion
             if (doc.RootElement.TryGetProperty("output", out var outputArray))
             {
                 var sb = new StringBuilder();
@@ -108,4 +133,8 @@ namespace Acadify.Services
             throw new Exception("OpenAI response did not contain output text.");
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin_second/linaLMversion

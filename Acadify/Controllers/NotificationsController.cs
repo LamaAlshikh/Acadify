@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 ﻿using Acadify.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+=======
+﻿using Microsoft.AspNetCore.Mvc;
+>>>>>>> origin_second/linaLMversion
 
 namespace Acadify.Controllers
 {
     public class NotificationsController : Controller
     {
+<<<<<<< HEAD
         private readonly AcadifyDbContext _db;
 
         public NotificationsController(AcadifyDbContext db)
@@ -13,10 +18,14 @@ namespace Acadify.Controllers
             _db = db;
         }
 
+=======
+        // فقط يفتح لوحة الإشعارات
+>>>>>>> origin_second/linaLMversion
         public IActionResult Panel()
         {
             return ViewComponent("Notifications");
         }
+<<<<<<< HEAD
 
         [HttpPost]
         public async Task<IActionResult> MarkAsRead(int id)
@@ -332,3 +341,7 @@ namespace Acadify.Controllers
         }
     }
 }
+=======
+    }
+}
+>>>>>>> origin_second/linaLMversion

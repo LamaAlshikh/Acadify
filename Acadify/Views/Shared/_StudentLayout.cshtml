@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - Acadify</title>
 
+<<<<<<< HEAD
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,17 +13,31 @@
     <link rel="stylesheet" href="~/css/UploadTranscript.css" />
     <link rel="stylesheet" href="~/css/StudentChat.css" />
 
+=======
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/UploadTranscript.css" />
+    <link rel="stylesheet" href="~/css/StudentChat.css" />
+
+
+>>>>>>> origin_second/linaLMversion
     <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- Main CSS -->
     <link rel="stylesheet" href="~/css/site.css" />
+<<<<<<< HEAD
     <link rel="stylesheet" href="~/css/RahafZh.css" />
+=======
+>>>>>>> origin_second/linaLMversion
 </head>
 
 <body class="@ViewBag.BodyClass">
 
+<<<<<<< HEAD
 =======
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/StudentLayout.css" asp-append-version="true" />
@@ -45,11 +60,26 @@
                 <div class="profile-top">
                     <img src="~/images/user.png" class="student-avatar" alt="Student" />
 
+=======
+
+    <div class="student-layout">
+
+        <!-- ================= Sidebar ================= -->
+        <aside class="student-sidebar">
+
+            <!-- Profile -->
+            <div class="student-profile">
+                <div class="profile-top">
+                    <img src="~/images/user.png" class="student-avatar" />
+
+                    <!-- Notifications -->
+>>>>>>> origin_second/linaLMversion
                     <button type="button" class="topbar-notif-btn" onclick="toggleNotifications()">
                         <i class="fa-regular fa-bell"></i>
                     </button>
                 </div>
 
+<<<<<<< HEAD
                 <!-- student name + email under profile -->
                 <h4>@ViewBag.StudentName</h4>
 
@@ -130,11 +160,53 @@
             </div>
         </aside>
 
+=======
+                <h4>@ViewBag.StudentName</h4>
+                <p>@ViewBag.StudentEmail</p>
+            </div>
+
+            <!-- Menu -->
+            <ul class="student-menu">
+                <li class="active">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Homepage</span>
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-users"></i>
+                    <span>Community</span>
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Meeting</span>
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-book"></i>
+                    <span>Course Recommendation</span>
+                </li>
+            </ul>
+
+            <!-- Logout -->
+            <div class="logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Log out</span>
+            </div>
+
+        </aside>
+
+        <!-- ================= Main Content ================= -->
+>>>>>>> origin_second/linaLMversion
         <div class="main-background-box">
             <div class="page-content">
                 @RenderBody()
             </div>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin_second/linaLMversion
     </div>
 
     @await Component.InvokeAsync("Notifications")
@@ -153,5 +225,11 @@
             overlay.classList.remove('show');
         }
     </script>
+<<<<<<< HEAD
 </body>
 </html>
+=======
+
+</body>
+</html>
+>>>>>>> origin_second/linaLMversion
