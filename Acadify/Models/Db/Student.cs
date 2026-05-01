@@ -19,6 +19,7 @@ public partial class Student
 
     public int? AdvisorId { get; set; }
 
+    // العلاقات الملاحية (Navigation Properties)
     public virtual Advisor? Advisor { get; set; }
 
     public virtual ICollection<Form> Forms { get; set; } = new List<Form>();
@@ -32,9 +33,7 @@ public partial class Student
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual Transcript? Transcript { get; set; }
-<<<<<<< HEAD
-=======
 
+    // تم دمج إضافة لينا لتمكين قرارات المواد الأكاديمية
     public virtual ICollection<TranscriptCourseDecision> TranscriptCourseDecisions { get; set; } = new List<TranscriptCourseDecision>();
->>>>>>> origin_second/linaLMversion
 }

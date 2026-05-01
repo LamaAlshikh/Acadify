@@ -16,7 +16,7 @@ namespace Acadify.Controllers
         }
 
         // =========================
-        // Session helpers
+        // Helpers
         // =========================
         private int? GetCurrentStudentId()
         {
@@ -25,10 +25,7 @@ namespace Acadify.Controllers
 
         private async Task<int?> GetAdvisorIdForStudentAsync(int studentId)
         {
-<<<<<<< HEAD
-            // مهم: إذا اسم الحقل عندك مختلف، بدليه هنا فقط
-=======
->>>>>>> origin_second/لما2
+            // تم الحفاظ على الاستعلام المباشر لضمان جلب الـ Advisor المرتبط حالياً
             return await _context.Students
                 .Where(s => s.StudentId == studentId)
                 .Select(s => (int?)s.AdvisorId)
@@ -57,9 +54,7 @@ namespace Acadify.Controllers
                     FormType = "Form 5",
                     FormDate = DateTime.Now,
                     FormStatus = "Pending",
-                    AdvisorNotes = null,
-                    AutoFilled = true,
-                    AdvisorConfirmation = null
+                    AutoFilled = true
                 };
 
                 _context.Forms.Add(latestForm5);
@@ -88,7 +83,6 @@ namespace Acadify.Controllers
                         Eligibility = null,
                         RequiredCoursesStatus = null
                     };
-
                     _context.GraduationProjectEligibilityForms.Add(details);
                     await _context.SaveChangesAsync();
                 }
@@ -97,83 +91,57 @@ namespace Acadify.Controllers
             return latestForm5.FormId;
         }
 
-        private static string BuildSnapshot(
-            bool cpis351,
-            bool cpis358,
-            bool cpis323,
-            bool cpis380,
-            bool cpis357,
-            bool cpis342)
+        // Snapshot Logic for storing course statuses in string format
+        private static string BuildSnapshot(bool cpis351, bool cpis358, bool cpis323, bool cpis380, bool cpis357, bool cpis342)
         {
             return string.Join(";",
-                $"CPIS351={(cpis351 ? 1 : 0)}",
-                $"CPIS358={(cpis358 ? 1 : 0)}",
-                $"CPIS323={(cpis323 ? 1 : 0)}",
-                $"CPIS380={(cpis380 ? 1 : 0)}",
-                $"CPIS357={(cpis357 ? 1 : 0)}",
-                $"CPIS342={(cpis342 ? 1 : 0)}"
+                $"CPIS351={(cpis351 ? 1 : 0)}", $"CPIS358={(cpis358 ? 1 : 0)}",
+                $"CPIS323={(cpis323 ? 1 : 0)}", $"CPIS380={(cpis380 ? 1 : 0)}",
+                $"CPIS357={(cpis357 ? 1 : 0)}", $"CPIS342={(cpis342 ? 1 : 0)}"
             );
         }
 
         private static Dictionary<string, string> ParseSnapshot(string? raw)
         {
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            if (string.IsNullOrWhiteSpace(raw))
-                return map;
-
+            if (string.IsNullOrWhiteSpace(raw)) return map;
             var parts = raw.Split(';', StringSplitOptions.RemoveEmptyEntries);
-
             foreach (var part in parts)
             {
                 var index = part.IndexOf('=');
-                if (index <= 0)
-                    continue;
-
-                var key = part.Substring(0, index).Trim();
-                var value = part[(index + 1)..].Trim();
-
-                if (!map.ContainsKey(key))
-                    map.Add(key, value);
+                if (index <= 0) continue;
+                map[part.Substring(0, index).Trim()] = part[(index + 1)..].Trim();
             }
-
             return map;
         }
 
         private static bool GetBool(Dictionary<string, string> map, string key)
         {
-            if (!map.TryGetValue(key, out var value))
-                return false;
-
-            return value == "1" ||
-                   value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
-                   value.Equals("yes", StringComparison.OrdinalIgnoreCase);
+            if (!map.TryGetValue(key, out var value)) return false;
+            return value == "1" || value.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void FillVmFromSnapshot(GraduationProjectEligibilityFormVM vm, string? snapshot)
         {
             var map = ParseSnapshot(snapshot);
-
             vm.CPIS351 = GetBool(map, "CPIS351");
             vm.CPIS358 = GetBool(map, "CPIS358");
             vm.CPIS323 = GetBool(map, "CPIS323");
             vm.CPIS380 = GetBool(map, "CPIS380");
             vm.CPIS357 = GetBool(map, "CPIS357");
             vm.CPIS342 = GetBool(map, "CPIS342");
-
-            vm.IsEligible =
-                vm.CPIS351 &&
-                vm.CPIS358 &&
-                vm.CPIS323 &&
-                vm.CPIS380 &&
-                vm.CPIS357 &&
-                vm.CPIS342;
+            vm.IsEligible = vm.CPIS351 && vm.CPIS358 && vm.CPIS323 && vm.CPIS380 && vm.CPIS357 && vm.CPIS342;
         }
+
+        // =========================
+        // Actions
+        // =========================
 
         [HttpGet]
         public async Task<IActionResult> Form5(int? formId, bool editMode = false)
         {
             int selectedFormId;
+            var sessionStudentId = GetCurrentStudentId();
 
             if (formId.HasValue && formId.Value > 0)
             {
@@ -181,101 +149,51 @@ namespace Acadify.Controllers
             }
             else
             {
-                var currentStudentId = GetCurrentStudentId();
-
-                if (!currentStudentId.HasValue || currentStudentId.Value <= 0)
-                    return BadRequest("Student session is not found. Please login again.");
-
-                selectedFormId = await GetOrCreateLatestForm5ForStudentAsync(currentStudentId.Value);
+                if (!sessionStudentId.HasValue) return BadRequest("Session expired.");
+                selectedFormId = await GetOrCreateLatestForm5ForStudentAsync(sessionStudentId.Value);
             }
 
             var form5Entity = await _context.GraduationProjectEligibilityForms
-                .Include(x => x.Form)
-                .ThenInclude(f => f.Student)
+                .Include(x => x.Form).ThenInclude(f => f.Student)
                 .FirstOrDefaultAsync(x => x.FormId == selectedFormId);
 
-            if (form5Entity == null || form5Entity.Form == null)
-                return NotFound();
+            if (form5Entity == null || form5Entity.Form == null) return NotFound();
 
-<<<<<<< HEAD
-            // حماية: الطالبة لا تفتح فورم لطالبة ثانية إذا كان الاعتماد على السشن
-=======
->>>>>>> origin_second/لما2
-            var sessionStudentId = GetCurrentStudentId();
+            // حماية أمنية: منع الوصول لنموذج طالب آخر
             if (sessionStudentId.HasValue && form5Entity.Form.StudentId != sessionStudentId.Value)
                 return Forbid();
 
-            int currentStudentIdForForm = form5Entity.Form.StudentId;
-
             var transcript = await _context.Transcripts
                 .Include(t => t.Courses)
-                .FirstOrDefaultAsync(t => t.StudentId == currentStudentIdForForm);
+                .FirstOrDefaultAsync(t => t.StudentId == form5Entity.Form.StudentId);
 
             var vm = new GraduationProjectEligibilityFormVM
             {
                 FormId = form5Entity.FormId,
                 Form = form5Entity.Form,
                 StudentName = form5Entity.Form.Student?.Name ?? "-",
-                StudentId = currentStudentIdForForm.ToString(),
-                IsHistoryView = false,
+                StudentId = form5Entity.Form.StudentId.ToString(),
                 IsEditMode = editMode
             };
 
-            if (!string.IsNullOrWhiteSpace(form5Entity.RequiredCoursesStatus) &&
-                form5Entity.RequiredCoursesStatus.Contains("CPIS351=", StringComparison.OrdinalIgnoreCase))
+            // تحميل البيانات من السجل المحفوظ إن وجد، وإلا يتم حسابها من السجل الأكاديمي
+            if (!string.IsNullOrWhiteSpace(form5Entity.RequiredCoursesStatus))
             {
                 FillVmFromSnapshot(vm, form5Entity.RequiredCoursesStatus);
-                vm.Eligibility = vm.IsEligible ? "Eligible" : "Not Eligible";
-                return View(vm);
             }
-
-            if (transcript == null)
+            else if (transcript != null)
             {
-                vm.CPIS351 = false;
-                vm.CPIS358 = false;
-                vm.CPIS323 = false;
-                vm.CPIS380 = false;
-                vm.CPIS357 = false;
-                vm.CPIS342 = false;
-            }
-            else
-            {
-                bool HasCourse(string code)
-                {
-                    string Normalize(string s) => (s ?? "").Replace(" ", "").Trim().ToUpper();
-                    string target = Normalize(code);
-
-                    return transcript.Courses.Any(c => Normalize(c.CourseId) == target);
-                }
-
-                vm.CPIS351 = HasCourse("CPIS351");
-                vm.CPIS358 = HasCourse("CPIS358");
-                vm.CPIS323 = HasCourse("CPIS323");
-                vm.CPIS380 = HasCourse("CPIS380");
-                vm.CPIS357 = HasCourse("CPIS357");
-                vm.CPIS342 = HasCourse("CPIS342");
+                string Norm(string s) => s.Replace(" ", "").ToUpper().Trim();
+                vm.CPIS351 = transcript.Courses.Any(c => Norm(c.CourseId) == "CPIS351");
+                vm.CPIS358 = transcript.Courses.Any(c => Norm(c.CourseId) == "CPIS358");
+                vm.CPIS323 = transcript.Courses.Any(c => Norm(c.CourseId) == "CPIS323");
+                vm.CPIS380 = transcript.Courses.Any(c => Norm(c.CourseId) == "CPIS380");
+                vm.CPIS357 = transcript.Courses.Any(c => Norm(c.CourseId) == "CPIS357");
+                vm.CPIS342 = transcript.Courses.Any(c => Norm(c.CourseId) == "CPIS342");
             }
 
-            vm.IsEligible =
-                vm.CPIS351 &&
-                vm.CPIS358 &&
-                vm.CPIS323 &&
-                vm.CPIS380 &&
-                vm.CPIS357 &&
-                vm.CPIS342;
-
+            vm.IsEligible = vm.CPIS351 && vm.CPIS358 && vm.CPIS323 && vm.CPIS380 && vm.CPIS357 && vm.CPIS342;
             vm.Eligibility = vm.IsEligible ? "Eligible" : "Not Eligible";
-
-            form5Entity.Eligibility = vm.Eligibility;
-            form5Entity.RequiredCoursesStatus = BuildSnapshot(
-                vm.CPIS351,
-                vm.CPIS358,
-                vm.CPIS323,
-                vm.CPIS380,
-                vm.CPIS357,
-                vm.CPIS342);
-
-            await _context.SaveChangesAsync();
 
             return View(vm);
         }
@@ -286,40 +204,21 @@ namespace Acadify.Controllers
         {
             var entity = await _context.GraduationProjectEligibilityForms
                 .Include(x => x.Form)
-                .ThenInclude(f => f.Student)
                 .FirstOrDefaultAsync(x => x.FormId == vm.FormId);
 
-            if (entity == null || entity.Form == null)
-                return NotFound();
+            if (entity == null || entity.Form == null) return NotFound();
 
             var sessionStudentId = GetCurrentStudentId();
             if (sessionStudentId.HasValue && entity.Form.StudentId != sessionStudentId.Value)
                 return Forbid();
 
-            vm.IsEligible =
-                vm.CPIS351 &&
-                vm.CPIS358 &&
-                vm.CPIS323 &&
-                vm.CPIS380 &&
-                vm.CPIS357 &&
-                vm.CPIS342;
-
-            entity.Eligibility = vm.IsEligible ? "Eligible" : "Not Eligible";
-            entity.RequiredCoursesStatus = BuildSnapshot(
-                vm.CPIS351,
-                vm.CPIS358,
-                vm.CPIS323,
-                vm.CPIS380,
-                vm.CPIS357,
-                vm.CPIS342);
-
+            entity.RequiredCoursesStatus = BuildSnapshot(vm.CPIS351, vm.CPIS358, vm.CPIS323, vm.CPIS380, vm.CPIS357, vm.CPIS342);
+            entity.Eligibility = (vm.CPIS351 && vm.CPIS358 && vm.CPIS323 && vm.CPIS380 && vm.CPIS357 && vm.CPIS342) ? "Eligible" : "Not Eligible";
             entity.Form.FormStatus = "Updated";
             entity.Form.FormDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
-
             TempData["ActionMessage"] = "The form is updated successfully.";
-
             return RedirectToAction("Form5", new { formId = vm.FormId });
         }
 
@@ -327,48 +226,29 @@ namespace Acadify.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int formId, string status)
         {
-            var form = await _context.Forms.FirstOrDefaultAsync(f => f.FormId == formId);
-
-            if (form == null)
-                return NotFound("Form record not found.");
+            var form = await _context.Forms.FindAsync(formId);
+            if (form == null) return NotFound();
 
             form.FormStatus = status;
             form.FormDate = DateTime.Now;
-
             await _context.SaveChangesAsync();
 
-            TempData["ActionMessage"] = status switch
-            {
-                "Accepted" => "The form is accepted successfully.",
-                "Rejected" => "The form is rejected successfully.",
-                "Updated" => "The form is updated successfully.",
-                _ => "The form status is updated successfully."
-            };
-
+            TempData["ActionMessage"] = $"The form status is updated to {status}.";
             return RedirectToAction("Form5", new { formId });
         }
-<<<<<<< HEAD
-    
-[HttpPost]
-=======
 
         [HttpPost]
->>>>>>> origin_second/لما2
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendToAdvisingCommittee(int formId)
         {
-            var form = await _context.Forms.FirstOrDefaultAsync(f => f.FormId == formId);
-
-            if (form == null)
-                return NotFound("Form record not found.");
+            var form = await _context.Forms.FindAsync(formId);
+            if (form == null) return NotFound();
 
             form.FormStatus = "Sent to Advising Committee";
             form.FormDate = DateTime.Now;
-
             await _context.SaveChangesAsync();
 
             TempData["ActionMessage"] = "The form is sent to the Advising Committee successfully.";
-
             return RedirectToAction("Form5", new { formId });
         }
     }

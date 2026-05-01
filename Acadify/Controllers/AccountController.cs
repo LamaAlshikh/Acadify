@@ -1,86 +1,33 @@
 ﻿using Acadify.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Db = Acadify.Models.Db;
+using UserModel = Acadify.Models.User;
+using AdminModel = Acadify.Models.Admin;
+using AdvisorModel = Acadify.Models.Advisor;
+using StudentModel = Acadify.Models.Student;
 
 namespace Acadify.Controllers
 {
     public class AccountController : Controller
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        // يعرض صفحة التسجيل
-        [HttpGet]
-        public IActionResult SignUp()
-        {
-            return View();
-        }
+        private readonly Db.AcadifyDbContext _db;
 
-        // يستقبل بيانات التسجيل
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult SignUp(SignUpVM model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            // هنا لاحقاً نحفظ البيانات في الداتابيس
-
-            return RedirectToAction("SignUp");
-        }
-
-        // يعرض صفحة تسجيل الدخول
-=======
->>>>>>> origin_second/rahafgh
-        [HttpGet]
-        public IActionResult Login()
-=======
-        private readonly AcadifyDbContext _db;
-
-        public AccountController(AcadifyDbContext db)
->>>>>>> origin_second/لما2
+        public AccountController(Db.AcadifyDbContext db)
         {
             _db = db;
         }
 
-        private async Task AddNotificationToAllAdminsAsync(
-            string senderRole,
-            string sourceType,
-            string type,
-            string message,
-            int? studentId = null,
-            int? advisorId = null)
-        {
-            var admins = await _db.Admins.ToListAsync();
-
-            foreach (var admin in admins)
-            {
-                _db.Notifications.Add(new Notification
-                {
-                    SenderRole = senderRole,
-                    SourceType = sourceType,
-                    Type = type,
-                    Message = message,
-                    StudentId = studentId,
-                    AdvisorId = advisorId,
-                    AdminId = admin.AdminId,
-                    Date = DateTime.Now,
-                    IsRead = false
-                });
-            }
-
-            await _db.SaveChangesAsync();
-        }
-
+        // ==============================
+        // SignUp
+        // ==============================
         [HttpGet]
         public IActionResult SignUp()
         {
             return View(new SignUpVM());
         }
 
-<<<<<<< HEAD
-        // يستقبل بيانات تسجيل الدخول
-=======
->>>>>>> origin_second/rahafgh
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignUp(SignUpVM model)
@@ -95,86 +42,72 @@ namespace Acadify.Controllers
 
             if (!isStudentEmail && !isStaffEmail)
             {
-                ModelState.AddModelError("Email", "Only KAU academic emails are allowed.");
+                ModelState.AddModelError("Email", "يسمح فقط باستخدام البريد الجامعي الخاص بجامعة KAU.");
                 return View(model);
             }
 
-            if (isStudentEmail)
-            {
-                if (string.IsNullOrWhiteSpace(model.ID))
-                {
-                    ModelState.AddModelError("ID", "Student ID is required for student accounts.");
-                    return View(model);
-                }
+            bool emailExists = await _db.Set<UserModel>()
+                .AnyAsync(u => u.Email.ToLower() == email);
 
-                if (!int.TryParse(model.ID, out _))
-                {
-                    ModelState.AddModelError("ID", "Student ID must be numeric.");
-                    return View(model);
-                }
-            }
-
-            bool emailExists = _db.Users.Any(u => u.Email.ToLower() == email);
             if (emailExists)
             {
-                ModelState.AddModelError("Email", "This email is already registered.");
+                ModelState.AddModelError("Email", "هذا البريد مسجل مسبقاً.");
                 return View(model);
             }
 
-            var user = new User
+            var user = new UserModel
             {
                 Name = model.FullName.Trim(),
                 Email = email,
                 Password = model.Password
             };
 
-            _db.Users.Add(user);
+            _db.Set<UserModel>().Add(user);
             await _db.SaveChangesAsync();
 
             if (isStudentEmail)
             {
-                int studentId = int.Parse(model.ID!);
-
-                bool studentIdExists = _db.Students.Any(s => s.StudentId == studentId);
-                if (studentIdExists)
+                if (!int.TryParse(model.ID, out int studentId))
                 {
-                    ModelState.AddModelError("ID", "This student ID already exists.");
+                    ModelState.AddModelError("ID", "يجب أن يكون الرقم الجامعي أرقاماً فقط.");
 
-                    _db.Users.Remove(user);
+                    _db.Set<UserModel>().Remove(user);
                     await _db.SaveChangesAsync();
 
                     return View(model);
                 }
 
-                var student = new Student
+                bool studentExists = await _db.Set<StudentModel>()
+                    .AnyAsync(s => EF.Property<int>(s, "StudentId") == studentId);
+
+                if (studentExists)
                 {
-                    StudentId = studentId,
-                    UserId = user.UserId,
-                    Name = model.FullName.Trim(),
-                    Major = "Information Systems",
-                    Level = null,
-                    CompletedHours = 0,
-                    CohortYear = null,
-                    AdvisorId = null
-                };
+                    ModelState.AddModelError("ID", "الرقم الجامعي مستخدم بالفعل.");
 
-                _db.Students.Add(student);
+                    _db.Set<UserModel>().Remove(user);
+                    await _db.SaveChangesAsync();
+
+                    return View(model);
+                }
+
+                var student = new StudentModel();
+
+                SetPropertyValue(student, studentId, "StudentId", "StudentID", "Id");
+                SetPropertyValue(student, model.FullName.Trim(), "Name", "StudentName", "FullName");
+                SetPropertyValue(student, "Information Systems", "Major");
+                SetPropertyValue(student, 0, "CompletedHours");
+
+                _db.Set<StudentModel>().Add(student);
                 await _db.SaveChangesAsync();
-
-                await AddNotificationToAllAdminsAsync(
-                    senderRole: "System",
-                    sourceType: "Request",
-                    type: "new student account",
-                    message: $"New student account was created for {student.Name}.",
-                    studentId: student.StudentId);
             }
 
-            HttpContext.Session.SetString("PendingFirstLoginEmail", email);
-
-            TempData["SuccessMessage"] = "Account created successfully. Please log in.";
-            return RedirectToAction("Login");
+            TempData["SuccessMessage"] = "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن.";
+            return RedirectToAction(nameof(Login));
         }
 
+        // ==============================
+        // Login
+        // ==============================
         [HttpGet]
         public IActionResult Login()
         {
@@ -190,79 +123,14 @@ namespace Acadify.Controllers
 
             string email = model.Email.Trim().ToLower();
 
-            bool isStudentEmail = email.EndsWith("@stu.kau.edu.sa");
-            bool isStaffEmail = email.EndsWith("@kau.edu.sa") && !isStudentEmail;
-
-            var user = await _db.Users
-                .Include(u => u.Student)
-                    .ThenInclude(s => s!.Transcript)
-                .Include(u => u.Admin)
-                .Include(u => u.Advisor)
-                .FirstOrDefaultAsync(u => u.Email.ToLower() == email);
+            var user = await _db.Set<UserModel>()
+                .FirstOrDefaultAsync(u =>
+                    u.Email.ToLower() == email &&
+                    u.Password == model.Password);
 
             if (user == null)
             {
-                ModelState.AddModelError("", "Invalid email or password.");
-                return View(model);
-            }
-
-            if (user.Password != model.Password)
-            {
-                ModelState.AddModelError("", "Invalid email or password.");
-                return View(model);
-            }
-
-            if (isStaffEmail)
-            {
-                if (string.IsNullOrWhiteSpace(model.Role) ||
-                    (model.Role != "Admin" && model.Role != "Advisor"))
-                {
-                    ModelState.AddModelError("Role", "Please choose Admin or Advisor.");
-                    return View(model);
-                }
-
-                if (model.Role == "Admin" && user.Admin == null)
-                {
-                    var admin = new Acadify.Models.Admin
-                    {
-                        UserId = user.UserId
-                    };
-
-                    _db.Admins.Add(admin);
-                    await _db.SaveChangesAsync();
-
-                    user = await _db.Users
-                        .Include(u => u.Student)
-                            .ThenInclude(s => s!.Transcript)
-                        .Include(u => u.Admin)
-                        .Include(u => u.Advisor)
-                        .FirstOrDefaultAsync(u => u.UserId == user.UserId);
-                }
-
-                if (model.Role == "Advisor" && user.Advisor == null)
-                {
-                    var advisor = new Acadify.Models.Advisor
-                    {
-                        UserId = user.UserId,
-                        AdvisorId = user.UserId,
-                        Department = "Information Systems"
-                    };
-
-                    _db.Advisors.Add(advisor);
-                    await _db.SaveChangesAsync();
-
-                    user = await _db.Users
-                        .Include(u => u.Student)
-                            .ThenInclude(s => s!.Transcript)
-                        .Include(u => u.Admin)
-                        .Include(u => u.Advisor)
-                        .FirstOrDefaultAsync(u => u.UserId == user.UserId);
-                }
-            }
-
-            if (user == null)
-            {
-                ModelState.AddModelError("", "This account could not be loaded.");
+                ModelState.AddModelError("", "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
                 return View(model);
             }
 
@@ -270,79 +138,221 @@ namespace Acadify.Controllers
             HttpContext.Session.SetString("UserName", user.Name);
             HttpContext.Session.SetString("UserEmail", user.Email);
 
-            string role = "";
-
-            if (user.Student != null)
-                role = "Student";
-            else if (user.Admin != null && model.Role == "Admin")
-                role = "Admin";
-            else if (user.Advisor != null && model.Role == "Advisor")
-                role = "Advisor";
-            else if (user.Admin != null)
-                role = "Admin";
-            else if (user.Advisor != null)
-                role = "Advisor";
-
-            HttpContext.Session.SetString("UserRole", role);
-
-            if (user.Student != null)
+            // Student login
+            if (email.EndsWith("@stu.kau.edu.sa"))
             {
-                HttpContext.Session.SetInt32("StudentId", user.Student.StudentId);
+                var student = await FindStudentForUserAsync(user);
 
-                string? pendingFirstLoginEmail = HttpContext.Session.GetString("PendingFirstLoginEmail");
-
-                bool isFirstLoginAfterSignup =
-                    !string.IsNullOrEmpty(pendingFirstLoginEmail) &&
-                    pendingFirstLoginEmail == user.Email.ToLower();
-
-                bool hasTranscript = user.Student.Transcript != null;
-
-                if (isFirstLoginAfterSignup || !hasTranscript)
+                if (student == null)
                 {
-                    HttpContext.Session.Remove("PendingFirstLoginEmail");
-                    return RedirectToAction("UploadTranscript", "Student");
+                    ModelState.AddModelError("", "Student record was not found.");
+                    return View(model);
                 }
 
-                if (!user.Student.AdvisorId.HasValue)
+                int? studentId = GetIntPropertyValue(student, "StudentId", "StudentID", "Id");
+
+                if (!studentId.HasValue)
                 {
-                    var hasPendingRequest = await _db.Set<AdvisorRequest>()
-                        .AnyAsync(r => r.StudentId == user.Student.StudentId && r.Status == "Pending");
+                    ModelState.AddModelError("", "Student ID was not found.");
+                    return View(model);
+                }
 
-                    if (!hasPendingRequest)
-                        return RedirectToAction("SelectAdvisor", "Student");
+                HttpContext.Session.SetString("UserRole", "Student");
+                HttpContext.Session.SetInt32("StudentId", studentId.Value);
 
+                int? advisorId = GetIntPropertyValue(student, "AdvisorId", "AdvisorID");
+
+                if (!advisorId.HasValue || advisorId.Value <= 0)
                     return RedirectToAction("SelectAdvisor", "Student");
-                }
 
                 return RedirectToAction("StudentHome", "Student");
             }
 
+            // Staff login
+            string role = string.IsNullOrWhiteSpace(model.Role) ? "Advisor" : model.Role;
+
             if (role == "Admin")
             {
-                if (user.Admin != null)
-                    HttpContext.Session.SetInt32("AdminId", user.Admin.AdminId);
+                int? adminId = await FindAdminIdForUserAsync(user);
+
+                if (!adminId.HasValue)
+                {
+                    ModelState.AddModelError("", "Admin record was not found.");
+                    return View(model);
+                }
+
+                HttpContext.Session.SetString("UserRole", "Admin");
+                HttpContext.Session.SetInt32("AdminId", adminId.Value);
 
                 return RedirectToAction("ManageAdvisorRequests", "Admin");
             }
 
             if (role == "Advisor")
             {
-                if (user.Advisor != null)
-                    HttpContext.Session.SetInt32("AdvisorId", user.Advisor.AdvisorId);
+                int? advisorId = await FindAdvisorIdForUserAsync(user);
+
+                if (!advisorId.HasValue)
+                {
+                    ModelState.AddModelError("", "Advisor record was not found.");
+                    return View(model);
+                }
+
+                HttpContext.Session.SetString("UserRole", "Advisor");
+                HttpContext.Session.SetInt32("AdvisorId", advisorId.Value);
 
                 return RedirectToAction("AdvisorHome", "Advisor");
             }
 
-            ModelState.AddModelError("", "This account has no valid role.");
+            ModelState.AddModelError("", "لا يوجد دور مرتبط بهذا الحساب.");
             return View(model);
         }
 
+        private async Task<StudentModel?> FindStudentForUserAsync(UserModel user)
+        {
+            var students = await _db.Set<StudentModel>().ToListAsync();
+
+            string userEmail = user.Email.Trim().ToLower();
+            string userName = user.Name.Trim().ToLower();
+
+            return students.FirstOrDefault(s =>
+            {
+                string name = GetStringPropertyValue(s, "Name", "StudentName", "FullName")
+                    .Trim()
+                    .ToLower();
+
+                string email = GetStringPropertyValue(s, "Email", "StudentEmail", "UniversityEmail")
+                    .Trim()
+                    .ToLower();
+
+                return (!string.IsNullOrWhiteSpace(email) && email == userEmail) ||
+                       (!string.IsNullOrWhiteSpace(name) && name == userName);
+            });
+        }
+
+        private async Task<int?> FindAdminIdForUserAsync(UserModel user)
+        {
+            var admins = await _db.Set<AdminModel>().ToListAsync();
+
+            string userEmail = user.Email.Trim().ToLower();
+            string userName = user.Name.Trim().ToLower();
+
+            var admin = admins.FirstOrDefault(a =>
+            {
+                int? userId = GetIntPropertyValue(a, "UserId", "UserID");
+                string email = GetStringPropertyValue(a, "Email", "AdminEmail", "UniversityEmail")
+                    .Trim()
+                    .ToLower();
+
+                string name = GetStringPropertyValue(a, "Name", "AdminName", "FullName")
+                    .Trim()
+                    .ToLower();
+
+                return (userId.HasValue && userId.Value == user.UserId) ||
+                       (!string.IsNullOrWhiteSpace(email) && email == userEmail) ||
+                       (!string.IsNullOrWhiteSpace(name) && name == userName);
+            });
+
+            return admin == null ? null : GetIntPropertyValue(admin, "AdminId", "AdminID", "Id");
+        }
+
+        private async Task<int?> FindAdvisorIdForUserAsync(UserModel user)
+        {
+            var advisors = await _db.Set<AdvisorModel>().ToListAsync();
+
+            string userEmail = user.Email.Trim().ToLower();
+            string userName = user.Name.Trim().ToLower();
+
+            var advisor = advisors.FirstOrDefault(a =>
+            {
+                int? userId = GetIntPropertyValue(a, "UserId", "UserID");
+                string email = GetStringPropertyValue(a, "Email", "AdvisorEmail", "UniversityEmail")
+                    .Trim()
+                    .ToLower();
+
+                string name = GetStringPropertyValue(a, "Name", "AdvisorName", "FullName")
+                    .Trim()
+                    .ToLower();
+
+                return (userId.HasValue && userId.Value == user.UserId) ||
+                       (!string.IsNullOrWhiteSpace(email) && email == userEmail) ||
+                       (!string.IsNullOrWhiteSpace(name) && name == userName);
+            });
+
+            return advisor == null ? null : GetIntPropertyValue(advisor, "AdvisorId", "AdvisorID", "Id");
+        }
+
+        private static string GetStringPropertyValue(object obj, params string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                var prop = obj.GetType().GetProperty(propertyName);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(obj)?.ToString();
+                    if (!string.IsNullOrWhiteSpace(value))
+                        return value;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static int? GetIntPropertyValue(object obj, params string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                var prop = obj.GetType().GetProperty(propertyName);
+                if (prop == null)
+                    continue;
+
+                var value = prop.GetValue(obj);
+
+                if (value is int intValue)
+                    return intValue;
+
+                if (value != null && int.TryParse(value.ToString(), out int parsed))
+                    return parsed;
+            }
+
+            return null;
+        }
+
+        private static void SetPropertyValue(object obj, object? value, params string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                var prop = obj.GetType().GetProperty(propertyName);
+
+                if (prop == null || !prop.CanWrite)
+                    continue;
+
+                var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+                try
+                {
+                    var convertedValue = value == null
+                        ? null
+                        : Convert.ChangeType(value, targetType);
+
+                    prop.SetValue(obj, convertedValue);
+                    return;
+                }
+                catch
+                {
+                    // Try the next property name if conversion fails.
+                }
+            }
+        }
+
+        // ==============================
+        // Logout
+        // ==============================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction(nameof(Login));
         }
     }
 }

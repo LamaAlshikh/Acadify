@@ -1,29 +1,16 @@
-﻿@model Acadify.Models.AdminPages.ManageRequestsVM
-<<<<<<< HEAD
-
-@{
-    ViewData["Title"] = "Manage Advisor Requests";
-}
-
-@{
-    Layout = "~/Views/Admin/_AdminLayout.cshtml";
-=======
+@model Acadify.Models.AdminPages.ManageRequestsVM
 @using Acadify.Models
 
 @{
     ViewData["Title"] = "Manage Advisor Requests";
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
     var advisors = ViewBag.Advisors as List<Advisor>;
->>>>>>> origin_second/لما2
 }
 
 <link rel="stylesheet" href="~/css/Site2.css" />
 
 <div class="page">
     <div class="card">
-<<<<<<< HEAD
-       
-=======
 
         @if (TempData["RequestSuccess"] != null)
         {
@@ -34,7 +21,6 @@
         {
             <div class="alert error">@TempData["RequestError"]</div>
         }
->>>>>>> origin_second/لما2
 
         <table class="table">
             <thead>
@@ -49,36 +35,6 @@
                 </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
-                @foreach (var r in Model.PendingRequests)
-                {
-                    <tr>
-                        <td>@r.StudentName</td>
-                        <td>@r.UniversityId</td>
-                        <td>@r.RequestedAdvisorName</td>
-                        <td>@r.RequestedAdvisorEmail</td>
-                        <td>
-                            <span class="badge">@r.Status</span>
-                        </td>
-                        <td>@r.CreatedAt.ToString("yyyy-MM-dd")</td>
-                        <td class="actions-col">
-                            <form asp-action="ApproveAdvisorRequest" method="post" class="inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="requestId" value="@r.RequestId" />
-                                <button class="btn btn-approve" type="submit">Approve</button>
-                            </form>
-
-                            <a class="btn btn-correct" asp-action="CorrectAdvisorRequest" asp-route-requestId="@r.RequestId">
-                                Update
-                            </a>
-
-                            <form asp-action="RejectAdvisorRequest" method="post" class="inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="requestId" value="@r.RequestId" />
-                                <button class="btn btn-reject" type="submit">Reject</button>
-                            </form>
-                        </td>
-=======
                 @if (Model.PendingRequests != null && Model.PendingRequests.Any())
                 {
                     @foreach (var r in Model.PendingRequests)
@@ -93,7 +49,6 @@
                             </td>
                             <td>@r.CreatedAt.ToString("yyyy-MM-dd")</td>
                             <td class="actions-col">
-
                                 <form asp-action="ApproveAdvisorRequest" method="post" class="inline">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="requestId" value="@r.RequestId" />
@@ -106,7 +61,11 @@
                                     Update
                                 </button>
 
-                              
+                                <form asp-action="RejectAdvisorRequest" method="post" class="inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="requestId" value="@r.RequestId" />
+                                    <button class="btn btn-reject" type="submit">Reject</button>
+                                </form>
                             </td>
                         </tr>
 
@@ -160,17 +119,10 @@
                 {
                     <tr>
                         <td colspan="7" style="text-align:center;">No pending requests found.</td>
->>>>>>> origin_second/لما2
                     </tr>
                 }
             </tbody>
         </table>
-<<<<<<< HEAD
-
-        
-    </div>
-</div>
-=======
     </div>
 </div>
 
@@ -196,6 +148,8 @@
 
     function toggleUpdateRow(requestId) {
         const row = document.getElementById("updateRow-" + requestId);
+
+        if (!row) return;
 
         if (row.style.display === "none" || row.style.display === "") {
             row.style.display = "table-row";
@@ -234,4 +188,3 @@
         closeManualAdvisorPopup();
     }
 </script>
->>>>>>> origin_second/لما2

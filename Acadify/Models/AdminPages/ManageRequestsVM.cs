@@ -6,28 +6,23 @@
 
         public class RequestRow
         {
+            // المعرفات الأساسية للعمليات البرمجية (من نسخة لما)
             public int RequestId { get; set; }
-<<<<<<< HEAD
-
-            public string StudentName { get; set; } = "";
-            public string UniversityId { get; set; } = "";
-
-            public string RequestedAdvisorName { get; set; } = "";
-            public string RequestedAdvisorEmail { get; set; } = "";
-
-            public string Status { get; set; } = "Pending";
-=======
             public int StudentId { get; set; }
             public int? RequestedAdvisorId { get; set; }
 
+            // بيانات الطالب للعرض
             public string StudentName { get; set; } = string.Empty;
             public string UniversityId { get; set; } = string.Empty;
 
+            // بيانات المرشد المطلوب
+            // تم اختيار "Not registered yet" كقيمة افتراضية في حال لم يكن المرشد مسجلاً في النظام بعد
             public string RequestedAdvisorName { get; set; } = "Not registered yet";
             public string RequestedAdvisorEmail { get; set; } = string.Empty;
 
-            public string Status { get; set; } = string.Empty;
->>>>>>> origin_second/لما2
+            // حالة الطلب
+            public string Status { get; set; } = "Pending";
+
             public DateTime CreatedAt { get; set; }
         }
     }

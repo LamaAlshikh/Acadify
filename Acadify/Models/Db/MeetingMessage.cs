@@ -14,15 +14,7 @@ public partial class MeetingMessage
     public string MessageText { get; set; } = null!;
 
     public DateTime? MessageDate { get; set; }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
+    // تمت إضافة هذه الخاصية من نسخ الزميلات لتحديد ما إذا كانت الرسالة مسجلة/مؤرشفة
     public bool IsRecorded { get; set; }
->>>>>>> origin_second/rahafgh
-=======
-    public bool IsRecorded { get; set; }
->>>>>>> origin_second/linaLMversion
-=======
->>>>>>> origin_second/لما2
 }

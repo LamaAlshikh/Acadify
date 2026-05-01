@@ -35,4 +35,5 @@ public partial class Course
     [ForeignKey("CourseId")]
     [InverseProperty("Courses")]
     public virtual ICollection<Transcript> Transcripts { get; set; } = new List<Transcript>();
+
 }

@@ -5,18 +5,11 @@ namespace Acadify.Models.Db;
 
 public partial class MeetingForm
 {
+    // المعرف الأساسي للنموذج (مرتبط بجدول Form)
     public int FormId { get; set; }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
+    // المعرف الخاص بالاجتماع (تمت إضافته لربط النموذج بجلسة محددة)
     public int? MeetingId { get; set; }
->>>>>>> origin_second/rahafgh
-=======
-    public int? MeetingId { get; set; }
->>>>>>> origin_second/linaLMversion
-=======
->>>>>>> origin_second/لما2
 
     public DateTime? MeetingStart { get; set; }
 
@@ -34,5 +27,6 @@ public partial class MeetingForm
 
     public string? AdvisorActions { get; set; }
 
+    // العلاقة الملاحية مع النموذج العام
     public virtual Form Form { get; set; } = null!;
 }

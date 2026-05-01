@@ -20,18 +20,6 @@ namespace Acadify.Services
             if (string.IsNullOrWhiteSpace(chatRecord))
                 return "";
 
-<<<<<<< HEAD
-=======
-            var apiKey = _configuration["OpenAI:ApiKey"];
-            var model = _configuration["OpenAI:Model"] ?? "gpt-4.1-mini";
-
-            if (string.IsNullOrWhiteSpace(apiKey))
-                throw new Exception("OpenAI API key not found in configuration.");
-
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", apiKey);
-
->>>>>>> origin_second/linaLMversion
             var prompt = $"""
 لخص المحادثة التالية باللغة العربية الفصحى، بصياغة رسمية ومختصرة مناسبة تمامًا لوضعها في خانة:
 "Proposed Solutions / Advise / Brief notes"
@@ -48,11 +36,9 @@ namespace Acadify.Services
 - لا تستخدم تعداد نقطي.
 - الناتج النهائي يكون بالعربية فقط.
 
-المحادثة:
-{chatRecord}
+المحادثة:{chatRecord}
 """;
 
-<<<<<<< HEAD
             return await GetRawResponseAsync(
                 prompt,
                 "أنت مساعد متخصص في تلخيص محادثات الإرشاد الأكاديمي بصياغة عربية رسمية وواضحة.",
@@ -73,26 +59,19 @@ namespace Acadify.Services
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
 
-=======
->>>>>>> origin_second/linaLMversion
             var body = new
             {
                 model = model,
                 input = prompt,
-<<<<<<< HEAD
                 instructions = instructions,
-                temperature = 0.1,
+                temperature = 0.2, // تم اعتماد قيمة لينا للثبات والدقة
                 max_output_tokens = maxOutputTokens
-=======
-                instructions = "أنت مساعد متخصص في تلخيص محادثات الإرشاد الأكاديمي بصياغة عربية رسمية وواضحة.",
-                temperature = 0.2,
-                max_output_tokens = 250
->>>>>>> origin_second/linaLMversion
             };
 
             var json = JsonSerializer.Serialize(body);
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            // ملاحظة: تأكدي من أن رابط الـ endpoint صحيح، عادة ما يكون v1/chat/completions في OpenAI
             using var response = await _httpClient.PostAsync("https://api.openai.com/v1/responses", content);
             var responseText = await response.Content.ReadAsStringAsync();
 
@@ -101,10 +80,7 @@ namespace Acadify.Services
 
             using var doc = JsonDocument.Parse(responseText);
 
-<<<<<<< HEAD
-=======
-            // نحاول استخراج النص من output[...].content[...].text
->>>>>>> origin_second/linaLMversion
+            // محاولة استخراج النص بناءً على الهيكلية التي وضعتها "لينا"
             if (doc.RootElement.TryGetProperty("output", out var outputArray))
             {
                 var sb = new StringBuilder();
@@ -133,8 +109,4 @@ namespace Acadify.Services
             throw new Exception("OpenAI response did not contain output text.");
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin_second/linaLMversion

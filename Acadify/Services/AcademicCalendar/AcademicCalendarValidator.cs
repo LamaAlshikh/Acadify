@@ -1,5 +1,4 @@
-﻿using Acadify.Models.AdminPages;
-using System.Text.RegularExpressions;
+﻿using Acadify.Models;
 
 namespace Acadify.Services.AcademicCalendar
 {
@@ -16,43 +15,56 @@ namespace Acadify.Services.AcademicCalendar
             "بداية تقديم طلبات التأجيل",
             "نهاية تقديم طلبات التأجيل",
             "بداية تقديم طلبات الاعتذار",
-            "نهاية فترة تقديم طلبات الاعتذار"
+            "نهاية فترة تقديم طلبات الاعتذار",
+            "إجازة نهاية العام"
         };
 
-        private static bool IsValidHijri(string? s) =>
-            s != null && Regex.IsMatch(s, @"^\d{2}/\d{2}/\d{4}هـ$");
-
-        private static bool IsValidGregorian(string? s) =>
-            s != null && Regex.IsMatch(s, @"^\d{2}/\d{2}/\d{4}م$");
-
-        private static bool IsValidDay(string? s) =>
-            s == null || new[]
-            {
-                "الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"
-            }.Contains(s.Trim());
-
-        public static void ValidateOrThrow(AcademicCalendarAiResult result)
+        public static void ValidateOrThrow(List<AcademicCalendarEvent>? events)
         {
-            if (result?.Events == null)
-                throw new InvalidOperationException("AI result is null.");
+            if (events == null || events.Count == 0)
+                throw new InvalidOperationException("No academic calendar events were extracted.");
 
-            if (result.Events.Count != 10)
-                throw new InvalidOperationException($"Expected 10 events, got {result.Events.Count}.");
-
-            foreach (var e in result.Events)
+            foreach (var e in events)
             {
-                if (!AllowedEvents.Contains(e.Event))
-                    throw new InvalidOperationException($"Unexpected event: {e.Event}");
+                if (string.IsNullOrWhiteSpace(e.EventName))
+                    throw new InvalidOperationException("An extracted event has an empty name.");
 
-                if (!IsValidDay(e.Day_Ar))
-                    throw new InvalidOperationException($"Invalid day_ar: {e.Day_Ar}");
+                if (!AllowedEvents.Contains(e.EventName))
+                    throw new InvalidOperationException($"Unexpected event: {e.EventName}");
 
-                if (e.Hijri_Date != null && !IsValidHijri(e.Hijri_Date))
-                    throw new InvalidOperationException($"Invalid hijri_date format: {e.Hijri_Date}");
+                if (e.GregorianDate == default)
+                    throw new InvalidOperationException($"Invalid gregorian date for event: {e.EventName}");
 
-                if (e.Gregorian_Date != null && !IsValidGregorian(e.Gregorian_Date))
-                    throw new InvalidOperationException($"Invalid gregorian_date format: {e.Gregorian_Date}");
+                if (!IsValidDay(e.DayAr))
+                    throw new InvalidOperationException($"Invalid day_ar: {e.DayAr}");
             }
+
+            var duplicatedEvents = events
+                .GroupBy(e => e.EventName)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            if (duplicatedEvents.Any())
+                throw new InvalidOperationException(
+                    "Duplicate event names were found: " + string.Join(", ", duplicatedEvents));
+        }
+
+        private static bool IsValidDay(string? day)
+        {
+            if (string.IsNullOrWhiteSpace(day))
+                return true;
+
+            return new[]
+            {
+                "الأحد",
+                "الاثنين",
+                "الثلاثاء",
+                "الأربعاء",
+                "الخميس",
+                "الجمعة",
+                "السبت"
+            }.Contains(day.Trim());
         }
     }
 }

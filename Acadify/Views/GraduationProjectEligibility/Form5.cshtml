@@ -1,6 +1,8 @@
-﻿@model Acadify.ViewModels.GraduationProjectEligibilityFormVM
+@model Acadify.ViewModels.GraduationProjectEligibilityFormVM
+
 @{
     Layout = "_AdvisorLayout";
+    ViewData["Title"] = "Graduation Project Eligibility";
 }
 
 <link rel="stylesheet" href="~/css/site.css" />
@@ -25,17 +27,10 @@
         {
             <div class="form5-header-actions">
                 <a class="btn-history"
-<<<<<<< HEAD
                    asp-controller="FormHistory"
                    asp-action="FormHistory"
                    asp-route-studentId="@Model.Form.StudentId"
                    asp-route-formType="GraduationProjectEligibilityForm">
-=======
-                       asp-controller="FormHistory"
-                       asp-action="FormHistory"
-                       asp-route-studentId="@Model.Form.StudentId"
-                       asp-route-formType="GraduationProjectEligibilityForm">
->>>>>>> origin_second/لما2
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     History
                 </a>

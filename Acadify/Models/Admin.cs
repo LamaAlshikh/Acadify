@@ -1,30 +1,29 @@
-<<<<<<< HEAD
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Acadify.Models;
-
-[Table("Admin")]
-[Index("UserId", Name = "UQ_Admin_UserID", IsUnique = true)]
-public partial class Admin
+namespace Acadify.Models
 {
-    [Key]
-    [Column("adminID")]
-    public int AdminId { get; set; }
+    [Table("Admin")]
+    [Index("UserId", Name = "UQ_Admin_UserID", IsUnique = true)]
+    public partial class Admin
+    {
+        [Key]
+        [Column("adminID")]
+        public int AdminId { get; set; }
 
-    [Column("userID")]
-    public int UserId { get; set; }
+        [Column("userID")]
+        public int UserId { get; set; }
 
-    [ForeignKey("UserId")]
-    [InverseProperty("Admin")]
-    public virtual User User { get; set; } = null!;
+        // --- العلاقات (Navigation Properties) ---
 
-    [InverseProperty("Admin")]
-    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        [ForeignKey("UserId")]
+        [InverseProperty("Admin")]
+        public virtual User User { get; set; } = null!;
+
+        [InverseProperty("Admin")]
+        public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+    }
 }
-=======
-﻿using System; using System.Collections.Generic; using System.ComponentModel.DataAnnotations; using System.ComponentModel.DataAnnotations.Schema; using Microsoft.EntityFrameworkCore; namespace Acadify.Models; [Table("Admin")] [Index("UserId", Name = "UQ_Admin_UserID", IsUnique = true)] public partial class Admin { [Key] [Column("adminID")] public int AdminId { get; set; } [Column("userID")] public int UserId { get; set; } [ForeignKey("UserId")] [InverseProperty("Admin")] public virtual User User { get; set; } = null!; [InverseProperty("Admin")] public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>(); }
->>>>>>> origin_second/لما2

@@ -2,29 +2,24 @@ using Acadify.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-public class WelcomeController : Controller
+namespace Acadify.Controllers
 {
-    // Welcome Page
-    public IActionResult Welcome()
+    public class WelcomeController : Controller
     {
-        return View();
-    }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
- 
->>>>>>> origin_second/linaLMversion
-=======
-
->>>>>>> origin_second/لما2
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel
+        // عرض الصفحة الترحيبية (Welcome Page)
+        public IActionResult Welcome()
         {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
-        });
+            return View();
+        }
+
+        // صفحة معالجة الأخطاء
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
+        }
     }
 }

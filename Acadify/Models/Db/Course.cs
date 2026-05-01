@@ -5,6 +5,7 @@ namespace Acadify.Models.Db;
 
 public partial class Course
 {
+    // المعرف الأساسي للمادة (مثل: CS101)
     public string CourseId { get; set; } = null!;
 
     public string CourseName { get; set; } = null!;
@@ -14,20 +15,11 @@ public partial class Course
     public string? Prerequisite { get; set; }
 
     public string? GraduationRequirement { get; set; }
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-=======
-    public string? RequirementCategory { get; set; }
->>>>>>> origin_second/rahafgh
-=======
+    // تم الإبقاء عليه ليتوافق مع DbContext (من إضافات رهف ولينا)
     public string? RequirementCategory { get; set; }
 
->>>>>>> origin_second/linaLMversion
-=======
-
->>>>>>> origin_second/لما2
+    // علاقات Many-to-Many
     public virtual ICollection<StudyPlan> Plans { get; set; } = new List<StudyPlan>();
 
     public virtual ICollection<Transcript> Transcripts { get; set; } = new List<Transcript>();

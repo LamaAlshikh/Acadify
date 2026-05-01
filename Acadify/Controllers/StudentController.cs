@@ -1,813 +1,51 @@
-﻿using Acadify.Models;
-<<<<<<< HEAD
-<<<<<<< HEAD
-using Acadify.Services;
-using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
-=======
-using Acadify.Models.StudentPages;
-using Microsoft.AspNetCore.Mvc;
->>>>>>> origin_second/لما2
-using Microsoft.EntityFrameworkCore;
-using UglyToad.PdfPig;
-using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
-<<<<<<< HEAD
-=======
-=======
-using Microsoft.AspNetCore.Mvc;
->>>>>>> origin_second/linaLMversion
-using System.IO;
-using Acadify.Models.Db;
-using Microsoft.EntityFrameworkCore;
-using UglyToad.PdfPig;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Globalization;
-using System.Text.RegularExpressions;
-<<<<<<< HEAD
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
->>>>>>> origin_second/rahafgh
-=======
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
+using Acadify.Models;
+using Db = Acadify.Models.Db;
+using Acadify.Models.StudentPages;
+using Acadify.Services;
 
->>>>>>> origin_second/linaLMversion
-=======
->>>>>>> origin_second/لما2
+using UglyToad.PdfPig;
 
 namespace Acadify.Controllers
 {
     public class StudentController : Controller
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        private readonly AcadifyDbContext _db;
+        private readonly Db.AcadifyDbContext _db;
         private readonly IWebHostEnvironment _env;
-=======
-
         private readonly ITranscriptParserService _transcriptParserService;
         private readonly IRecommendationEngineService _recommendationEngineService;
         private readonly ITranscriptAiParserService _transcriptAiParserService;
 
-
-        private readonly AcadifyDbContext _context;
-
-
-=======
-
-        private readonly AcadifyDbContext _context;
-
-       
->>>>>>> origin_second/linaLMversion
-
-
-        private readonly AcadifyDbContext _db;
-        private readonly IWebHostEnvironment _env;
-
-<<<<<<< HEAD
-        public StudentController(AcadifyDbContext db, IWebHostEnvironment env, AcadifyDbContext context,
+        public StudentController(
+            Db.AcadifyDbContext db,
+            IWebHostEnvironment env,
             ITranscriptParserService transcriptParserService,
             IRecommendationEngineService recommendationEngineService,
-            ITranscriptAiParserService transcriptAiParserService
-            )
-=======
-        public StudentController(AcadifyDbContext db, IWebHostEnvironment env , AcadifyDbContext context)
->>>>>>> origin_second/linaLMversion
+            ITranscriptAiParserService transcriptAiParserService)
         {
             _db = db;
             _env = env;
-            _context = context;
-<<<<<<< HEAD
             _transcriptParserService = transcriptParserService;
             _recommendationEngineService = recommendationEngineService;
             _transcriptAiParserService = transcriptAiParserService;
-=======
->>>>>>> origin_second/linaLMversion
         }
 
         // =========================
-        // Helpers
-        // =========================
-
-        private static string ReadPdfText(string fullPath)
-        {
-            var sb = new StringBuilder();
-
-            using (var document = PdfDocument.Open(fullPath))
-            {
-                foreach (var page in document.GetPages())
-                    sb.AppendLine(page.Text);
-            }
-
-            return sb.ToString();
-        }
-
-        private sealed class ParsedTranscript
-        {
-            public decimal? CumulativeGpa { get; set; }
-            public decimal? LatestTermGpa { get; set; }
-            public HashSet<string> CourseCodes { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-        }
-
-        private static ParsedTranscript ParseTranscriptText(string text)
-        {
-            var result = new ParsedTranscript();
-
-            if (string.IsNullOrWhiteSpace(text))
-                return result;
-
-            var normalized = Regex.Replace(text, @"\s+", " ").Trim();
-
-            // Cumulative GPA
-            var cumMatch = Regex.Match(
-                normalized,
-                @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})",
-                RegexOptions.IgnoreCase);
-
-            if (!cumMatch.Success)
-            {
-                cumMatch = Regex.Match(
-                    normalized,
-                    @"([0-5]\.\d{2})\s*Cumulative\s*GPA",
-                    RegexOptions.IgnoreCase);
-            }
-
-            if (cumMatch.Success)
-                result.CumulativeGpa = TryDec(cumMatch.Groups[1].Value);
-
-            // Latest Term GPA
-            var termMatches = Regex.Matches(
-                normalized,
-                @"\bTerm\b.*?\b([0-5]\.\d{2})\b",
-                RegexOptions.IgnoreCase);
-
-            if (termMatches.Count > 0)
-                result.LatestTermGpa = TryDec(termMatches[^1].Groups[1].Value);
-
-            // Course codes: any academic-looking code مثل CPIS352 أو FMIS420 أو ARAB201
-            var blockedPrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        "FALL", "SPRING", "SUMMER", "WINTER", "TERM", "PAGE"
-    };
-
-            foreach (Match m in Regex.Matches(normalized, @"(?<![A-Z0-9])([A-Z]{3,6})\s*[-]?\s*(\d{3})(?!\d)"))
-            {
-                var prefix = m.Groups[1].Value.ToUpperInvariant();
-                var number = m.Groups[2].Value;
-                var code = prefix + number;
-
-                if (blockedPrefixes.Contains(prefix))
-                    continue;
-
-                result.CourseCodes.Add(code);
-            }
-
-            return result;
-
-            static decimal? TryDec(string s)
-            {
-                if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
-                    return d;
-                return null;
-            }
-        }
-        private static (decimal? cumulativeGpa, decimal? lastTermGpa) ParseGpaFromTranscriptText(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return (null, null);
-
-            var normalized = Regex.Replace(text, @"\s+", " ").Trim();
-
-            decimal? cumulative = null;
-
-            var m1 = Regex.Match(normalized, @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})", RegexOptions.IgnoreCase);
-            if (m1.Success) cumulative = TryDec(m1.Groups[1].Value);
-
-            if (!cumulative.HasValue)
-            {
-                var m3 = Regex.Match(normalized, @"\b\d+\s+([0-5]\.\d{2})\s*Cumulative\s*Total", RegexOptions.IgnoreCase);
-                if (m3.Success) cumulative = TryDec(m3.Groups[1].Value);
-            }
-
-            decimal? term = null;
-            {
-                var tail = normalized.Length > 2500 ? normalized[^2500..] : normalized;
-                var nums = Regex.Matches(tail, @"\b[0-5]\.\d{2}\b")
-                    .Select(x => TryDec(x.Value))
-                    .Where(x => x.HasValue)
-                    .Select(x => x!.Value)
-                    .ToList();
-
-                if (nums.Count > 0)
-                {
-                    if (cumulative.HasValue)
-                        nums = nums.Where(x => x != cumulative.Value).ToList();
-
-                    if (nums.Count > 0)
-                        term = nums.Max();
-                }
-            }
-
-            return (cumulative, term);
-
-            static decimal? TryDec(string s)
-            {
-                if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
-                    return d;
-                return null;
-            }
-        }
-
-        private static List<string> ExtractCourseCodesFromPdf(string fullPath)
-        {
-            var blockedPrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        "FALL", "SPRING", "SUMMER", "WINTER", "TERM", "PAGE"
-    };
-
-            var results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            using var doc = UglyToad.PdfPig.PdfDocument.Open(fullPath);
-
-            foreach (var page in doc.GetPages())
-            {
-                var words = page.GetWords().ToList();
-
-                // Case 1: CPIS352 or CPIS-352
-                foreach (var word in words)
-                {
-                    var text = word.Text.Trim().ToUpperInvariant();
-
-                    var m = Regex.Match(text, @"^([A-Z]{3,6})[-]?(\d{3})$");
-                    if (m.Success)
-                    {
-                        var prefix = m.Groups[1].Value.ToUpperInvariant();
-                        var code = prefix + m.Groups[2].Value;
-
-                        if (!blockedPrefixes.Contains(prefix))
-                            results.Add(code);
-                    }
-                }
-
-                // Case 2: CPIS 352
-                var lineGroups = words
-                    .GroupBy(w => Math.Round(w.BoundingBox.Bottom, 0))
-                    .OrderByDescending(g => g.Key);
-
-                foreach (var line in lineGroups)
-                {
-                    var tokens = line
-                        .OrderBy(w => w.BoundingBox.Left)
-                        .Select(w => w.Text.Trim().ToUpperInvariant())
-                        .Where(t => !string.IsNullOrWhiteSpace(t))
-                        .ToList();
-
-                    for (int i = 0; i < tokens.Count - 1; i++)
-                    {
-                        var p = tokens[i];
-                        var n = tokens[i + 1];
-
-                        if (Regex.IsMatch(p, @"^[A-Z]{3,6}$") && Regex.IsMatch(n, @"^\d{3}$"))
-                        {
-                            if (!blockedPrefixes.Contains(p))
-                                results.Add(p + n);
-                        }
-                    }
-                }
-            }
-
-            return results.OrderBy(x => x).ToList();
-        }
-
-
-
-        private static List<string> ExtractCourseCodesByKnownTitles(string text)
-        {
-            var results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            if (string.IsNullOrWhiteSpace(text))
-                return results.ToList();
-
-            var normalized = Regex.Replace(text, @"\s+", " ").ToUpperInvariant();
-
-            var titleToCode = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-    {
-        { "ARABIC LANGUAGE (2)", "ARAB201" },
-        { "IS APPLICATIONS DESIGN & DEVEL", "CPIS352" },
-        { "HISTORY OF ASTRONOMY", "ASTR203" },
-        { "PERSUASION", "ARAB292" },
-        { "PRINCIPLES OF MARKETING", "MRKT260" },
-        { "INFORMATION & COMPUTER SECURIT", "CPIS312" },
-        { "PRINCIPLES OF HUMAN COMPUTER I", "CPIS354" },
-        { "INTERNET APPLICATIONS&WEB PRO", "CPIS358" },
-        { "SOFTWARE QUALITY AND TESTING", "CPIS357" },
-        { "INTELLIGENT SYSTEMS", "CPIS363" },
-        { "INTRODUCTION TO E-BUSINESS SYS", "CPIS380" },
-        { "SUMMER(WORKPLACE) TRAINING", "CPIS323" },
-                 { "SYSTEMS DESIGN PATTERNS", "CPIS350" }
-    };
-
-            foreach (var item in titleToCode)
-            {
-                if (normalized.Contains(item.Key.ToUpperInvariant()))
-                    results.Add(item.Value);
-            }
-
-            return results.OrderBy(x => x).ToList();
-        }
-
-
-
-<<<<<<< HEAD
-=======
-        private static Dictionary<string, int> ExtractCourseHoursMapFromPdf(string fullPath, List<string>? targetCourseIds)
-        {
-            var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-            using var doc = UglyToad.PdfPig.PdfDocument.Open(fullPath);
-
-            foreach (var page in doc.GetPages())
-            {
-                var words = page.GetWords()
-                    .OrderByDescending(w => w.BoundingBox.Bottom)
-                    .ThenBy(w => w.BoundingBox.Left)
-                    .ToList();
-
-                var lines = GroupWordsIntoLines(words);
-
-                foreach (var line in lines)
-                {
-                    var tokens = line
-                        .OrderBy(w => w.BoundingBox.Left)
-                        .Select(w => w.Text.Trim().ToUpperInvariant())
-                        .Where(t => !string.IsNullOrWhiteSpace(t))
-                        .ToList();
-
-                    if (tokens.Count == 0)
-                        continue;
-
-                    var lineCourseIds = ExtractCourseIdsFromTokens(tokens);
-
-                    foreach (var courseId in lineCourseIds)
-                    {
-                        if (targetCourseIds != null && !targetCourseIds.Contains(courseId, StringComparer.OrdinalIgnoreCase))
-                            continue;
-
-                        if (result.ContainsKey(courseId))
-                            continue;
-
-                        if (!TryFindCourseOnLine(tokens, courseId, out var codeIndex))
-                            continue;
-
-                        if (TryExtractHourNearCourse(tokens, codeIndex, out var hours))
-                            result[courseId] = hours;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private static List<List<UglyToad.PdfPig.Content.Word>> GroupWordsIntoLines(List<UglyToad.PdfPig.Content.Word> words)
-        {
-            var lines = new List<List<UglyToad.PdfPig.Content.Word>>();
-
-            foreach (var word in words)
-            {
-                var existingLine = lines.FirstOrDefault(line =>
-                    Math.Abs(line[0].BoundingBox.Bottom - word.BoundingBox.Bottom) <= 3.5);
-
-                if (existingLine == null)
-                {
-                    lines.Add(new List<UglyToad.PdfPig.Content.Word> { word });
-                }
-                else
-                {
-                    existingLine.Add(word);
-                }
-            }
-
-            return lines;
-        }
-
-        private static List<string> ExtractCourseIdsFromTokens(List<string> tokens)
-        {
-            var result = new List<string>();
-
-            for (int i = 0; i < tokens.Count; i++)
-            {
-                var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
-                if (m.Success)
-                {
-                    result.Add((m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant());
-                    continue;
-                }
-
-                if (i < tokens.Count - 1 &&
-                    Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
-                    Regex.IsMatch(tokens[i + 1], @"^\d{3}$"))
-                {
-                    result.Add((tokens[i] + tokens[i + 1]).ToUpperInvariant());
-                }
-            }
-
-            return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-        }
-
-        private static bool TryFindCourseOnLine(List<string> tokens, string courseId, out int codeIndex)
-        {
-            codeIndex = -1;
-
-            var upperCourseId = courseId.ToUpperInvariant();
-            var prefix = new string(upperCourseId.TakeWhile(char.IsLetter).ToArray());
-            var number = new string(upperCourseId.SkipWhile(char.IsLetter).ToArray());
-
-            for (int i = 0; i < tokens.Count; i++)
-            {
-                var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
-                if (m.Success)
-                {
-                    var code = (m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant();
-                    if (code == upperCourseId)
-                    {
-                        codeIndex = i;
-                        return true;
-                    }
-                }
-
-                if (i < tokens.Count - 1 &&
-                    Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
-                    tokens[i] == prefix &&
-                    tokens[i + 1] == number)
-                {
-                    codeIndex = i;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool TryExtractHourNearCourse(List<string> tokens, int codeIndex, out int hours)
-        {
-            hours = 0;
-
-            var candidates = new List<(int Distance, int Value, bool IsBefore)>();
-
-            for (int i = Math.Max(0, codeIndex - 10); i <= Math.Min(tokens.Count - 1, codeIndex + 10); i++)
-            {
-                if (i == codeIndex)
-                    continue;
-
-                if (Regex.IsMatch(tokens[i], @"^[0-5]$"))
-                {
-                    int value = int.Parse(tokens[i]);
-                    int distance = Math.Abs(i - codeIndex);
-                    bool isBefore = i < codeIndex;
-
-                    candidates.Add((distance, value, isBefore));
-                }
-            }
-
-            if (candidates.Count == 0)
-                return false;
-
-            var best = candidates
-                .OrderBy(c => c.Distance)
-                .ThenBy(c => c.IsBefore ? 0 : 1)
-                .ThenBy(c => c.Value == 0 ? 1 : 0)
-                .First();
-
-            hours = best.Value;
-            return true;
-        }
-
-
-
->>>>>>> origin_second/linaLMversion
-
-
-
-
-
-
-
-        // Student Home Page
-        public IActionResult StudentHome()
-        {
-            // مؤقتًا: القيمة جاية من الإيجنت
-            // لاحقًا: تستبدل بقيمة من Database
-            int progressFromAgent = 80;
-<<<<<<< HEAD
->>>>>>> origin_second/rahafgh
-
-        public StudentController(AcadifyDbContext db, IWebHostEnvironment env)
-        {
-            _db = db;
-            _env = env;
-        }
-
-        // =========================
-        // Helpers
-        // =========================
-
-        private int? GetCurrentStudentId()
-        {
-            return HttpContext.Session.GetInt32("StudentId");
-        }
-
-        private async Task<int?> GetAdvisorIdForStudentAsync(int studentId)
-        {
-            return await _db.Students
-                .Where(s => s.StudentId == studentId)
-                .Select(s => (int?)s.AdvisorId)
-                .FirstOrDefaultAsync();
-        }
-
-        // load student name + email for sidebar
-        private async Task LoadStudentSidebarDataAsync()
-        {
-            int? studentId = GetCurrentStudentId();
-
-            if (!studentId.HasValue)
-            {
-                studentId = 2209009; // temporary for testing
-            }
-
-            var student = await _db.Students
-                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
-
-            if (student == null)
-            {
-                ViewBag.StudentName = "Student";
-                ViewBag.StudentEmail = "";
-                return;
-            }
-
-            ViewBag.StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName");
-            ViewBag.StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail");
-        }
-
-        private static string GetStringPropertyValue(object obj, params string[] propertyNames)
-        {
-            foreach (var propertyName in propertyNames)
-            {
-                var prop = obj.GetType().GetProperty(propertyName);
-                if (prop != null)
-                {
-                    var value = prop.GetValue(obj)?.ToString();
-                    if (!string.IsNullOrWhiteSpace(value))
-                        return value;
-                }
-            }
-
-            return string.Empty;
-        }
-
-        private static string ReadPdfText(string fullPath)
-        {
-            var sb = new StringBuilder();
-
-            using (var document = PdfDocument.Open(fullPath))
-            {
-                foreach (var page in document.GetPages())
-                    sb.AppendLine(page.Text);
-            }
-
-            return sb.ToString();
-        }
-
-        private static (decimal? cumulativeGpa, decimal? lastTermGpa) ParseGpaFromTranscriptText(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return (null, null);
-
-            var normalized = Regex.Replace(text, @"\s+", " ").Trim();
-
-            decimal? cumulative = null;
-
-            var m1 = Regex.Match(
-                normalized,
-                @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})",
-                RegexOptions.IgnoreCase);
-
-            if (m1.Success)
-                cumulative = TryDec(m1.Groups[1].Value);
-
-            if (!cumulative.HasValue)
-            {
-                var m3 = Regex.Match(
-                    normalized,
-                    @"\b\d+\s+([0-5]\.\d{2})\s*Cumulative\s*Total",
-                    RegexOptions.IgnoreCase);
-
-                if (m3.Success)
-                    cumulative = TryDec(m3.Groups[1].Value);
-            }
-
-            decimal? term = null;
-
-            var tail = normalized.Length > 2500 ? normalized[^2500..] : normalized;
-            var nums = Regex.Matches(tail, @"\b[0-5]\.\d{2}\b")
-                .Select(x => TryDec(x.Value))
-                .Where(x => x.HasValue)
-                .Select(x => x!.Value)
-                .ToList();
-
-            if (nums.Count > 0)
-            {
-                if (cumulative.HasValue)
-                    nums = nums.Where(x => x != cumulative.Value).ToList();
-
-                if (nums.Count > 0)
-                    term = nums.Max();
-            }
-
-            return (cumulative, term);
-
-            static decimal? TryDec(string s)
-            {
-                if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
-                    return d;
-
-                return null;
-            }
-        }
-
-        private static List<string> ExtractCourseCodesFromPdf(string fullPath)
-        {
-            var prefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "CPIS","IS","CPCS","CPIT","BUS","ACCT","MRKT","ARAB",
-                "STAT","ELIS","MATH","PHYS","CHEM","BIO","ASTR","COMM","ISLS"
-            };
-
-            var results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            using var doc = PdfDocument.Open(fullPath);
-
-            foreach (var page in doc.GetPages())
-            {
-                var words = page.GetWords().ToList();
-
-                var lineGroups = words
-                    .GroupBy(w => Math.Round(w.BoundingBox.Bottom, 0))
-                    .OrderByDescending(g => g.Key);
-
-                foreach (var line in lineGroups)
-                {
-                    var tokens = line
-                        .OrderBy(w => w.BoundingBox.Left)
-                        .Select(w => w.Text.Trim())
-                        .Where(t => !string.IsNullOrWhiteSpace(t))
-                        .ToList();
-
-                    foreach (var t in tokens)
-                    {
-                        var mm = Regex.Match(t, @"^([A-Z]{2,6})(\d{3,4})$");
-                        if (mm.Success && prefixes.Contains(mm.Groups[1].Value))
-                            results.Add((mm.Groups[1].Value + mm.Groups[2].Value).ToUpperInvariant());
-                    }
-
-                    for (int i = 0; i < tokens.Count - 1; i++)
-                    {
-                        var p = tokens[i].ToUpperInvariant();
-                        var n = tokens[i + 1];
-
-                        if (prefixes.Contains(p) && Regex.IsMatch(n, @"^\d{3,4}$"))
-                            results.Add(p + n);
-                    }
-                }
-            }
-
-            return results.OrderBy(x => x).ToList();
-        }
-
-        private async Task<int> CreateNewForm5ForStudentAsync(int studentId)
-        {
-            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
-
-            if (!advisorId.HasValue || advisorId.Value <= 0)
-                throw new InvalidOperationException("No advisor is assigned to this student.");
-
-            var newForm5 = new Form
-            {
-                StudentId = studentId,
-                AdvisorId = advisorId.Value,
-                FormType = "Form 5",
-                FormDate = DateTime.Now,
-                FormStatus = "Pending",
-                AdvisorNotes = null,
-                AutoFilled = true,
-                AdvisorConfirmation = null
-            };
-
-            _db.Forms.Add(newForm5);
-            await _db.SaveChangesAsync();
-
-            var details = new GraduationProjectEligibilityForm
-            {
-                FormId = newForm5.FormId,
-                Eligibility = null,
-                RequiredCoursesStatus = null
-            };
-
-            _db.GraduationProjectEligibilityForms.Add(details);
-            await _db.SaveChangesAsync();
-
-            return newForm5.FormId;
-        }
-
-        private int CalculateProgressPercentage(int remainingHours, int totalRequiredHours)
-        {
-            if (remainingHours <= 0)
-                return 100;
-
-            if (remainingHours <= 3)
-                return 99;
-
-            int completedHours = totalRequiredHours - remainingHours;
-
-            double percentage = ((double)completedHours / totalRequiredHours) * 100;
-
-            int roundedToTens = ((int)Math.Floor(percentage / 10.0)) * 10;
-
-            if (roundedToTens < 10 && completedHours > 0)
-                roundedToTens = 10;
-
-            if (roundedToTens > 90)
-                roundedToTens = 90;
-
-            return roundedToTens;
-        }
-
-        private string CalculateCurrentStatus(int remainingHours)
-        {
-            if (remainingHours <= 0)
-                return "Graduated";
-
-            if (remainingHours <= 3)
-                return "Near Graduation";
-
-            return "Has Remaining Courses";
-        }
-
-        // =======================
-        // Student Home Page
-        // =======================
-        [HttpGet]
-        public async Task<IActionResult> StudentHome()
-        {
-            ViewData["Title"] = "Student Home";
-            await LoadStudentSidebarDataAsync();
-
-            int? studentId = GetCurrentStudentId();
-
-            if (!studentId.HasValue)
-            {
-                studentId = 2209009; // temporary for testing
-            }
-
-            var student = await _db.Students
-                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
-
-            if (student == null)
-            {
-                return NotFound("Student not found.");
-            }
-
-            var graduationStatus = await _db.GraduationStatuses
-                .FirstOrDefaultAsync(g => g.StudentId == studentId.Value);
-
-            int totalRequiredHours = 140;
-            int remainingHours = graduationStatus?.RemainingHours ?? 140;
-
-            var model = new StudenthomeViewModel
-            {
-                StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName"),
-                StudentEmail = GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail"),
-                ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
-                CurrentStatus = CalculateCurrentStatus(remainingHours)
-=======
-=======
-        private readonly AcadifyDbContext _db;
-        private readonly IWebHostEnvironment _env;
->>>>>>> origin_second/لما2
-
-        public StudentController(AcadifyDbContext db, IWebHostEnvironment env)
-        {
-            _db = db;
-            _env = env;
-        }
-
-        // =========================
-        // Helpers
+        // Notification helpers
         // =========================
         private async Task AddNotificationAsync(
             string senderRole,
@@ -818,24 +56,13 @@ namespace Acadify.Controllers
             int? advisorId = null,
             int? adminId = null)
         {
-            _db.Notifications.Add(new Notification
+            _db.Notifications.Add(new Db.Notification
             {
-<<<<<<< HEAD
-                StudentName = "lama alshikh",
-                StudentEmail = "lalshikh@stu.kau.edu.sa",
-                ProgressPercentage = progressFromAgent,
-                CurrentStatus = GetStatus(progressFromAgent)
->>>>>>> origin_second/linaLMversion
-=======
-                SenderRole = senderRole,
-                SourceType = sourceType,
                 Type = type,
                 Message = message,
                 StudentId = studentId,
                 AdvisorId = advisorId,
-                AdminId = adminId,
-                Date = DateTime.Now,
-                IsRead = false
+                Date = DateTime.Now
             });
 
             await _db.SaveChangesAsync();
@@ -849,28 +76,19 @@ namespace Acadify.Controllers
             int? studentId = null,
             int? advisorId = null)
         {
-            var admins = await _db.Admins.ToListAsync();
-
-            foreach (var admin in admins)
+            _db.Notifications.Add(new Db.Notification
             {
-                _db.Notifications.Add(new Notification
-                {
-                    SenderRole = senderRole,
-                    SourceType = sourceType,
-                    Type = type,
-                    Message = message,
-                    StudentId = studentId,
-                    AdvisorId = advisorId,
-                    AdminId = admin.AdminId,
-                    Date = DateTime.Now,
-                    IsRead = false
-                });
-            }
+                Type = type,
+                Message = message,
+                StudentId = studentId,
+                AdvisorId = advisorId,
+                Date = DateTime.Now
+            });
 
             await _db.SaveChangesAsync();
         }
 
-        private async Task AddGeneratedFormsNotificationsAsync(Student student)
+        private async Task AddGeneratedFormsNotificationsAsync(Db.Student student)
         {
             var messages = new List<string>
             {
@@ -905,6 +123,9 @@ namespace Acadify.Controllers
             }
         }
 
+        // =========================
+        // General helpers
+        // =========================
         private int? GetCurrentStudentId()
         {
             return HttpContext.Session.GetInt32("StudentId");
@@ -925,7 +146,7 @@ namespace Acadify.Controllers
             if (!studentId.HasValue)
             {
                 ViewBag.StudentName = "Student";
-                ViewBag.StudentEmail = "";
+                ViewBag.StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "";
                 return;
             }
 
@@ -940,7 +161,8 @@ namespace Acadify.Controllers
             }
 
             ViewBag.StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName");
-            ViewBag.StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "";
+            ViewBag.StudentEmail = HttpContext.Session.GetString("UserEmail")
+                ?? GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail");
         }
 
         private static string GetStringPropertyValue(object obj, params string[] propertyNames)
@@ -959,6 +181,9 @@ namespace Acadify.Controllers
             return string.Empty;
         }
 
+        // =========================
+        // Transcript PDF helpers
+        // =========================
         private static string ReadPdfText(string fullPath)
         {
             var sb = new StringBuilder();
@@ -972,69 +197,105 @@ namespace Acadify.Controllers
             return sb.ToString();
         }
 
-        private static (decimal? cumulativeGpa, decimal? lastTermGpa) ParseGpaFromTranscriptText(string text)
+        private sealed class ParsedTranscript
         {
+            public decimal? CumulativeGpa { get; set; }
+            public decimal? LatestTermGpa { get; set; }
+            public HashSet<string> CourseCodes { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static ParsedTranscript ParseTranscriptText(string text)
+        {
+            var result = new ParsedTranscript();
             if (string.IsNullOrWhiteSpace(text))
-                return (null, null);
+                return result;
 
             var normalized = Regex.Replace(text, @"\s+", " ").Trim();
 
-            decimal? cumulative = null;
-
-            var m1 = Regex.Match(
+            var cumMatch = Regex.Match(
                 normalized,
                 @"Cumulative\s*GPA\s*[:\-]?\s*([0-5]\.\d{2})",
                 RegexOptions.IgnoreCase);
 
-            if (m1.Success)
-                cumulative = TryDec(m1.Groups[1].Value);
-
-            if (!cumulative.HasValue)
+            if (!cumMatch.Success)
             {
-                var m3 = Regex.Match(
+                cumMatch = Regex.Match(
+                    normalized,
+                    @"([0-5]\.\d{2})\s*Cumulative\s*GPA",
+                    RegexOptions.IgnoreCase);
+            }
+
+            if (!cumMatch.Success)
+            {
+                cumMatch = Regex.Match(
                     normalized,
                     @"\b\d+\s+([0-5]\.\d{2})\s*Cumulative\s*Total",
                     RegexOptions.IgnoreCase);
-
-                if (m3.Success)
-                    cumulative = TryDec(m3.Groups[1].Value);
             }
 
-            decimal? term = null;
+            if (cumMatch.Success)
+                result.CumulativeGpa = TryDec(cumMatch.Groups[1].Value);
 
-            var tail = normalized.Length > 2500 ? normalized[^2500..] : normalized;
-            var nums = Regex.Matches(tail, @"\b[0-5]\.\d{2}\b")
-                .Select(x => TryDec(x.Value))
-                .Where(x => x.HasValue)
-                .Select(x => x!.Value)
-                .ToList();
+            var termMatches = Regex.Matches(
+                normalized,
+                @"\bTerm\b.*?\b([0-5]\.\d{2})\b",
+                RegexOptions.IgnoreCase);
 
-            if (nums.Count > 0)
+            if (termMatches.Count > 0)
             {
-                if (cumulative.HasValue)
-                    nums = nums.Where(x => x != cumulative.Value).ToList();
-
-                if (nums.Count > 0)
-                    term = nums.Max();
+                result.LatestTermGpa = TryDec(termMatches[^1].Groups[1].Value);
             }
-
-            return (cumulative, term);
-
-            static decimal? TryDec(string s)
+            else
             {
-                if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
-                    return d;
+                var tail = normalized.Length > 2500 ? normalized[^2500..] : normalized;
+                var nums = Regex.Matches(tail, @"\b[0-5]\.\d{2}\b")
+                    .Select(x => TryDec(x.Value))
+                    .Where(x => x.HasValue && x != result.CumulativeGpa)
+                    .Select(x => x!.Value)
+                    .ToList();
 
-                return null;
+                if (nums.Any())
+                    result.LatestTermGpa = nums.Max();
             }
+
+            var blockedPrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "FALL", "SPRING", "SUMMER", "WINTER", "TERM", "PAGE"
+            };
+
+            var courseRegex = new Regex(@"(?<![A-Z0-9])([A-Z]{2,6})\s*[-]?\s*(\d{3,4})(?!\d)");
+
+            foreach (Match m in courseRegex.Matches(normalized))
+            {
+                var prefix = m.Groups[1].Value.ToUpperInvariant();
+                if (blockedPrefixes.Contains(prefix))
+                    continue;
+
+                result.CourseCodes.Add(prefix + m.Groups[2].Value);
+            }
+
+            return result;
+        }
+
+        private static (decimal? cumulativeGpa, decimal? lastTermGpa) ParseGpaFromTranscriptText(string text)
+        {
+            var parsed = ParseTranscriptText(text);
+            return (parsed.CumulativeGpa, parsed.LatestTermGpa);
+        }
+
+        private static decimal? TryDec(string s)
+        {
+            if (decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
+                return d;
+
+            return null;
         }
 
         private static List<string> ExtractCourseCodesFromPdf(string fullPath)
         {
-            var prefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            var blockedPrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "CPIS","IS","CPCS","CPIT","BUS","ACCT","MRKT","ARAB",
-                "STAT","ELIS","MATH","PHYS","CHEM","BIO","ASTR","COMM","ISLS"
+                "FALL", "SPRING", "SUMMER", "WINTER", "TERM", "PAGE"
             };
 
             var results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1045,6 +306,18 @@ namespace Acadify.Controllers
             {
                 var words = page.GetWords().ToList();
 
+                foreach (var word in words)
+                {
+                    var text = word.Text.Trim().ToUpperInvariant();
+                    var m = Regex.Match(text, @"^([A-Z]{2,6})[-]?(\d{3,4})$");
+                    if (m.Success)
+                    {
+                        var prefix = m.Groups[1].Value;
+                        if (!blockedPrefixes.Contains(prefix))
+                            results.Add(prefix + m.Groups[2].Value);
+                    }
+                }
+
                 var lineGroups = words
                     .GroupBy(w => Math.Round(w.BoundingBox.Bottom, 0))
                     .OrderByDescending(g => g.Key);
@@ -1053,24 +326,18 @@ namespace Acadify.Controllers
                 {
                     var tokens = line
                         .OrderBy(w => w.BoundingBox.Left)
-                        .Select(w => w.Text.Trim())
+                        .Select(w => w.Text.Trim().ToUpperInvariant())
                         .Where(t => !string.IsNullOrWhiteSpace(t))
                         .ToList();
 
-                    foreach (var t in tokens)
-                    {
-                        var mm = Regex.Match(t, @"^([A-Z]{2,6})(\d{3,4})$");
-                        if (mm.Success && prefixes.Contains(mm.Groups[1].Value))
-                            results.Add((mm.Groups[1].Value + mm.Groups[2].Value).ToUpperInvariant());
-                    }
-
                     for (int i = 0; i < tokens.Count - 1; i++)
                     {
-                        var p = tokens[i].ToUpperInvariant();
-                        var n = tokens[i + 1];
-
-                        if (prefixes.Contains(p) && Regex.IsMatch(n, @"^\d{3,4}$"))
-                            results.Add(p + n);
+                        if (Regex.IsMatch(tokens[i], @"^[A-Z]{2,6}$") &&
+                            Regex.IsMatch(tokens[i + 1], @"^\d{3,4}$"))
+                        {
+                            if (!blockedPrefixes.Contains(tokens[i]))
+                                results.Add(tokens[i] + tokens[i + 1]);
+                        }
                     }
                 }
             }
@@ -1078,39 +345,237 @@ namespace Acadify.Controllers
             return results.OrderBy(x => x).ToList();
         }
 
-        private async Task<int> CreateNewForm5ForStudentAsync(int studentId)
+        private static List<string> ExtractCourseCodesByKnownTitles(string text)
         {
-            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
+            var results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(text))
+                return results.ToList();
 
-            if (!advisorId.HasValue || advisorId.Value <= 0)
-                throw new InvalidOperationException("No advisor is assigned to this student.");
-
-            var newForm5 = new Form
+            var normalized = Regex.Replace(text, @"\s+", " ").ToUpperInvariant();
+            var titleToCode = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                StudentId = studentId,
-                AdvisorId = advisorId.Value,
-                FormType = "Form 5",
-                FormDate = DateTime.Now,
-                FormStatus = "Pending",
-                AdvisorNotes = null,
-                AutoFilled = true,
-                AdvisorConfirmation = null
+                { "ARABIC LANGUAGE (2)", "ARAB201" },
+                { "IS APPLICATIONS DESIGN & DEVEL", "CPIS352" },
+                { "HISTORY OF ASTRONOMY", "ASTR203" },
+                { "PERSUASION", "ARAB292" },
+                { "PRINCIPLES OF MARKETING", "MRKT260" },
+                { "INFORMATION & COMPUTER SECURIT", "CPIS312" },
+                { "PRINCIPLES OF HUMAN COMPUTER I", "CPIS354" },
+                { "INTERNET APPLICATIONS&WEB PRO", "CPIS358" },
+                { "SOFTWARE QUALITY AND TESTING", "CPIS357" },
+                { "INTELLIGENT SYSTEMS", "CPIS363" },
+                { "INTRODUCTION TO E-BUSINESS SYS", "CPIS380" },
+                { "SUMMER(WORKPLACE) TRAINING", "CPIS323" },
+                { "SYSTEMS DESIGN PATTERNS", "CPIS350" }
             };
 
-            _db.Forms.Add(newForm5);
-            await _db.SaveChangesAsync();
-
-            var details = new GraduationProjectEligibilityForm
+            foreach (var item in titleToCode)
             {
-                FormId = newForm5.FormId,
-                Eligibility = null,
-                RequiredCoursesStatus = null
+                if (normalized.Contains(item.Key))
+                    results.Add(item.Value);
+            }
+
+            return results.OrderBy(x => x).ToList();
+        }
+
+        private static Dictionary<string, int> ExtractCourseHoursMapFromPdf(string fullPath, List<string>? targetCourseIds)
+        {
+            var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            using var doc = PdfDocument.Open(fullPath);
+
+            foreach (var page in doc.GetPages())
+            {
+                var words = page.GetWords()
+                    .OrderByDescending(w => w.BoundingBox.Bottom)
+                    .ThenBy(w => w.BoundingBox.Left)
+                    .ToList();
+
+                var lines = GroupWordsIntoLines(words);
+
+                foreach (var line in lines)
+                {
+                    var tokens = line
+                        .OrderBy(w => w.BoundingBox.Left)
+                        .Select(w => w.Text.Trim().ToUpperInvariant())
+                        .Where(t => !string.IsNullOrWhiteSpace(t))
+                        .ToList();
+
+                    if (tokens.Count == 0)
+                        continue;
+
+                    var lineCourseIds = ExtractCourseIdsFromTokens(tokens);
+                    foreach (var courseId in lineCourseIds)
+                    {
+                        if (targetCourseIds != null && !targetCourseIds.Contains(courseId))
+                            continue;
+
+                        if (result.ContainsKey(courseId))
+                            continue;
+
+                        if (TryFindCourseOnLine(tokens, courseId, out var codeIndex) &&
+                            TryExtractHourNearCourse(tokens, codeIndex, out var hours))
+                        {
+                            result[courseId] = hours;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static List<List<UglyToad.PdfPig.Content.Word>> GroupWordsIntoLines(List<UglyToad.PdfPig.Content.Word> words)
+        {
+            var lines = new List<List<UglyToad.PdfPig.Content.Word>>();
+
+            foreach (var word in words)
+            {
+                var existingLine = lines.FirstOrDefault(line =>
+                    Math.Abs(line[0].BoundingBox.Bottom - word.BoundingBox.Bottom) <= 3.5);
+
+                if (existingLine == null)
+                    lines.Add(new List<UglyToad.PdfPig.Content.Word> { word });
+                else
+                    existingLine.Add(word);
+            }
+
+            return lines;
+        }
+
+        private static List<string> ExtractCourseIdsFromTokens(List<string> tokens)
+        {
+            var result = new List<string>();
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                var m = Regex.Match(tokens[i], @"^([A-Z]{2,6})[-]?(\d{3,4})$");
+                if (m.Success)
+                {
+                    result.Add(m.Groups[1].Value + m.Groups[2].Value);
+                    continue;
+                }
+
+                if (i < tokens.Count - 1 &&
+                    Regex.IsMatch(tokens[i], @"^[A-Z]{2,6}$") &&
+                    Regex.IsMatch(tokens[i + 1], @"^\d{3,4}$"))
+                {
+                    result.Add(tokens[i] + tokens[i + 1]);
+                }
+            }
+
+            return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static bool TryFindCourseOnLine(List<string> tokens, string courseId, out int codeIndex)
+        {
+            codeIndex = -1;
+
+            var upperCourseId = courseId.ToUpperInvariant();
+            var prefix = new string(upperCourseId.TakeWhile(char.IsLetter).ToArray());
+            var number = new string(upperCourseId.SkipWhile(char.IsLetter).ToArray());
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                var m = Regex.Match(tokens[i], @"^([A-Z]{2,6})[-]?(\d{3,4})$");
+                if (m.Success)
+                {
+                    var code = (m.Groups[1].Value + m.Groups[2].Value).ToUpperInvariant();
+                    if (code == upperCourseId)
+                    {
+                        codeIndex = i;
+                        return true;
+                    }
+                }
+
+                if (i < tokens.Count - 1 &&
+                    Regex.IsMatch(tokens[i], @"^[A-Z]{2,6}$") &&
+                    tokens[i] == prefix &&
+                    tokens[i + 1] == number)
+                {
+                    codeIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool TryExtractHourNearCourse(List<string> tokens, int codeIndex, out int hours)
+        {
+            hours = 0;
+            var candidates = new List<(int Distance, int Value, bool IsBefore)>();
+
+            for (int i = Math.Max(0, codeIndex - 10); i <= Math.Min(tokens.Count - 1, codeIndex + 10); i++)
+            {
+                if (i == codeIndex)
+                    continue;
+
+                if (Regex.IsMatch(tokens[i], @"^[0-5]$"))
+                {
+                    int value = int.Parse(tokens[i]);
+                    int distance = Math.Abs(i - codeIndex);
+                    bool isBefore = i < codeIndex;
+                    candidates.Add((distance, value, isBefore));
+                }
+            }
+
+            if (candidates.Count == 0)
+                return false;
+
+            var best = candidates
+                .OrderBy(c => c.Distance)
+                .ThenBy(c => c.IsBefore ? 0 : 1)
+                .ThenBy(c => c.Value == 0 ? 1 : 0)
+                .First();
+
+            hours = best.Value;
+            return true;
+        }
+
+        // =========================
+        // Student Home
+        // =========================
+        [HttpGet]
+        public async Task<IActionResult> StudentHome()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
+
+            ViewData["Title"] = "Student Home";
+            await LoadStudentSidebarDataAsync();
+
+            int? studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return RedirectToAction("Login", "Account");
+
+            var student = await _db.Students.FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+            if (student == null)
+                return NotFound("Student not found.");
+
+            if (!student.AdvisorId.HasValue)
+                return RedirectToAction(nameof(SelectAdvisor));
+
+            var graduationStatus = await _db.GraduationStatuses
+                .FirstOrDefaultAsync(g => g.StudentId == studentId.Value);
+
+            int totalRequiredHours = 140;
+            int remainingHours = graduationStatus?.RemainingHours ?? totalRequiredHours;
+            int completedHours = Math.Max(0, totalRequiredHours - remainingHours);
+
+            var model = new StudentHomeViewModel
+            {
+                StudentId = student.StudentId,
+                StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName"),
+                StudentEmail = HttpContext.Session.GetString("UserEmail")
+                    ?? GetStringPropertyValue(student, "Email", "StudentEmail", "UniversityEmail"),
+                RemainingHours = remainingHours,
+                CompletedHours = completedHours,
+                TotalRequiredHours = totalRequiredHours,
+                ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
+                CurrentStatus = CalculateCurrentStatus(remainingHours)
             };
 
-            _db.GraduationProjectEligibilityForms.Add(details);
-            await _db.SaveChangesAsync();
-
-            return newForm5.FormId;
+            return View(model);
         }
 
         private int CalculateProgressPercentage(int remainingHours, int totalRequiredHours)
@@ -1145,9 +610,10 @@ namespace Acadify.Controllers
             return "Has Remaining Courses";
         }
 
-        // =======================
+        // =========================
         // Select Advisor
-        // =======================
+        // =========================
+     
         [HttpGet]
         public async Task<IActionResult> SelectAdvisor(string? search)
         {
@@ -1162,7 +628,6 @@ namespace Acadify.Controllers
                 return RedirectToAction("Login", "Account");
 
             var student = await _db.Students
-                .Include(s => s.User)
                 .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
 
             if (student == null)
@@ -1173,35 +638,35 @@ namespace Acadify.Controllers
 
             var latestRequest = await _db.Set<AdvisorRequest>()
                 .Include(r => r.RequestedAdvisor)
-                    .ThenInclude(a => a!.User)
                 .Where(r => r.StudentId == student.StudentId)
                 .OrderByDescending(r => r.CreatedAt)
                 .FirstOrDefaultAsync();
 
-            var advisorsQuery = _db.Advisors
-                .Include(a => a.User)
-                .AsQueryable();
+            var advisorsFromDb = await _db.Advisors
+                .OrderBy(a => a.AdvisorId)
+                .ToListAsync();
+
+            var advisors = advisorsFromDb
+                .Select(a => new AdvisorCardVM
+                {
+                    AdvisorId = a.AdvisorId,
+                    AdvisorName = GetStringPropertyValue(a, "Name", "AdvisorName", "FullName"),
+                    AdvisorEmail = GetStringPropertyValue(a, "Email", "AdvisorEmail", "UniversityEmail"),
+                    Department = GetStringPropertyValue(a, "Department")
+                })
+                .ToList();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim().ToLower();
 
-                advisorsQuery = advisorsQuery.Where(a =>
-                    a.User.Name.ToLower().Contains(search) ||
-                    a.User.Email.ToLower().Contains(search) ||
-                    (a.Department != null && a.Department.ToLower().Contains(search)));
+                advisors = advisors
+                    .Where(a =>
+                        (!string.IsNullOrWhiteSpace(a.AdvisorName) && a.AdvisorName.ToLower().Contains(search)) ||
+                        (!string.IsNullOrWhiteSpace(a.AdvisorEmail) && a.AdvisorEmail.ToLower().Contains(search)) ||
+                        (!string.IsNullOrWhiteSpace(a.Department) && a.Department.ToLower().Contains(search)))
+                    .ToList();
             }
-
-            var advisors = await advisorsQuery
-                .OrderBy(a => a.User.Name)
-                .Select(a => new AdvisorCardVM
-                {
-                    AdvisorId = a.AdvisorId,
-                    AdvisorName = a.User.Name,
-                    AdvisorEmail = a.User.Email,
-                    Department = a.Department
-                })
-                .ToListAsync();
 
             var vm = new SelectAdvisorVM
             {
@@ -1214,9 +679,7 @@ namespace Acadify.Controllers
             {
                 vm.HasPendingRequest = true;
                 vm.PendingStatus = latestRequest.Status;
-                vm.PendingAdvisorEmail = latestRequest.RequestedAdvisor != null
-                    ? latestRequest.RequestedAdvisor.User.Email
-                    : latestRequest.RequestedAdvisorEmail;
+                vm.PendingAdvisorEmail = latestRequest.RequestedAdvisorEmail;
             }
 
             return View(vm);
@@ -1241,7 +704,7 @@ namespace Acadify.Controllers
                 return RedirectToAction(nameof(StudentHome));
 
             var advisor = await _db.Advisors
-                .Include(a => a.User)
+                .Include(a => a.AdvisorNavigation)
                 .FirstOrDefaultAsync(a => a.AdvisorId == advisorId);
 
             if (advisor == null)
@@ -1263,18 +726,19 @@ namespace Acadify.Controllers
             {
                 StudentId = student.StudentId,
                 RequestedAdvisorId = advisor.AdvisorId,
-                RequestedAdvisorEmail = advisor.User.Email,
+                RequestedAdvisorEmail = advisor.AdvisorNavigation.Email,
                 Status = "Pending",
                 CreatedAt = DateTime.Now
             };
 
             _db.Set<AdvisorRequest>().Add(request);
             await _db.SaveChangesAsync();
+
             await AddNotificationToAllAdminsAsync(
                 senderRole: "Student",
                 sourceType: "Request",
                 type: "advisor selection request",
-                message: $"{student.Name} sent an advisor request to {advisor.User.Name}.",
+                message: $"{student.Name} sent an advisor request to {advisor.AdvisorNavigation.Name}.",
                 studentId: student.StudentId);
 
             TempData["AdvisorSuccess"] = "Your advisor request has been sent to the admin.";
@@ -1317,8 +781,8 @@ namespace Acadify.Controllers
             string email = model.ManualAdvisorEmail.Trim().ToLower();
 
             var advisor = await _db.Advisors
-                .Include(a => a.User)
-                .FirstOrDefaultAsync(a => a.User.Email.ToLower() == email);
+                .Include(a => a.AdvisorNavigation)
+                .FirstOrDefaultAsync(a => a.AdvisorNavigation.Email.ToLower() == email);
 
             var request = new AdvisorRequest
             {
@@ -1333,390 +797,21 @@ namespace Acadify.Controllers
             await _db.SaveChangesAsync();
 
             await AddNotificationToAllAdminsAsync(
-      senderRole: "Student",
-      sourceType: "Request",
-      type: "manual advisor request",
-      message: $"{student.Name} sent a manual advisor request for {email}.",
-      studentId: student.StudentId);
+                senderRole: "Student",
+                sourceType: "Request",
+                type: "manual advisor request",
+                message: $"{student.Name} sent a manual advisor request for {email}.",
+                studentId: student.StudentId);
 
             TempData["AdvisorSuccess"] = "Your request has been sent to the admin for review.";
             return RedirectToAction(nameof(SelectAdvisor));
         }
 
-        // =======================
-        // Student Home Page
-        // =======================
-        [HttpGet]
-        public async Task<IActionResult> StudentHome()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "Student")
-                return RedirectToAction("Login", "Account");
-
-            ViewData["Title"] = "Student Home";
-            await LoadStudentSidebarDataAsync();
-
-            int? studentId = GetCurrentStudentId();
-
-            if (!studentId.HasValue)
-                return RedirectToAction("Login", "Account");
-
-            var student = await _db.Students
-                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            if (!student.AdvisorId.HasValue)
-                return RedirectToAction(nameof(SelectAdvisor));
-
-            var graduationStatus = await _db.GraduationStatuses
-                .FirstOrDefaultAsync(g => g.StudentId == studentId.Value);
-
-            int totalRequiredHours = 140;
-            int remainingHours = graduationStatus?.RemainingHours ?? 140;
-            int completedHours = totalRequiredHours - remainingHours;
-
-            if (completedHours < 0)
-                completedHours = 0;
-
-            var model = new StudenthomeViewModel
-            {
-                StudentId = student.StudentId,
-                StudentName = GetStringPropertyValue(student, "Name", "StudentName", "FullName"),
-                StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "",
-                RemainingHours = remainingHours,
-                CompletedHours = completedHours,
-                TotalRequiredHours = totalRequiredHours,
-                ProgressPercentage = CalculateProgressPercentage(remainingHours, totalRequiredHours),
-                CurrentStatus = CalculateCurrentStatus(remainingHours)
->>>>>>> origin_second/لما2
-            };
-
-            return View(model);
-        }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin_second/لما2
-        // =======================
-        // Upload Transcript Page
-        // =======================
+        // =========================
+        // Upload Transcript
+        // =========================
         [HttpGet]
         public async Task<IActionResult> UploadTranscript()
-<<<<<<< HEAD
-        {
-            ViewData["Title"] = "Upload Transcript";
-            await LoadStudentSidebarDataAsync();
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadTranscript(IFormFile transcriptFile)
-        {
-            ViewData["Title"] = "Upload Transcript";
-            await LoadStudentSidebarDataAsync();
-
-            if (transcriptFile == null || transcriptFile.Length == 0)
-            {
-                ViewBag.Error = "Please select a PDF file.";
-                return View();
-            }
-
-            var ext = Path.GetExtension(transcriptFile.FileName).ToLowerInvariant();
-            if (ext != ".pdf")
-            {
-                ViewBag.Error = "Only PDF files are allowed.";
-                return View();
-            }
-
-            var studentIdSession = GetCurrentStudentId();
-
-            if (!studentIdSession.HasValue)
-            {
-                ViewBag.Error = "Student session is not found. Please login again.";
-                return View();
-            }
-
-            int studentId = studentIdSession.Value;
-
-            var student = await _db.Students.FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-            {
-                ViewBag.Error = "Student record is not found in the database.";
-                return View();
-            }
-
-            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
-            if (!advisorId.HasValue || advisorId.Value <= 0)
-            {
-                ViewBag.Error = "No advisor is assigned to this student.";
-                return View();
-            }
-
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "transcripts");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var savedFileName = $"{Guid.NewGuid()}{ext}";
-            var fullPath = Path.Combine(uploadsFolder, savedFileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
-            {
-                await transcriptFile.CopyToAsync(stream);
-            }
-
-            string extractedText;
-            try
-            {
-                extractedText = ReadPdfText(fullPath);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "PDF uploaded, but text extraction failed: " + ex.Message;
-                return View();
-            }
-
-            ViewBag.DebugStudentId = studentId;
-            ViewBag.DebugOriginalFileName = transcriptFile.FileName;
-            ViewBag.DebugPreview = extractedText.Length > 1000
-                ? extractedText.Substring(0, 1000)
-                : extractedText;
-
-            var (cumulativeGpa, latestTermGpa) = ParseGpaFromTranscriptText(extractedText);
-
-            var courseCodes = ExtractCourseCodesFromPdf(fullPath);
-            var courseCodesSet = courseCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            ViewBag.CodesCount = courseCodesSet.Count;
-            ViewBag.CodesPreview = string.Join(", ", courseCodesSet.Take(30));
-
-            var transcript = await _db.Transcripts
-                .Include(t => t.Courses)
-                .FirstOrDefaultAsync(t => t.StudentId == studentId);
-
-            if (transcript == null)
-            {
-                transcript = new Transcript
-                {
-                    StudentId = studentId
-                };
-
-                _db.Transcripts.Add(transcript);
-                await _db.SaveChangesAsync();
-                await _db.Entry(transcript).Collection(t => t.Courses).LoadAsync();
-            }
-
-            transcript.PdfFile = $"/uploads/transcripts/{savedFileName}";
-            transcript.ExtractedInfo = extractedText;
-
-            if (cumulativeGpa.HasValue)
-                transcript.Gpa = cumulativeGpa.Value;
-
-            if (latestTermGpa.HasValue)
-                transcript.SemesterGpa = latestTermGpa.Value;
-
-            transcript.ExtractedCourses = courseCodesSet.Count == 0
-                ? null
-                : string.Join(", ", courseCodesSet);
-
-            transcript.Courses.Clear();
-
-            if (courseCodesSet.Count > 0)
-            {
-                var coursesInDb = await _db.Courses
-                    .Where(c => courseCodesSet.Contains(c.CourseId))
-                    .ToListAsync();
-
-                var existingIds = coursesInDb
-                    .Select(c => c.CourseId)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                var missingIds = courseCodesSet
-                    .Where(id => !existingIds.Contains(id))
-                    .ToList();
-
-                foreach (var id in missingIds)
-                {
-                    var newCourse = new Course
-                    {
-                        CourseId = id,
-                        CourseName = id,
-                        Hours = 0
-                    };
-
-                    _db.Courses.Add(newCourse);
-                    coursesInDb.Add(newCourse);
-                }
-
-                foreach (var c in coursesInDb)
-                    transcript.Courses.Add(c);
-            }
-
-            await _db.SaveChangesAsync();
-
-            return RedirectToAction(nameof(StudentHome));
-        }
-
-        // =======================
-        // Student Chat
-        // =======================
-        [HttpGet]
-        public async Task<IActionResult> Chat()
-        {
-            ViewData["Title"] = "Chat";
-            await LoadStudentSidebarDataAsync();
-
-            var model = new StudentChatViewModel
-            {
-                AdvisorName = "DR. Amina Hasan Gamlo",
-                StudentName = "Lama Alshikh",
-                IsRecordingStarted = true,
-                Messages = new List<ChatMessageVM>
-                {
-                    new ChatMessageVM
-                    {
-                        SenderName = "Lama Alshikh (me)",
-                        Text = "السلام عليكم دكتورة، أبغى اطلب اجتماع بخصوص حذف مادة CPIS-352",
-                        IsFromStudent = true
-                    },
-                    new ChatMessageVM
-                    {
-                        SenderName = "Amina Gamlo",
-                        Text = "وعليكم السلام ورحمة الله وبركاته، تمام. متى تبغي نسوي الاجتماع؟",
-                        IsFromStudent = false
-                    },
-                    new ChatMessageVM
-                    {
-                        SenderName = "Lama Alshikh (me)",
-                        Text = "تمام",
-                        IsFromStudent = true
-                    },
-                    new ChatMessageVM
-                    {
-                        SenderName = "Amina Gamlo",
-                        Text = "ايش السبب اللي خلاك تبغي تحذف المادة هذي؟",
-                        IsFromStudent = false
-                    }
-                }
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult SendMessage(string message)
-        {
-            return RedirectToAction("Chat");
-        }
-
-        /* =========================================================
-                          CommunityStudent
-           ========================================================= */
-        [HttpGet]
-        public async Task<IActionResult> CommunityStudent()
-        {
-            ViewData["Title"] = "Community Student";
-            await LoadStudentSidebarDataAsync();
-
-            var model = new CommunityStudentVM
-            {
-                Messages = new List<CommunityMessageVM>
-                {
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Lina Alrwaily",
-                        SenderInitials = "LA",
-                        MessageText = "السلام عليكم دكتورة أمينة",
-                        IsCurrentUserMessage = false,
-                        BubbleColorClass = "msg-blue"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Lina Alrwaily",
-                        SenderInitials = "LA",
-                        MessageText = "هل اقدر أنزل مادة تطوير برمجيات الترم الجاي؟",
-                        IsCurrentUserMessage = false,
-                        BubbleColorClass = "msg-blue"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Rahaf Alghamdi",
-                        SenderInitials = "RA",
-                        MessageText = "ايوا دكتورة حتى انا",
-                        IsCurrentUserMessage = false,
-                        BubbleColorClass = "msg-pink"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Amina Gamlo",
-                        SenderInitials = "AG",
-                        MessageText = "و عليكم السلام و رحمة الله و بركاته\nليش ما تبغو تنزلوها هذا الترم؟",
-                        IsCurrentUserMessage = false,
-                        BubbleColorClass = "msg-purple"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Lama Alshaikh (me)",
-                        SenderInitials = "LA",
-                        MessageText = "عندي استفسار بخصوص التدريب",
-                        IsCurrentUserMessage = true,
-                        BubbleColorClass = "msg-indigo"
-                    }
-                },
-
-                Members = new List<CommunityMemberVM>
-                {
-                    new CommunityMemberVM
-                    {
-                        Name = "DR.Amina Gamlo",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Lina Alrwaily",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Rahaf Alghamdi",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Rahaf Alzahrani",
-                        ImagePath = "~/images/user.png"
-                    }
-                }
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult SendStudentMessage([FromBody] SendStudentMessageRequest request)
-        {
-            if (request == null || string.IsNullOrWhiteSpace(request.Message))
-            {
-                return BadRequest(new { success = false, message = "Message is empty." });
-            }
-
-            return Json(new
-            {
-                success = true,
-                text = request.Message.Trim()
-            });
-        }
-
-        public class SendStudentMessageRequest
-        {
-            public string Message { get; set; } = string.Empty;
-=======
-        // تحديد حالة الطالبة بناءً على نسبة التقدم
-        private string GetStatus(int progress)
-=======
->>>>>>> origin_second/لما2
         {
             if (HttpContext.Session.GetString("UserRole") != "Student")
                 return RedirectToAction("Login", "Account");
@@ -1726,10 +821,6 @@ namespace Acadify.Controllers
             return View();
         }
 
-<<<<<<< HEAD
-            return "Near Graduation";
->>>>>>> origin_second/linaLMversion
-=======
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadTranscript(IFormFile transcriptFile)
@@ -1753,8 +844,7 @@ namespace Acadify.Controllers
                 return View();
             }
 
-            var studentIdSession = GetCurrentStudentId();
-
+            int? studentIdSession = GetCurrentStudentId();
             if (!studentIdSession.HasValue)
             {
                 ViewBag.Error = "Student session is not found. Please login again.";
@@ -1764,7 +854,6 @@ namespace Acadify.Controllers
             int studentId = studentIdSession.Value;
 
             var student = await _db.Students.FirstOrDefaultAsync(s => s.StudentId == studentId);
-
             if (student == null)
             {
                 ViewBag.Error = "Student record is not found in the database.";
@@ -1793,19 +882,37 @@ namespace Acadify.Controllers
                 return View();
             }
 
-            ViewBag.DebugStudentId = studentId;
-            ViewBag.DebugOriginalFileName = transcriptFile.FileName;
-            ViewBag.DebugPreview = extractedText.Length > 1000
-                ? extractedText.Substring(0, 1000)
-                : extractedText;
-
+            var parsedTranscript = ParseTranscriptText(extractedText);
             var (cumulativeGpa, latestTermGpa) = ParseGpaFromTranscriptText(extractedText);
 
-            var courseCodes = ExtractCourseCodesFromPdf(fullPath);
-            var courseCodesSet = courseCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var pdfCourseCodes = ExtractCourseCodesFromPdf(fullPath);
+            var titleBasedCodes = ExtractCourseCodesByKnownTitles(extractedText);
 
+            var courseCodesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var code in parsedTranscript.CourseCodes.Concat(pdfCourseCodes).Concat(titleBasedCodes))
+            {
+                var cleanCode = code?.Trim().ToUpperInvariant();
+                if (!string.IsNullOrWhiteSpace(cleanCode))
+                    courseCodesSet.Add(cleanCode);
+            }
+
+            courseCodesSet.RemoveWhere(code =>
+                string.IsNullOrWhiteSpace(code) ||
+                code.StartsWith("FALL", StringComparison.OrdinalIgnoreCase) ||
+                code.StartsWith("SPRING", StringComparison.OrdinalIgnoreCase) ||
+                code.StartsWith("SUMMER", StringComparison.OrdinalIgnoreCase) ||
+                code.StartsWith("WINTER", StringComparison.OrdinalIgnoreCase) ||
+                code.StartsWith("TERM", StringComparison.OrdinalIgnoreCase) ||
+                code.StartsWith("PAGE", StringComparison.OrdinalIgnoreCase));
+
+            var transcriptHourMap = ExtractCourseHoursMapFromPdf(fullPath, courseCodesSet.ToList());
+
+            ViewBag.DebugStudentId = studentId;
+            ViewBag.DebugOriginalFileName = transcriptFile.FileName;
             ViewBag.CodesCount = courseCodesSet.Count;
-            ViewBag.CodesPreview = string.Join(", ", courseCodesSet.Take(30));
+            ViewBag.CodesPreview = string.Join(", ", courseCodesSet.OrderBy(x => x));
+            ViewBag.DebugPreview = extractedText.Length > 1000 ? extractedText[..1000] : extractedText;
 
             var transcript = await _db.Transcripts
                 .Include(t => t.Courses)
@@ -1813,11 +920,7 @@ namespace Acadify.Controllers
 
             if (transcript == null)
             {
-                transcript = new Transcript
-                {
-                    StudentId = studentId
-                };
-
+                transcript = new Db.Transcript { StudentId = studentId };
                 _db.Transcripts.Add(transcript);
                 await _db.SaveChangesAsync();
                 await _db.Entry(transcript).Collection(t => t.Courses).LoadAsync();
@@ -1828,24 +931,42 @@ namespace Acadify.Controllers
 
             if (cumulativeGpa.HasValue)
                 transcript.Gpa = cumulativeGpa.Value;
+            else if (parsedTranscript.CumulativeGpa.HasValue)
+                transcript.Gpa = parsedTranscript.CumulativeGpa.Value;
 
             if (latestTermGpa.HasValue)
                 transcript.SemesterGpa = latestTermGpa.Value;
+            else if (parsedTranscript.LatestTermGpa.HasValue)
+                transcript.SemesterGpa = parsedTranscript.LatestTermGpa.Value;
 
             transcript.ExtractedCourses = courseCodesSet.Count == 0
                 ? null
-                : string.Join(", ", courseCodesSet);
+                : string.Join(", ", courseCodesSet.OrderBy(x => x));
 
             transcript.Courses.Clear();
 
             if (courseCodesSet.Count > 0)
             {
                 var coursesInDb = await _db.Courses
-                    .Where(c => courseCodesSet.Contains(c.CourseId))
+                    .Where(c => courseCodesSet.Contains(c.CourseId.Trim().ToUpper()))
                     .ToListAsync();
 
+                foreach (var course in coursesInDb)
+                {
+                    var normalizedCourseId = course.CourseId.Trim().ToUpperInvariant();
+                    bool isUnclassified = string.IsNullOrWhiteSpace(course.RequirementCategory);
+                    bool hasZeroHours = course.Hours <= 0;
+
+                    if ((isUnclassified || hasZeroHours) &&
+                        transcriptHourMap.TryGetValue(normalizedCourseId, out var extractedHours) &&
+                        extractedHours > 0)
+                    {
+                        course.Hours = extractedHours;
+                    }
+                }
+
                 var existingIds = coursesInDb
-                    .Select(c => c.CourseId)
+                    .Select(c => c.CourseId.Trim().ToUpperInvariant())
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                 var missingIds = courseCodesSet
@@ -1854,19 +975,19 @@ namespace Acadify.Controllers
 
                 foreach (var id in missingIds)
                 {
-                    var newCourse = new Course
+                    var newCourse = new Db.Course
                     {
                         CourseId = id,
                         CourseName = id,
-                        Hours = 0
+                        Hours = transcriptHourMap.TryGetValue(id, out var extractedHours) ? extractedHours : 0
                     };
 
                     _db.Courses.Add(newCourse);
                     coursesInDb.Add(newCourse);
                 }
 
-                foreach (var c in coursesInDb)
-                    transcript.Courses.Add(c);
+                foreach (var course in coursesInDb)
+                    transcript.Courses.Add(course);
             }
 
             await _db.SaveChangesAsync();
@@ -1906,9 +1027,9 @@ namespace Acadify.Controllers
             return RedirectToAction(nameof(StudentHome));
         }
 
-        // =======================
+        // =========================
         // Student Chat
-        // =======================
+        // =========================
         [HttpGet]
         public async Task<IActionResult> Chat()
         {
@@ -1921,7 +1042,7 @@ namespace Acadify.Controllers
             var model = new StudentChatViewModel
             {
                 AdvisorName = "DR. Amina Hasan Gamlo",
-                StudentName = "Lama Alshikh",
+                StudentName = ViewBag.StudentName ?? "Student",
                 IsRecordingStarted = true,
                 Messages = new List<ChatMessageVM>
                 {
@@ -1958,12 +1079,12 @@ namespace Acadify.Controllers
         [HttpPost]
         public IActionResult SendMessage(string message)
         {
-            return RedirectToAction("Chat");
+            return RedirectToAction(nameof(Chat));
         }
 
-        // =======================
+        // =========================
         // Community Student
-        // =======================
+        // =========================
         [HttpGet]
         public async Task<IActionResult> CommunityStudent()
         {
@@ -2018,29 +1139,12 @@ namespace Acadify.Controllers
                         BubbleColorClass = "msg-indigo"
                     }
                 },
-
                 Members = new List<CommunityMemberVM>
                 {
-                    new CommunityMemberVM
-                    {
-                        Name = "DR.Amina Gamlo",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Lina Alrwaily",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Rahaf Alghamdi",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Rahaf Alzahrani",
-                        ImagePath = "~/images/user.png"
-                    }
+                    new CommunityMemberVM { Name = "DR.Amina Gamlo", ImagePath = "~/images/user.png" },
+                    new CommunityMemberVM { Name = "Lina Alrwaily", ImagePath = "~/images/user.png" },
+                    new CommunityMemberVM { Name = "Rahaf Alghamdi", ImagePath = "~/images/user.png" },
+                    new CommunityMemberVM { Name = "Rahaf Alzahrani", ImagePath = "~/images/user.png" }
                 }
             };
 
@@ -2051,9 +1155,7 @@ namespace Acadify.Controllers
         public IActionResult SendStudentMessage([FromBody] SendStudentMessageRequest request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.Message))
-            {
                 return BadRequest(new { success = false, message = "Message is empty." });
-            }
 
             return Json(new
             {
@@ -2065,371 +1167,373 @@ namespace Acadify.Controllers
         public class SendStudentMessageRequest
         {
             public string Message { get; set; } = string.Empty;
->>>>>>> origin_second/لما2
         }
-        // =======================
-        // Upload Transcript Page
-        // =======================
 
-        // GET: Student/UploadTranscript
+        // =========================
+        // Course Recommendation
         // =========================
         [HttpGet]
-        public IActionResult UploadTranscript()
+        public async Task<IActionResult> CourseRecommendation()
         {
-            return View();
-        }
+            if (HttpContext.Session.GetString("UserRole") != "Student")
+                return RedirectToAction("Login", "Account");
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadTranscript(IFormFile transcriptFile)
-        {
-            // 1) Validate file
-            if (transcriptFile == null || transcriptFile.Length == 0)
+            await LoadStudentSidebarDataAsync();
+
+            int? studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return RedirectToAction("Login", "Account");
+
+            var student = await _db.Students
+                .Include(s => s.Transcript)
+                    .ThenInclude(t => t.Courses)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            ViewBag.StudentName = student.Name;
+            ViewBag.StudentEmail = HttpContext.Session.GetString("UserEmail") ?? "student@kau.edu.sa";
+            ViewBag.ActivePage = "CourseRecommendation";
+
+            var transcript = student.Transcript;
+
+            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
+            var selected = string.IsNullOrEmpty(selectedJson)
+                ? new List<SelectedCourseVM>()
+                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
+
+            var cardsJson = HttpContext.Session.GetString("RecommendedCards");
+            var cards = string.IsNullOrEmpty(cardsJson)
+                ? new List<CourseCardVM>()
+                : JsonSerializer.Deserialize<List<CourseCardVM>>(cardsJson) ?? new List<CourseCardVM>();
+
+            var model = new CourseRecommendationViewModel
             {
-                ViewBag.Error = "Please select a PDF file.";
-                return View();
-            }
-
-            var ext = Path.GetExtension(transcriptFile.FileName).ToLowerInvariant();
-            if (ext != ".pdf")
-            {
-                ViewBag.Error = "Only PDF files are allowed.";
-                return View();
-            }
-
-            // 2) Save file
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "transcripts");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var fileName = $"{Guid.NewGuid()}{ext}";
-            var fullPath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
-            {
-                await transcriptFile.CopyToAsync(stream);
-            }
-
-            // 3) Extract text (PdfPig)
-            string extractedText;
-            try
-            {
-                extractedText = ReadPdfText(fullPath);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "PDF uploaded, but text extraction failed: " + ex.Message;
-                return View();
-            }
-
-            // 4) Parse GPA من النص
-            var (cumulativeGpa, latestTermGpa) = ParseGpaFromTranscriptText(extractedText);
-
-            // 5) Extract course codes من النص + من layout الـ PDF + من أسماء المواد المعروفة
-            var parsedTranscript = ParseTranscriptText(extractedText);
-            var pdfCourseCodes = ExtractCourseCodesFromPdf(fullPath);
-            var titleBasedCodes = ExtractCourseCodesByKnownTitles(extractedText);
-
-            // 6) دمج الأكواد
-<<<<<<< HEAD
-
-
-
-            /*
-             * var courseCodesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-               foreach (var code in parsedTranscript.CourseCodes)
-               courseCodesSet.Add(code);
-
-               foreach (var code in pdfCourseCodes)
-               courseCodesSet.Add(code);
-
-               foreach (var code in titleBasedCodes)
-               courseCodesSet.Add(code);
-             */
-
-            var courseCodesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var code in parsedTranscript.CourseCodes)
-            {
-                var cleanCode = code?.Trim().ToUpper();
-                if (!string.IsNullOrWhiteSpace(cleanCode))
-                    courseCodesSet.Add(cleanCode);
-            }
-
-            foreach (var code in pdfCourseCodes)
-            {
-                var cleanCode = code?.Trim().ToUpper();
-                if (!string.IsNullOrWhiteSpace(cleanCode))
-                    courseCodesSet.Add(cleanCode);
-            }
-
-            foreach (var code in titleBasedCodes)
-            {
-                var cleanCode = code?.Trim().ToUpper();
-                if (!string.IsNullOrWhiteSpace(cleanCode))
-                    courseCodesSet.Add(cleanCode);
-            }
-
-=======
-            var courseCodesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var code in parsedTranscript.CourseCodes)
-                courseCodesSet.Add(code);
-
-            foreach (var code in pdfCourseCodes)
-                courseCodesSet.Add(code);
-
-            foreach (var code in titleBasedCodes)
-                courseCodesSet.Add(code);
->>>>>>> origin_second/linaLMversion
-
-            // 7) تنظيف الأكواد غير الصحيحة
-            courseCodesSet.RemoveWhere(code =>
-                string.IsNullOrWhiteSpace(code) ||
-                code.StartsWith("FALL", StringComparison.OrdinalIgnoreCase) ||
-                code.StartsWith("SPRING", StringComparison.OrdinalIgnoreCase) ||
-                code.StartsWith("SUMMER", StringComparison.OrdinalIgnoreCase) ||
-                code.StartsWith("WINTER", StringComparison.OrdinalIgnoreCase));
-
-<<<<<<< HEAD
-=======
-            // اقرأ ساعات المواد من الترانسكربت
-            var transcriptHourMap = ExtractCourseHoursMapFromPdf(fullPath, courseCodesSet.ToList());
-
->>>>>>> origin_second/linaLMversion
-            // ✅ Debug
-            ViewBag.CodesCount = courseCodesSet.Count;
-            ViewBag.CodesPreview = string.Join(", ", courseCodesSet.OrderBy(x => x));
-
-            // 8) TEMP studentId (مؤقت الآن)
-            int studentId = 2210783;
-
-            // 9) UPSERT transcript + include Courses
-            var transcript = await _db.Transcripts
-                .Include(t => t.Courses)
-                .FirstOrDefaultAsync(t => t.StudentId == studentId);
-
-            if (transcript == null)
-            {
-                transcript = new Transcript { StudentId = studentId };
-                _db.Transcripts.Add(transcript);
-
-                await _db.SaveChangesAsync();
-                _db.Entry(transcript).Collection(t => t.Courses).Load();
-            }
-
-            // 10) Update fields
-            transcript.PdfFile = $"/uploads/transcripts/{fileName}";
-            transcript.ExtractedInfo = extractedText;
-
-            if (cumulativeGpa.HasValue) transcript.Gpa = cumulativeGpa.Value;
-            if (latestTermGpa.HasValue) transcript.SemesterGpa = latestTermGpa.Value;
-
-            transcript.ExtractedCourses = courseCodesSet.Count == 0
-                ? null
-                : string.Join(", ", courseCodesSet.OrderBy(x => x));
-
-            // 11) Fill TranscriptCourse
-            transcript.Courses.Clear();
-
-            if (courseCodesSet.Count > 0)
-            {
-<<<<<<< HEAD
-
-                /*
-                 * var coursesInDb = await _db.Courses
-                      .Where(c => courseCodesSet.Contains(c.CourseId))
-                      .ToListAsync();
-                 */
-                var coursesInDb = await _db.Courses
-                   .Where(c => courseCodesSet.Contains(c.CourseId.Trim().ToUpper()))
-                   .ToListAsync();
-
-
-                /*
-                 * var existingIds = coursesInDb
-                    .Select(c => c.CourseId)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
-                 */
-                var existingIds = coursesInDb
-                   .Select(c => c.CourseId.Trim().ToUpper())
-                   .ToHashSet(StringComparer.OrdinalIgnoreCase);
-=======
-                var coursesInDb = await _db.Courses
-                    .Where(c => courseCodesSet.Contains(c.CourseId))
-                    .ToListAsync();
-
-                foreach (var course in coursesInDb)
-                {
-                    bool isUnclassified = string.IsNullOrWhiteSpace(course.RequirementCategory);
-                    bool hasZeroHours = course.Hours <= 0;
-
-                    if ((isUnclassified || hasZeroHours) &&
-                        transcriptHourMap.TryGetValue(course.CourseId, out var extractedHours) &&
-                        extractedHours > 0)
-                    {
-                        course.Hours = extractedHours;
-                    }
-                }
-
-                var existingIds = coursesInDb
-                    .Select(c => c.CourseId)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
->>>>>>> origin_second/linaLMversion
-
-                var missingIds = courseCodesSet
-                    .Where(id => !existingIds.Contains(id))
-                    .ToList();
-
-<<<<<<< HEAD
-                /*
-=======
->>>>>>> origin_second/linaLMversion
-                foreach (var id in missingIds)
-                {
-                    if (id.StartsWith("FALL", StringComparison.OrdinalIgnoreCase) ||
-                        id.StartsWith("SPRING", StringComparison.OrdinalIgnoreCase) ||
-                        id.StartsWith("SUMMER", StringComparison.OrdinalIgnoreCase) ||
-                        id.StartsWith("WINTER", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    var newCourse = new Course
-                    {
-                        CourseId = id,
-                        CourseName = id,
-<<<<<<< HEAD
-                        Hours = 0
-=======
-                        Hours = transcriptHourMap.TryGetValue(id, out var extractedHours) ? extractedHours : 0
->>>>>>> origin_second/linaLMversion
-                    };
-
-                    _db.Courses.Add(newCourse);
-                    coursesInDb.Add(newCourse);
-                }
-<<<<<<< HEAD
-                */
-
-                foreach (var id in missingIds)
-                {
-                    if (id.StartsWith("FALL", StringComparison.OrdinalIgnoreCase) ||
-                        id.StartsWith("SPRING", StringComparison.OrdinalIgnoreCase) ||
-                        id.StartsWith("SUMMER", StringComparison.OrdinalIgnoreCase) ||
-                        id.StartsWith("WINTER", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    // ممكن تحطين هذا للديبغ فقط
-                    Console.WriteLine($"Course not found in DB: {id}");
-                }
-=======
->>>>>>> origin_second/linaLMversion
-
-                foreach (var c in coursesInDb)
-                    transcript.Courses.Add(c);
-            }
-
-            await _db.SaveChangesAsync();
-
-            ViewBag.Success = $"Uploaded successfully for StudentId = {studentId} (updated if already existed).";
-            ViewBag.DebugPreview = extractedText.Length > 250
-                ? extractedText.Substring(0, 250)
-                : extractedText;
-
-            return View();
-        }
-
-
-
-        // =======================
-        // Student Chat
-        // =======================
-
-        [HttpGet("/Student/Chat")]
-        public IActionResult Chat()
-        {
-            int meetingId = 1; // مؤقتًا
-
-            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
-            if (meeting == null)
-                return NotFound();
-
-            string recordingMessage = "";
-
-            if (meeting.LastRecordingAction == "started")
-                recordingMessage = "The chat recording is started";
-            else if (meeting.LastRecordingAction == "stopped")
-                recordingMessage = "The chat recording is stopped";
-
-            ViewBag.RecordingMessage = recordingMessage;
-
-            var messages = _context.MeetingMessages
-                .Where(m => m.MeetingId == meetingId)
-                .OrderBy(m => m.MessageDate)
-                .Select(m => new ChatMessageVM
-                {
-                    SenderName = (m.SenderName ?? "")
-                        .Replace("(me)", "", StringComparison.OrdinalIgnoreCase)
-                        .Trim(),
-                    Text = m.MessageText,
-                    IsFromStudent = m.SenderName != null &&
-                                    m.SenderName.Trim().ToLower().Contains("lama"),
-                    TimeText = m.MessageDate.HasValue ? m.MessageDate.Value.ToString("hh:mm tt") : "",
-                    IsRecorded = m.IsRecorded
-                })
-                .ToList();
-
-            var model = new StudentChatViewModel
-            {
-                AdvisorName = "DR. Amina Hasan Gamlo",
-                StudentName = "Lama Alshaikh",
-                IsRecordingStarted = meeting.IsRecordingStarted,
-                Messages = messages
+                StudentName = student.Name,
+                StudentId = student.StudentId,
+                Gpa = transcript?.Gpa,
+                SemesterGpa = transcript?.SemesterGpa,
+                Selected = selected,
+                Cards = cards,
+                FreeElectiveCourse1 = HttpContext.Session.GetString("FreeElectiveCourse1") ?? "",
+                FreeElectiveCourse2 = HttpContext.Session.GetString("FreeElectiveCourse2") ?? "",
+                FreeElectiveCourse3 = HttpContext.Session.GetString("FreeElectiveCourse3") ?? ""
             };
 
             return View(model);
         }
 
-        [HttpPost("/Student/SendMessage")]
-        public IActionResult SendMessage(string message)
+        [HttpPost]
+        public IActionResult SelectRecommendedCourse(string courseId)
         {
-            if (string.IsNullOrWhiteSpace(message))
-                return Redirect("/Student/Chat");
+            if (string.IsNullOrWhiteSpace(courseId))
+                return RedirectToAction(nameof(CourseRecommendation));
 
-            int meetingId = 1; // مؤقتًا
+            var course = _db.Courses.FirstOrDefault(c => c.CourseId == courseId);
+            if (course == null)
+                return RedirectToAction(nameof(CourseRecommendation));
 
-            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
+            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
+            var selected = string.IsNullOrEmpty(selectedJson)
+                ? new List<SelectedCourseVM>()
+                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
 
-            if (meeting == null)
-                return NotFound();
-
-            var newMessage = new MeetingMessage
+            if (!selected.Any(c => c.CourseId == courseId))
             {
-                MeetingId = meetingId,
-                SenderName = "Lama Alshaikh",
-                MessageText = message,
-                MessageDate = DateTime.Now,
-                IsRecorded = meeting.IsRecordingStarted
-            };
+                selected.Add(new SelectedCourseVM
+                {
+                    CourseId = course.CourseId,
+                    Hours = course.Hours
+                });
+            }
 
-            _context.MeetingMessages.Add(newMessage);
-            _context.SaveChanges();
-
-            return Redirect("/Student/Chat");
+            HttpContext.Session.SetString("SelectedRecommendedCourses", JsonSerializer.Serialize(selected));
+            return RedirectToAction(nameof(CourseRecommendation));
         }
 
-        [HttpGet("/Student/Test")]
-        public IActionResult Test()
+        [HttpPost]
+        public IActionResult RemoveRecommendedCourse(string courseId)
         {
-            return Content("Student works");
+            if (string.IsNullOrWhiteSpace(courseId))
+                return RedirectToAction(nameof(CourseRecommendation));
+
+            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
+            var selected = string.IsNullOrEmpty(selectedJson)
+                ? new List<SelectedCourseVM>()
+                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
+
+            selected = selected.Where(c => c.CourseId != courseId).ToList();
+            HttpContext.Session.SetString("SelectedRecommendedCourses", JsonSerializer.Serialize(selected));
+
+            return RedirectToAction(nameof(CourseRecommendation));
         }
 
+        [HttpPost]
+        public IActionResult SwapRecommendedCourse(string courseId)
+        {
+            if (string.IsNullOrWhiteSpace(courseId))
+                return RedirectToAction(nameof(CourseRecommendation));
 
-<<<<<<< HEAD
+            var cardsJson = HttpContext.Session.GetString("RecommendedCards");
+            var cards = string.IsNullOrEmpty(cardsJson)
+                ? new List<CourseCardVM>()
+                : JsonSerializer.Deserialize<List<CourseCardVM>>(cardsJson) ?? new List<CourseCardVM>();
+
+            if (!cards.Any())
+                return RedirectToAction(nameof(CourseRecommendation));
+
+            var currentCard = cards.FirstOrDefault(c => c.CourseId == courseId);
+            if (currentCard == null)
+                return RedirectToAction(nameof(CourseRecommendation));
+
+            var usedIds = cards.Select(c => c.CourseId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var replacement = _db.Courses
+                .Where(c => !usedIds.Contains(c.CourseId) && c.CourseId != courseId)
+                .OrderBy(c => c.CourseId)
+                .FirstOrDefault();
+
+            if (replacement != null)
+            {
+                currentCard.CourseId = replacement.CourseId;
+                currentCard.CourseName = replacement.CourseName;
+                currentCard.Hours = replacement.Hours;
+                currentCard.IsCompleted = false;
+                currentCard.CanTake = true;
+                currentCard.IsSelected = false;
+                currentCard.IsDisabled = false;
+
+                HttpContext.Session.SetString("RecommendedCards", JsonSerializer.Serialize(cards));
+            }
+
+            return RedirectToAction(nameof(CourseRecommendation));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendCourseRecommendationToAdvisor()
+        {
+            int? studentId = GetCurrentStudentId();
+            if (!studentId.HasValue)
+                return RedirectToAction("Login", "Account");
+
+            var student = await _db.Students
+                .Include(s => s.Transcript)
+                    .ThenInclude(t => t.Courses)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Student not found.";
+                return RedirectToAction(nameof(CourseRecommendation));
+            }
+
+            int? advisorId = student.AdvisorId;
+            if (!advisorId.HasValue)
+            {
+                TempData["ErrorMessage"] = "No advisor is assigned to this student.";
+                return RedirectToAction(nameof(SelectAdvisor));
+            }
+
+            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
+            var selectedCourses = string.IsNullOrEmpty(selectedJson)
+                ? new List<SelectedCourseVM>()
+                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
+
+            int advisedHours = selectedCourses.Sum(x => x.Hours);
+            string extractedInfo = student.Transcript?.ExtractedInfo ?? string.Empty;
+            string currentSemester = ExtractLastAcademicTerm(extractedInfo);
+            int earnedHours = student.Transcript?.Courses?.Sum(c => c.Hours) ?? 0;
+
+            var latestForm = await _db.Forms
+                .Include(f => f.CourseChoiceMonitoringForm)
+                .Where(f => f.StudentId == student.StudentId && f.FormType == "Form 2")
+                .OrderByDescending(f => f.FormId)
+                .FirstOrDefaultAsync();
+
+            Db.Form form;
+            Db.CourseChoiceMonitoringForm form2;
+
+            if (latestForm == null)
+            {
+                form = new Db.Form
+                {
+                    StudentId = student.StudentId,
+                    AdvisorId = advisorId.Value,
+                    FormType = "Form 2",
+                    FormDate = DateTime.Now,
+                    FormStatus = "Sent",
+                    AdvisorNotes = null,
+                    AutoFilled = true,
+                    AdvisorConfirmation = null
+                };
+
+                _db.Forms.Add(form);
+                await _db.SaveChangesAsync();
+
+                form2 = new Db.CourseChoiceMonitoringForm
+                {
+                    FormId = form.FormId
+                };
+
+                _db.CourseChoiceMonitoringForms.Add(form2);
+            }
+            else
+            {
+                form = latestForm;
+                form2 = latestForm.CourseChoiceMonitoringForm ?? new Db.CourseChoiceMonitoringForm
+                {
+                    FormId = form.FormId
+                };
+
+                if (latestForm.CourseChoiceMonitoringForm == null)
+                    _db.CourseChoiceMonitoringForms.Add(form2);
+            }
+
+            form.FormDate = DateTime.Now;
+            form.FormStatus = "Sent";
+
+            form2.Semester = currentSemester;
+            form2.ComingSemester = GetNextSemester(currentSemester);
+            form2.RunningCreditHours = earnedHours;
+            form2.AdvisedCreditHours = advisedHours;
+            form2.Level = CalculateLevelFromHours(earnedHours);
+            form2.DropSubjects = ExtractDropSubjects(extractedInfo);
+            form2.ICSubjects = ExtractICSubjects(extractedInfo);
+            form2.IpSubjects = ExtractIPSubjects(extractedInfo);
+            form2.SelectedCoursesJson = JsonSerializer.Serialize(selectedCourses);
+
+            await _db.SaveChangesAsync();
+
+            await AddNotificationAsync(
+                senderRole: "Student",
+                sourceType: "Recommendation",
+                type: "course recommendation sent",
+                message: $"{student.Name} sent course recommendations for advisor review.",
+                studentId: student.StudentId,
+                advisorId: advisorId.Value);
+
+            TempData["Success"] = "Course recommendation sent successfully.";
+            return RedirectToAction(nameof(CourseRecommendation));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadTranscriptForRecommendation(IFormFile transcriptFile)
+        {
+            if (transcriptFile == null || transcriptFile.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Please upload a transcript file.";
+                return RedirectToAction(nameof(CourseRecommendation));
+            }
+
+            try
+            {
+                int? studentId = GetCurrentStudentId();
+                if (!studentId.HasValue)
+                    return RedirectToAction("Login", "Account");
+
+                var student = await _db.Students
+                    .Include(s => s.Transcript)
+                    .FirstOrDefaultAsync(s => s.StudentId == studentId.Value);
+
+                if (student == null)
+                {
+                    TempData["ErrorMessage"] = "Student not found.";
+                    return RedirectToAction(nameof(CourseRecommendation));
+                }
+
+                int planId = 1;
+
+                var parserCourses = await _transcriptParserService.ParseTranscriptAsync(transcriptFile)
+                    ?? new List<TranscriptCourseItem>();
+
+                var aiCourses = await _transcriptAiParserService.ParseTranscriptAsync(transcriptFile)
+                    ?? new List<TranscriptCourseItem>();
+
+                var validCourseIds = await _db.Set<Db.StudyPlanCourse>()
+                    .Where(x => x.PlanId == planId)
+                    .Select(x => x.CourseId)
+                    .ToListAsync();
+
+                var validCourseIdSet = validCourseIds
+                    .Select(NormalizeCourseId)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                var transcriptCourses = MergeTranscriptCourses(
+                    parserCourses,
+                    aiCourses,
+                    validCourseIdSet);
+
+                TempData["ParsedCoursesDebug"] = transcriptCourses.Count == 0
+                    ? "No merged courses found."
+                    : string.Join(" | ", transcriptCourses.Select(x => $"{x.CourseId}-{x.Grade}-{x.IsPassed}"));
+
+                if (!transcriptCourses.Any())
+                {
+                    HttpContext.Session.Remove("RecommendedCards");
+                    HttpContext.Session.Remove("SelectedRecommendedCourses");
+
+                    TempData["ErrorMessage"] = "No valid courses were extracted from the transcript.";
+                    return RedirectToAction(nameof(CourseRecommendation));
+                }
+
+                var recommendations = await _recommendationEngineService
+                    .GenerateRecommendationsAsync(planId, transcriptCourses);
+
+                var cards = (recommendations ?? new List<RecommendedCourseVm>())
+                    .OrderBy(x => x.SemesterNo)
+                    .ThenBy(x => x.DisplayOrder)
+                    .Take(4)
+                    .Select(x => new CourseCardVM
+                    {
+                        CourseId = x.CourseId,
+                        CourseName = x.CourseName,
+                        Hours = x.Hours,
+                        Prerequisite = null,
+                        IsCompleted = false,
+                        CanTake = true,
+                        IsSelected = false,
+                        IsDisabled = false,
+                        Status = "Recommended"
+                    })
+                    .ToList();
+
+                HttpContext.Session.Remove("RecommendedCards");
+                HttpContext.Session.Remove("SelectedRecommendedCourses");
+
+                HttpContext.Session.SetString("RecommendedCards", JsonSerializer.Serialize(cards));
+                HttpContext.Session.SetString("SelectedRecommendedCourses", JsonSerializer.Serialize(new List<SelectedCourseVM>()));
+
+                TempData[cards.Any() ? "Success" : "InfoMessage"] = cards.Any()
+                    ? "Transcript uploaded successfully."
+                    : "No confirmed recommendations were found from the transcript.";
+
+                return RedirectToAction(nameof(CourseRecommendation));
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Session.Remove("RecommendedCards");
+                HttpContext.Session.Remove("SelectedRecommendedCourses");
+
+                TempData["ErrorMessage"] = $"An error occurred while processing the transcript: {ex.Message}";
+                return RedirectToAction(nameof(CourseRecommendation));
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SaveManualElectiveCourses(
+            string freeElectiveCourse1,
+            string freeElectiveCourse2,
+            string freeElectiveCourse3)
+        {
+            HttpContext.Session.SetString("FreeElectiveCourse1", freeElectiveCourse1?.Trim() ?? "");
+            HttpContext.Session.SetString("FreeElectiveCourse2", freeElectiveCourse2?.Trim() ?? "");
+            HttpContext.Session.SetString("FreeElectiveCourse3", freeElectiveCourse3?.Trim() ?? "");
+
+            TempData["Success"] = "Manual elective courses saved.";
+            return RedirectToAction(nameof(CourseRecommendation));
+        }
+
         private string ExtractLastAcademicTerm(string? extractedInfo)
         {
             if (string.IsNullOrWhiteSpace(extractedInfo))
@@ -2443,7 +1547,7 @@ namespace Acadify.Controllers
             if (matches.Count == 0)
                 return "";
 
-            return matches[matches.Count - 1].Value.ToUpper();
+            return matches[matches.Count - 1].Value.ToUpperInvariant();
         }
 
         private string GetNextSemester(string currentSemester)
@@ -2453,8 +1557,10 @@ namespace Acadify.Controllers
 
             if (currentSemester.Contains("FALL", StringComparison.OrdinalIgnoreCase))
                 return "SPRING";
+
             if (currentSemester.Contains("SPRING", StringComparison.OrdinalIgnoreCase))
                 return "SUMMER";
+
             if (currentSemester.Contains("SUMMER", StringComparison.OrdinalIgnoreCase))
                 return "FALL";
 
@@ -2469,7 +1575,6 @@ namespace Acadify.Controllers
             if (earnedHours < 105) return "Level 5-6";
             return "Level 7-8";
         }
-
 
         private string ExtractDropSubjects(string extractedInfo)
         {
@@ -2524,373 +1629,10 @@ namespace Acadify.Controllers
             return ipSubjects.Any() ? string.Join(", ", ipSubjects) : "";
         }
 
-
-
-      
-        [HttpGet]
-        public IActionResult CourseRecommendation()
-        {
-            int studentId = 2210783;
-
-            var student = _db.Students
-                .Include(s => s.Transcript)
-                .ThenInclude(t => t.Courses)
-                .FirstOrDefault(s => s.StudentId == studentId);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            ViewBag.StudentName = student.Name;
-            ViewBag.StudentEmail = "student@kau.edu.sa";
-            ViewBag.ActivePage = "CourseRecommendation";
-
-            var transcript = student.Transcript;
-
-            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
-            var selected = string.IsNullOrEmpty(selectedJson)
-                ? new List<SelectedCourseVM>()
-                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
-
-            var cardsJson = HttpContext.Session.GetString("RecommendedCards");
-            var cards = string.IsNullOrEmpty(cardsJson)
-                ? new List<CourseCardVM>()
-                : JsonSerializer.Deserialize<List<CourseCardVM>>(cardsJson) ?? new List<CourseCardVM>();
-
-            var freeElectiveCourse1 = HttpContext.Session.GetString("FreeElectiveCourse1") ?? "";
-            var freeElectiveCourse2 = HttpContext.Session.GetString("FreeElectiveCourse2") ?? "";
-            var freeElectiveCourse3 = HttpContext.Session.GetString("FreeElectiveCourse3") ?? "";
-
-
-            var model = new CourseRecommendationViewModel
-            {
-                StudentName = student.Name,
-                StudentId = student.StudentId,
-                Gpa = transcript?.Gpa,
-                SemesterGpa = transcript?.SemesterGpa,
-                Selected = selected,
-                Cards = cards,
-                FreeElectiveCourse1 = freeElectiveCourse1,
-                FreeElectiveCourse2 = freeElectiveCourse2,
-                FreeElectiveCourse3 = freeElectiveCourse3
-            };
-
-            return View(model);
-        }
-
-
-
-
-
-
-        [HttpPost]
-        public IActionResult SelectRecommendedCourse(string courseId)
-        {
-            if (string.IsNullOrWhiteSpace(courseId))
-                return RedirectToAction("CourseRecommendation");
-
-            var course = _db.Courses.FirstOrDefault(c => c.CourseId == courseId);
-            if (course == null)
-                return RedirectToAction("CourseRecommendation");
-
-            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
-            var selected = string.IsNullOrEmpty(selectedJson)
-                ? new List<SelectedCourseVM>()
-                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
-
-            if (!selected.Any(c => c.CourseId == courseId))
-            {
-                selected.Add(new SelectedCourseVM
-                {
-                    CourseId = course.CourseId,
-                    Hours = course.Hours
-                });
-            }
-
-            HttpContext.Session.SetString("SelectedRecommendedCourses", JsonSerializer.Serialize(selected));
-
-            return RedirectToAction("CourseRecommendation");
-        }
-
-        [HttpPost]
-        public IActionResult RemoveRecommendedCourse(string courseId)
-        {
-            if (string.IsNullOrWhiteSpace(courseId))
-                return RedirectToAction("CourseRecommendation");
-
-            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
-            var selected = string.IsNullOrEmpty(selectedJson)
-                ? new List<SelectedCourseVM>()
-                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
-
-            selected = selected.Where(c => c.CourseId != courseId).ToList();
-
-            HttpContext.Session.SetString("SelectedRecommendedCourses", JsonSerializer.Serialize(selected));
-
-            return RedirectToAction("CourseRecommendation");
-        }
-
-        [HttpPost]
-        public IActionResult SwapRecommendedCourse(string courseId)
-        {
-            if (string.IsNullOrWhiteSpace(courseId))
-                return RedirectToAction("CourseRecommendation");
-
-            var cardsJson = HttpContext.Session.GetString("RecommendedCards");
-            var cards = string.IsNullOrEmpty(cardsJson)
-                ? new List<CourseCardVM>()
-                : JsonSerializer.Deserialize<List<CourseCardVM>>(cardsJson) ?? new List<CourseCardVM>();
-
-            if (!cards.Any())
-                return RedirectToAction("CourseRecommendation");
-
-            var currentCard = cards.FirstOrDefault(c => c.CourseId == courseId);
-            if (currentCard == null)
-                return RedirectToAction("CourseRecommendation");
-
-            var usedIds = cards.Select(c => c.CourseId).ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            var replacement = _db.Courses
-                .Where(c => !usedIds.Contains(c.CourseId) && c.CourseId != courseId)
-                .OrderBy(c => c.CourseId)
-                .FirstOrDefault();
-
-            if (replacement != null)
-            {
-                currentCard.CourseId = replacement.CourseId;
-                currentCard.CourseName = replacement.CourseName;
-                currentCard.Hours = replacement.Hours;
-                currentCard.IsCompleted = false;
-                currentCard.CanTake = true;
-                currentCard.IsSelected = false;
-                currentCard.IsDisabled = false;
-
-                HttpContext.Session.SetString("RecommendedCards", JsonSerializer.Serialize(cards));
-            }
-
-            return RedirectToAction("CourseRecommendation");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SendCourseRecommendationToAdvisor()
-        {
-            int studentId = 2210783; // مؤقتًا
-            int advisorId = 1;       // مؤقتًا
-
-            var selectedJson = HttpContext.Session.GetString("SelectedRecommendedCourses");
-            var selectedCourses = string.IsNullOrEmpty(selectedJson)
-                ? new List<SelectedCourseVM>()
-                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(selectedJson) ?? new List<SelectedCourseVM>();
-
-            int advisedHours = selectedCourses.Sum(x => x.Hours);
-
-            var latestForm = await _db.Forms
-                .Include(f => f.CourseChoiceMonitoringForm)
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            Form form;
-            CourseChoiceMonitoringForm form2;
-
-            if (latestForm == null)
-            {
-                form = new Form
-                {
-                    StudentId = studentId,
-                    AdvisorId = advisorId,
-                    FormType = "Form 2",
-                    FormDate = DateTime.Now,
-                    FormStatus = "Sent",
-                    AdvisorNotes = null,
-                    AutoFilled = true,
-                    AdvisorConfirmation = null
-                };
-
-                _db.Forms.Add(form);
-                await _db.SaveChangesAsync();
-
-                form2 = new CourseChoiceMonitoringForm
-                {
-                    FormId = form.FormId
-                };
-
-                _db.CourseChoiceMonitoringForms.Add(form2);
-            }
-            else
-            {
-                form = latestForm;
-                form2 = latestForm.CourseChoiceMonitoringForm ?? new CourseChoiceMonitoringForm
-                {
-                    FormId = form.FormId
-                };
-
-                if (latestForm.CourseChoiceMonitoringForm == null)
-                    _db.CourseChoiceMonitoringForms.Add(form2);
-            }
-
-            form.FormDate = DateTime.Now;
-            form.FormStatus = "Sent";
-
-            form2.Semester = "";
-            form2.ComingSemester = "";
-            form2.RunningCreditHours = 0;
-            form2.AdvisedCreditHours = advisedHours;
-            form2.Level = "";
-            form2.DropSubjects = "";
-            form2.ICSubjects = "";
-            form2.IpSubjects = "";
-            form2.SelectedCoursesJson = JsonSerializer.Serialize(selectedCourses);
-
-            await _db.SaveChangesAsync();
-
-            TempData["Success"] = "Course recommendation sent successfully.";
-            return RedirectToAction("CourseRecommendation");
-        }
-
-
-
-        [HttpPost]
-        public async Task<IActionResult> UploadTranscriptForRecommendation(IFormFile transcriptFile)
-        {
-            if (transcriptFile == null || transcriptFile.Length == 0)
-            {
-                TempData["ErrorMessage"] = "Please upload a transcript file.";
-                return RedirectToAction(nameof(CourseRecommendation));
-            }
-
-            try
-            {
-                int studentId = 2210783;
-
-                var student = await _db.Students
-                    .Include(s => s.Transcript)
-                    .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-                if (student == null)
-                {
-                    TempData["ErrorMessage"] = "Student not found.";
-                    return RedirectToAction(nameof(CourseRecommendation));
-                }
-
-                // بدليه لاحقًا إلى student.PlanId إذا صار موجود عندك
-                int planId = 1;
-
-                // 1) استخراج من الـ parser العادي
-                var parserCourses = await _transcriptParserService.ParseTranscriptAsync(transcriptFile)
-                                   ?? new List<TranscriptCourseItem>();
-
-                // 2) استخراج من الـ AI parser
-                var aiCourses = await _transcriptAiParserService.ParseTranscriptAsync(transcriptFile)
-                               ?? new List<TranscriptCourseItem>();
-
-                // 3) جيبي فقط المواد المعتمدة في الخطة
-                var validCourseIds = await _db.Set<StudyPlanCourse>()
-                    .Where(x => x.PlanId == planId)
-                    .Select(x => x.CourseId)
-                    .ToListAsync();
-
-                var validCourseIdSet = validCourseIds
-                    .Select(NormalizeCourseId)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                // 4) دمج وتنظيف النتائج
-                var transcriptCourses = MergeTranscriptCourses(
-                    parserCourses,
-                    aiCourses,
-                    validCourseIdSet);
-
-                TempData["ParsedCoursesDebug"] = transcriptCourses.Count == 0
-                    ? "No merged courses found."
-                    : string.Join(" | ", transcriptCourses.Select(x => $"{x.CourseId}-{x.Grade}-{x.IsPassed}"));
-
-                if (!transcriptCourses.Any())
-                {
-                    HttpContext.Session.Remove("RecommendedCards");
-                    HttpContext.Session.Remove("SelectedRecommendedCourses");
-
-                    TempData["ErrorMessage"] = "No valid courses were extracted from the transcript.";
-                    return RedirectToAction(nameof(CourseRecommendation));
-                }
-
-                // 5) التوصيات المؤكدة فقط
-                var recommendations = await _recommendationEngineService
-                    .GenerateRecommendationsAsync(planId, transcriptCourses);
-
-                var cards = (recommendations ?? new List<RecommendedCourseVm>())
-                    .OrderBy(x => x.SemesterNo)
-                    .ThenBy(x => x.DisplayOrder)
-                    .Take(4)
-                    .Select(x => new CourseCardVM
-                    {
-                        CourseId = x.CourseId,
-                        CourseName = x.CourseName,
-                        Hours = x.Hours,
-                        Prerequisite = null,
-                        IsCompleted = false,
-                        CanTake = true,
-                        IsSelected = false,
-                        IsDisabled = false,
-                        Status = "Recommended"
-                    })
-                    .ToList();
-
-                // 6) تنظيف القديم وحفظ الجديد
-                HttpContext.Session.Remove("RecommendedCards");
-                HttpContext.Session.Remove("SelectedRecommendedCourses");
-
-                HttpContext.Session.SetString(
-                    "RecommendedCards",
-                    JsonSerializer.Serialize(cards));
-
-                HttpContext.Session.SetString(
-                    "SelectedRecommendedCourses",
-                    JsonSerializer.Serialize(new List<SelectedCourseVM>()));
-
-                if (!cards.Any())
-                {
-                    TempData["InfoMessage"] = "No confirmed recommendations were found from the transcript.";
-                }
-                else
-                {
-                    TempData["Success"] = "Transcript uploaded successfully.";
-                }
-
-                return RedirectToAction(nameof(CourseRecommendation));
-            }
-            catch (Exception ex)
-            {
-                HttpContext.Session.Remove("RecommendedCards");
-                HttpContext.Session.Remove("SelectedRecommendedCourses");
-
-                TempData["ErrorMessage"] = $"An error occurred while processing the transcript: {ex.Message}";
-                return RedirectToAction(nameof(CourseRecommendation));
-            }
-        }
-
-
-
-        [HttpPost]
-        public IActionResult SaveManualElectiveCourses(
-            string freeElectiveCourse1,
-            string freeElectiveCourse2,
-            string freeElectiveCourse3)
-        {
-            HttpContext.Session.SetString("FreeElectiveCourse1", freeElectiveCourse1?.Trim() ?? "");
-            HttpContext.Session.SetString("FreeElectiveCourse2", freeElectiveCourse2?.Trim() ?? "");
-            HttpContext.Session.SetString("FreeElectiveCourse3", freeElectiveCourse3?.Trim() ?? "");
-
-            TempData["Success"] = "Manual elective courses saved.";
-            return RedirectToAction(nameof(CourseRecommendation));
-        }
-
-
-
-
-
         private static List<TranscriptCourseItem> MergeTranscriptCourses(
-    List<TranscriptCourseItem> parserCourses,
-    List<TranscriptCourseItem> aiCourses,
-    HashSet<string> validCourseIds)
+            List<TranscriptCourseItem> parserCourses,
+            List<TranscriptCourseItem> aiCourses,
+            HashSet<string> validCourseIds)
         {
             var all = new List<TranscriptCourseItem>();
 
@@ -2931,7 +1673,7 @@ namespace Acadify.Controllers
             if (string.IsNullOrWhiteSpace(courseId))
                 return string.Empty;
 
-            courseId = courseId.Trim().ToUpper();
+            courseId = courseId.Trim().ToUpperInvariant();
             courseId = courseId.Replace(" ", "")
                                .Replace("_", "")
                                .Replace("/", "")
@@ -2939,7 +1681,7 @@ namespace Acadify.Controllers
 
             if (!courseId.Contains("-"))
             {
-                var match = System.Text.RegularExpressions.Regex.Match(courseId, @"^([A-Z]{4})(\d{3})$");
+                var match = Regex.Match(courseId, @"^([A-Z]{4})(\d{3})$");
                 if (match.Success)
                     return $"{match.Groups[1].Value}-{match.Groups[2].Value}";
             }
@@ -2952,7 +1694,7 @@ namespace Acadify.Controllers
             if (string.IsNullOrWhiteSpace(grade))
                 return string.Empty;
 
-            return grade.Trim().ToUpper().Replace(" ", "");
+            return grade.Trim().ToUpperInvariant().Replace(" ", "");
         }
 
         private static bool IsPassingGrade(string? grade)
@@ -2970,55 +1712,39 @@ namespace Acadify.Controllers
                    normalized == "P";
         }
 
+        private async Task<int> CreateNewForm5ForStudentAsync(int studentId)
+        {
+            var advisorId = await GetAdvisorIdForStudentAsync(studentId);
 
+            if (!advisorId.HasValue || advisorId.Value <= 0)
+                throw new InvalidOperationException("No advisor is assigned to this student.");
 
+            var newForm5 = new Db.Form
+            {
+                StudentId = studentId,
+                AdvisorId = advisorId.Value,
+                FormType = "Form 5",
+                FormDate = DateTime.Now,
+                FormStatus = "Pending",
+                AdvisorNotes = null,
+                AutoFilled = true,
+                AdvisorConfirmation = null
+            };
 
+            _db.Forms.Add(newForm5);
+            await _db.SaveChangesAsync();
 
+            var details = new Db.GraduationProjectEligibilityForm
+            {
+                FormId = newForm5.FormId,
+                Eligibility = null,
+                RequiredCoursesStatus = null
+            };
 
+            _db.GraduationProjectEligibilityForms.Add(details);
+            await _db.SaveChangesAsync();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return newForm5.FormId;
+        }
     }
-<<<<<<< HEAD
 }
-=======
-}
-
-
->>>>>>> origin_second/rahafgh
-=======
-
-
-    }
-<<<<<<< HEAD
-}
->>>>>>> origin_second/linaLMversion
-=======
-}
->>>>>>> origin_second/لما2
