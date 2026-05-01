@@ -1,13 +1,10 @@
-﻿
-/* ملاحظة: خلفية الصفحة */
+﻿/* ملاحظة: خلفية صفحة الرفع */
 .upload-page {
     min-height: 79vh;
-    background: #e7efee;
+    background: #f7f7f7;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
-    background: #f7f7f7;
     border-radius: 36px;
     padding: 36px 42px;
     margin: 30px;
@@ -114,28 +111,59 @@
     font-size: 13px;
 }
 
+/* ملاحظة: صفحة الطلبات */
 .page {
-    min-height:50vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    overflow: hidden;
+    padding: 34px 24px;
 }
 
+/* ملاحظة: البوكس الرئيسي */
 .card {
-    flex: 1;
+    width: 100%;
+    height: 100%;
     border-radius: 30px;
     padding: 36px 42px;
-    min-height: 79vh;
-    /* مهم: نخلي فيه border شفاف */
     border: 3px solid transparent;
-    /* نضيف خلفيتين */
-    background:
-    /* الخلفية الداخلية */
-    linear-gradient(#f7f7f7, #f7f7f7) padding-box;
-    /* البوردر المتدرج */
-   box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+    background: linear-gradient(#f7f7f7, #f7f7f7) padding-box;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
+
+/* ملاحظة: السكرول الداخلي للطلبات */
+.requests-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+    /* شكل السكرول داخل البوكس */
+    .requests-table-wrapper::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .requests-table-wrapper::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .requests-table-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(25, 122, 128, 0.45);
+        border-radius: 20px;
+    }
+
+        .requests-table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(25, 122, 128, 0.65);
+        }
 
 .title {
     margin: 0;
@@ -144,23 +172,24 @@
     color: #1a1a1a;
 }
 
-
-
+/* ملاحظة: جدول الطلبات */
 .table {
     width: 100%;
+    margin: 0;
     border-collapse: collapse;
     border-radius: 10px;
-    overflow: hidden;
 }
 
     .table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
         text-align: left;
         font-size: 12px;
         color: #000;
         padding: 12px;
         border-bottom: 1px solid #e3eceb;
         border-top: 1px solid #e3eceb;
-        background: linear-gradient( 180deg, #94C7B6 0%, #2272AD 50%, #76BAA5 85%, #12889C 100% );
         background: #ffffff;
     }
 
@@ -169,6 +198,7 @@
         font-size: 13px;
         border-bottom: 1px solid #eef3f2;
         color: #222;
+        background: #ffffff;
     }
 
 .actions-col {
@@ -216,117 +246,8 @@
     color: #856404;
     border: 1px solid #ffeeba;
 }
-/* Page wrapper (no sidebar here - layout already contains it) */
-.fh-page {
-    padding: 35px 45px;
-}
 
-/* List spacing */
-.fh-list {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    max-width: 980px;
-}
-
-/* Row (the long box) */
-.fh-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 10px;
-    border: 1.5px solid rgba(168, 200, 234, 1);
-    background: rgba(183, 180, 192, 0.09); /* B7B4C0 @ 9% */
-
-    padding: 16px 22px;
-}
-
-/* Left section */
-.fh-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-/* Circle icon */
-.fh-circle {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    background: #12889C; /* main circle color */
-    border: 2px solid #FFFFFF; /* stroke white 2 */
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-}
-
-    .fh-circle i {
-        color: #ffffff;
-        font-size: 20px;
-    }
-
-/* Title */
-.fh-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2d2d2d;
-    margin-bottom: 6px;
-}
-
-/* Meta line */
-.fh-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    font-size: 14px;
-}
-
-.fh-meta-label {
-    color: #a3a3a3;
-}
-
-.fh-meta-status {
-    color: #4cc269; /* green like screenshot */
-    font-weight: 500;
-}
-
-.fh-date-label {
-    margin-left: 16px;
-}
-
-.fh-meta-date {
-    color: #f0a262; /* orange like screenshot */
-    font-weight: 500;
-}
-
-/* Right button */
-.fh-view-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 78px;
-    height: 30px;
-    padding: 0 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(156, 196, 220, 1);
-    background: rgba(255, 255, 255, 0.55);
-    color: #7aa9c7;
-    font-size: 13px;
-    text-decoration: none;
-    box-shadow: 0 5px 12px rgba(0,0,0,0.10);
-    transition: 0.2s ease;
-}
-
-    .fh-view-btn:hover {
-        background: rgba(255, 255, 255, 0.75);
-        transform: translateY(-1px);
-<<<<<<< HEAD
-    }
-=======
-    }
+/* ملاحظة: صف التعديل داخل الجدول */
 .update-row td {
     background: #f8fcff;
     border-top: none;
@@ -371,15 +292,125 @@
     gap: 10px;
 }
 
+/* Page wrapper for Form History */
+.fh-page {
+    padding: 35px 45px;
+}
+
+/* List spacing */
+.fh-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 980px;
+}
+
+/* Row */
+.fh-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+    border: 1.5px solid rgba(168, 200, 234, 1);
+    background: rgba(183, 180, 192, 0.09);
+    padding: 16px 22px;
+}
+
+/* Left section */
+.fh-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Circle icon */
+.fh-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #12889C;
+    border: 2px solid #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+    .fh-circle i {
+        color: #ffffff;
+        font-size: 20px;
+    }
+
+/* Title */
+.fh-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d2d2d;
+    margin-bottom: 6px;
+}
+
+/* Meta line */
+.fh-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.fh-meta-label {
+    color: #a3a3a3;
+}
+
+.fh-meta-status {
+    color: #4cc269;
+    font-weight: 500;
+}
+
+.fh-date-label {
+    margin-left: 16px;
+}
+
+.fh-meta-date {
+    color: #f0a262;
+    font-weight: 500;
+}
+
+/* Right button */
+.fh-view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    height: 30px;
+    padding: 0 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(156, 196, 220, 1);
+    background: rgba(255, 255, 255, 0.55);
+    color: #7aa9c7;
+    font-size: 13px;
+    text-decoration: none;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.10);
+    transition: 0.2s ease;
+}
+
+    .fh-view-btn:hover {
+        background: rgba(255, 255, 255, 0.75);
+        transform: translateY(-1px);
+    }
+
+/* ملاحظة: خلفية البوب أب */
 .popup-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.18);
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
 }
 
+/* ملاحظة: كارد البوب أب العام */
 .popup-card {
     width: 420px;
     background: #ffffff;
@@ -422,4 +453,45 @@
     justify-content: flex-end;
     gap: 10px;
 }
->>>>>>> origin_second/لما2
+
+/* ملاحظة: بوب أب رسالة النجاح أو الخطأ */
+.request-status-popup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.request-status-card {
+    width: 380px;
+    min-height: 230px;
+    text-align: center;
+    padding: 34px 28px 28px;
+}
+
+.request-status-icon {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #12889C;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.request-status-card h3 {
+    margin: 8px 0 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #456274;
+}
+
+.request-status-card p {
+    margin: 0 0 22px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #444;
+}

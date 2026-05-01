@@ -1,15 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 using Acadify.Models;
-using Acadify.Models.Db;
 using Microsoft.EntityFrameworkCore;
+using Db = Acadify.Models.Db;
 
 namespace Acadify.Services
 {
     public class RecommendationEngineService : IRecommendationEngineService
     {
-        private readonly AcadifyDbContext _context;
+        private readonly Db.AcadifyDbContext _context;
 
-        public RecommendationEngineService(AcadifyDbContext context)
+        public RecommendationEngineService(Db.AcadifyDbContext context)
         {
             _context = context;
         }
@@ -18,15 +18,17 @@ namespace Acadify.Services
             int planId,
             List<TranscriptCourseItem> transcriptCourses)
         {
-            var passedCourseIds = transcriptCourses
-                .Where(x => x.IsPassed && !string.IsNullOrWhiteSpace(x.CourseId))
-                .Select(x => NormalizeCourseId(x.CourseId))
-                .ToHashSet();
+            transcriptCourses ??= new List<TranscriptCourseItem>();
 
-            var planCourses = await _context.Set<StudyPlanCourse>()
+            var passedCourseIds = transcriptCourses
+                .Where(x => x.IsPassed)
+                .Select(x => NormalizeCourseId(x.CourseId))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var planCourses = await _context.Set<Db.StudyPlanCourse>()
                 .Where(sp => sp.PlanId == planId)
                 .Join(
-                    _context.Set<Course>(),
+                    _context.Set<Db.Course>(),
                     sp => sp.CourseId,
                     c => c.CourseId,
                     (sp, c) => new
@@ -50,20 +52,14 @@ namespace Acadify.Services
             if (!remaining.Any())
                 return new List<RecommendedCourseVm>();
 
-            // أول سمستر فيه مواد متبقية
             var firstIncompleteSemester = remaining
                 .Where(x => x.SemesterNo != 81)
                 .Select(x => x.SemesterNo)
                 .DefaultIfEmpty(81)
                 .Min();
 
-            // فقط مواد هذا السمستر
-            var currentSemesterCourses = remaining
+            var recommended = remaining
                 .Where(x => x.SemesterNo == firstIncompleteSemester)
-                .OrderBy(x => x.DisplayOrder)
-                .ToList();
-
-            var recommended = currentSemesterCourses
                 .Where(x => ArePrerequisitesSatisfied(x.Prerequisite, passedCourseIds))
                 .Select(x => new RecommendedCourseVm
                 {
@@ -72,32 +68,30 @@ namespace Acadify.Services
                     Hours = x.Hours,
                     SemesterNo = x.SemesterNo,
                     DisplayOrder = x.DisplayOrder,
-                    Reason = BuildReason(x.Prerequisite, firstIncompleteSemester)
+                    Reason = BuildReason(x.Prerequisite)
                 })
-                .ToList();
-
-            // لو ما فيه شيء مؤهل في أول سمستر غير مكتمل:
-            // لا تقفزي لكل الخطة، رجعي فارغ أو عالجيه في الواجهة كـ blocked courses
-            if (recommended.Any())
-                return recommended;
-
-            // خيار اختياري: إذا عندك مواد عامة / اختيارية برقم 81 وتبغين تعرضينها فقط لما تكون متاحة
-            var electiveRecommendations = remaining
-                .Where(x => x.SemesterNo == 81)
-                .Where(x => ArePrerequisitesSatisfied(x.Prerequisite, passedCourseIds))
                 .OrderBy(x => x.DisplayOrder)
-                .Select(x => new RecommendedCourseVm
-                {
-                    CourseId = x.CourseId,
-                    CourseName = x.CourseName ?? x.CourseId,
-                    Hours = x.Hours,
-                    SemesterNo = x.SemesterNo,
-                    DisplayOrder = x.DisplayOrder,
-                    Reason = "Elective / general course with satisfied prerequisite."
-                })
                 .ToList();
 
-            return electiveRecommendations;
+            if (!recommended.Any())
+            {
+                recommended = remaining
+                    .Where(x => ArePrerequisitesSatisfied(x.Prerequisite, passedCourseIds))
+                    .Select(x => new RecommendedCourseVm
+                    {
+                        CourseId = x.CourseId,
+                        CourseName = x.CourseName ?? x.CourseId,
+                        Hours = x.Hours,
+                        SemesterNo = x.SemesterNo,
+                        DisplayOrder = x.DisplayOrder,
+                        Reason = BuildReason(x.Prerequisite)
+                    })
+                    .OrderBy(x => x.SemesterNo)
+                    .ThenBy(x => x.DisplayOrder)
+                    .ToList();
+            }
+
+            return recommended;
         }
 
         private bool ArePrerequisitesSatisfied(string? prerequisiteText, HashSet<string> passedCourseIds)
@@ -105,25 +99,6 @@ namespace Acadify.Services
             if (string.IsNullOrWhiteSpace(prerequisiteText))
                 return true;
 
-            // دعم بسيط لـ OR / أو
-            var orParts = Regex.Split(prerequisiteText, @"\s+(?:OR|or|Or|أو)\s+")
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToList();
-
-            // إذا فيه OR، يكفي أي جزء منها يتحقق بالكامل
-            if (orParts.Count > 1)
-            {
-                return orParts.Any(part =>
-                {
-                    var codes = ExtractCourseCodes(part);
-                    if (!codes.Any())
-                        return false;
-
-                    return codes.All(code => passedCourseIds.Contains(NormalizeCourseId(code)));
-                });
-            }
-
-            // otherwise = AND عادي
             var prerequisiteCodes = ExtractCourseCodes(prerequisiteText);
 
             if (!prerequisiteCodes.Any())
@@ -139,17 +114,14 @@ namespace Acadify.Services
             if (string.IsNullOrWhiteSpace(text))
                 return list;
 
-            var matches = Regex.Matches(
-                text,
-                @"\b([A-Z]{4})\s*-?\s*(\d{3})\b",
-                RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(text, @"\b([A-Z]{2,6})\s*-?\s*(\d{3,4})\b", RegexOptions.IgnoreCase);
 
             foreach (Match match in matches)
             {
                 if (match.Success)
                 {
-                    var code = $"{match.Groups[1].Value.ToUpper()}-{match.Groups[2].Value}";
-                    list.Add(code);
+                    var code = $"{match.Groups[1].Value.ToUpper()}{match.Groups[2].Value}";
+                    list.Add(NormalizeCourseId(code));
                 }
             }
 
@@ -161,34 +133,21 @@ namespace Acadify.Services
             if (string.IsNullOrWhiteSpace(courseId))
                 return string.Empty;
 
-            courseId = courseId.Trim().ToUpper();
-            courseId = courseId.Replace(" ", "")
-                               .Replace("_", "")
-                               .Replace("/", "")
-                               .Replace("--", "-");
-
-            if (!courseId.Contains("-"))
-            {
-                var match = Regex.Match(courseId, @"^([A-Z]{4})(\d{3})$");
-                if (match.Success)
-                {
-                    return $"{match.Groups[1].Value}-{match.Groups[2].Value}";
-                }
-            }
-
-            return courseId;
+            return courseId
+                .Trim()
+                .ToUpperInvariant()
+                .Replace(" ", "")
+                .Replace("_", "")
+                .Replace("/", "")
+                .Replace("-", "");
         }
 
-        private string BuildReason(string? prerequisiteText, int semesterNo)
+        private string BuildReason(string? prerequisiteText)
         {
             if (string.IsNullOrWhiteSpace(prerequisiteText))
-                return $"Recommended from semester {semesterNo}.";
+                return "Remaining course in the next incomplete semester.";
 
-            var codes = ExtractCourseCodes(prerequisiteText);
-            if (!codes.Any())
-                return $"Recommended from semester {semesterNo}; prerequisite text exists.";
-
-            return $"Recommended from semester {semesterNo}; prerequisite satisfied: {string.Join(", ", codes)}.";
+            return "Remaining course and prerequisites are satisfied.";
         }
     }
 }

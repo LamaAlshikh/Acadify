@@ -1,10 +1,7 @@
-﻿@{
+@{
     Layout = "_StudentLayout";
     ViewBag.BodyClass = "upload-page";
-<<<<<<< HEAD
-=======
     ViewData["Title"] = "Upload Transcript";
->>>>>>> origin_second/لما2
 }
 
 <main class="student-content">
@@ -29,14 +26,19 @@
                     drag and drop file or <label for="fileUpload" class="browse-link">Browse</label>
                 </p>
 
-                <input id="fileUpload" type="file" name="transcriptFile" accept=".pdf" required />
-                <p id="selectedFileName" class="selected-file" style="display:none;"></p>
+                <input id="fileUpload"
+                       type="file"
+                       name="transcriptFile"
+                       accept=".pdf"
+                       required />
+
+                <p id="selectedFileName"
+                   class="selected-file"
+                   style="display:none;"></p>
             </div>
 
             <p class="format-text">Supported format : PDF</p>
 
-<<<<<<< HEAD
-=======
             @if (ViewBag.Error != null)
             {
                 <div class="text-danger" style="margin-top:10px;">
@@ -51,7 +53,6 @@
                 </div>
             }
 
->>>>>>> origin_second/لما2
             <button id="uploadBtn" type="submit" class="upload-btn">
                 <span id="btnText">Upload</span>
                 <span id="btnLoader" style="display:none;">Uploading...</span>
@@ -60,11 +61,6 @@
         </form>
 
     </section>
-<<<<<<< HEAD
-
-   
-=======
->>>>>>> origin_second/لما2
 </main>
 
 <script>
@@ -75,66 +71,37 @@
         const btnLoader = document.getElementById("btnLoader");
         const fileInput = document.getElementById("fileUpload");
         const selectedFileName = document.getElementById("selectedFileName");
-<<<<<<< HEAD
-        
         const pageTitle = document.querySelector(".upload-card h2");
 
-        const successMessage = '@Html.Raw(ViewBag.Success != null ? ViewBag.Success.ToString().Replace("'", "\\'") : "")';
-        const errorMessage = '@Html.Raw(ViewBag.Error != null ? ViewBag.Error.ToString().Replace("'", "\\'") : "")';
-
-=======
-        const pageTitle = document.querySelector(".upload-card h2");
-
->>>>>>> origin_second/لما2
         if (fileInput) {
             fileInput.addEventListener("change", function () {
                 if (fileInput.files.length > 0) {
                     selectedFileName.textContent = "File: " + fileInput.files[0].name;
                     selectedFileName.style.display = "block";
-<<<<<<< HEAD
-=======
                 } else {
                     selectedFileName.textContent = "";
                     selectedFileName.style.display = "none";
->>>>>>> origin_second/لما2
                 }
             });
         }
 
         if (form) {
             form.addEventListener("submit", function () {
-<<<<<<< HEAD
-=======
-                if (fileInput.files.length === 0) return;
+                if (!fileInput || fileInput.files.length === 0) {
+                    return;
+                }
 
->>>>>>> origin_second/لما2
                 uploadBtn.disabled = true;
                 btnText.style.display = "none";
                 btnLoader.style.display = "inline";
 
-<<<<<<< HEAD
-                if (fileInput.files.length > 0) {
-                    const fileName = fileInput.files[0].name;
-                    pageTitle.innerHTML = 'Uploading <span>file...</span>';
-                    selectedFileName.textContent = "File: " + fileName;
-                    selectedFileName.style.display = "block";
+                if (pageTitle) {
+                    pageTitle.innerHTML = "Uploading <span>file...</span>";
                 }
-            });
-        }
 
-            if (successMessage) {
-        alert("Your file was uploaded successfully.");
-    }
-
-    if (errorMessage) {
-        alert(errorMessage);
-    }
-=======
-                pageTitle.innerHTML = 'Uploading <span>file...</span>';
                 selectedFileName.textContent = "File: " + fileInput.files[0].name;
                 selectedFileName.style.display = "block";
             });
         }
->>>>>>> origin_second/لما2
     });
 </script>

@@ -13,7 +13,7 @@
             @Html.AntiForgeryToken()
 
             <div class="upload-box">
-                <input asp-for="AcademicCalendarFile" type="file" id="academicCalendarFile" accept=".pdf" hidden />
+                <input asp-for="AcademicCalendarFile" type="file" id="academicCalendarFile" accept=".xlsx" hidden />
 
                 <label for="academicCalendarFile" class="upload-label">
                     <div class="upload-icon">☁</div>
@@ -22,7 +22,7 @@
                 </label>
             </div>
 
-            <p class="format-text">Supported format: PDF</p>
+            <p class="format-text">Supported format: Excel (.xlsx)</p>
 
             <button type="submit" id="uploadBtn" class="upload-btn">Upload</button>
         </form>
@@ -58,7 +58,21 @@
         }
     });
 
-    form.addEventListener("submit", function () {
+    form.addEventListener("submit", function (e) {
+        if (fileInput.files.length === 0) {
+            e.preventDefault();
+            alert("Please choose an Excel (.xlsx) file first.");
+            return;
+        }
+
+        const fileName = fileInput.files[0].name.toLowerCase();
+
+        if (!fileName.endsWith(".xlsx")) {
+            e.preventDefault();
+            alert("Only Excel (.xlsx) files are allowed.");
+            return;
+        }
+
         loadingOverlay.classList.add("show");
         uploadBtn.disabled = true;
         uploadBtn.textContent = "Uploading...";

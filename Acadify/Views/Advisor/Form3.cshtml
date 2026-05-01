@@ -1,29 +1,11 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin_second/لما2
-﻿@{
-    Layout = "_AdvisorLayout";
-}
+@model Acadify.Models.Form3ViewModel
 
-<main class="advisor-form3-page">
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin_second/linaLMversion
-﻿@model Acadify.Models.Form3ViewModel
 @{
     Layout = "_AdvisorLayout";
+    ViewData["Title"] = "Meeting Record";
 }
 
 <div class="form3-container">
-<<<<<<< HEAD
->>>>>>> origin_second/rahafgh
-=======
->>>>>>> origin_second/linaLMversion
-=======
->>>>>>> origin_second/لما2
 
     <!-- Top Header -->
     <section class="form3-top">
@@ -32,26 +14,6 @@
                 <i class="fa-solid fa-file-lines"></i>
             </div>
             <div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin_second/لما2
-                <h2>Meeting Record</h2>
-                <p>(Form 3)</p>
-            </div>
-        </div>
-
-        <button class="print-btn" onclick="window.print()">
-            Print <i class="fa-solid fa-print"></i>
-        </button>
-    </section>
-
-    <!-- Success message -->
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin_second/linaLMversion
                 <h2>Meeting Record (Form 3)</h2>
             </div>
         </div>
@@ -68,125 +30,14 @@
         </div>
     </section>
 
-<<<<<<< HEAD
->>>>>>> origin_second/rahafgh
-=======
->>>>>>> origin_second/linaLMversion
-=======
->>>>>>> origin_second/لما2
     @if (TempData["Success"] != null)
     {
         <div class="form3-msg">@TempData["Success"]</div>
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin_second/لما2
-    <section class="form3-card">
-
-        <div class="form3-paper">
-
-            <div class="form3-header">
-                <div class="form3-title-center">
-                    <h3>FORM-3 (Meeting Record)</h3>
-                </div>
-            </div>
-
-            <div class="form3-student-line">
-                <div>
-                    <label>Student Name:</label>
-                    <input type="text" name="StudentName" class="line-input" />
-                </div>
-
-                <div>
-                    <label>Student ID:</label>
-                    <input type="text" name="StudentId" class="line-input" />
-                </div>
-            </div>
-
-            <table class="form3-table">
-                <thead>
-                    <tr>
-                        <th>Meeting #</th>
-                        <th>Meeting date</th>
-                        <th>Meeting Purpose</th>
-                        <th>Referring Student to someone else</th>
-                        <th>Proposed Solutions / Advise / Brief notes</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @for (int i = 1; i <= 3; i++)
-                    {
-                        <tr>
-                            <td class="center">@i</td>
-
-                            <td>
-                                <input type="text" name="Rows[@i].MeetingDate" class="cell-input" placeholder="Year / Fall / Spring / Summer" />
-                            </td>
-
-                            <td>
-                                <label class="check-row"><input type="checkbox" /> Academic</label>
-                                <label class="check-row"><input type="checkbox" /> Career</label>
-                                <label class="check-row"><input type="checkbox" /> Other</label>
-                            </td>
-
-                            <td>
-                                <div class="mini-field">
-                                    <span>Name:</span>
-                                    <input type="text" class="cell-input" />
-                                </div>
-                                <div class="mini-field">
-                                    <span>Reason:</span>
-                                    <input type="text" class="cell-input" />
-                                </div>
-                            </td>
-
-                            <td>
-                                <textarea class="cell-textarea" rows="4"></textarea>
-                                <div class="initials">
-                                    <span>(Student Initial)</span>
-                                    <span>(Advisor Initial)</span>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-        </div>
-    </section>
-
-    <!-- Bottom Actions -->
-    <section class="form3-actions">
-
-        <form method="post" asp-action="SendForm3" asp-controller="Advisor">
-            <button type="submit" class="btn-primary-wide">
-                Send To The Advising Committee
-            </button>
-        </form>
-
-        <form method="post" asp-action="AddNotesForm3" asp-controller="Advisor" class="notes-form">
-            <input type="text" name="notes" placeholder="Add Notes..." class="notes-input" />
-            <button type="submit" class="btn-secondary">
-                Add Notes +
-            </button>
-        </form>
-
-        <a asp-action="Form3History" asp-controller="Advisor" class="btn-light">
-            Form History
-        </a>
-
-    </section>
-
-<<<<<<< HEAD
-</main>
-=======
-=======
->>>>>>> origin_second/linaLMversion
     <form method="post" asp-controller="Advisor">
+        @Html.AntiForgeryToken()
+
         <section class="form3-card">
             <div class="form3-paper">
 
@@ -208,6 +59,9 @@
                     </div>
                 </div>
 
+                <input asp-for="Status" type="hidden" />
+                <input asp-for="AdvisorNotes" type="hidden" />
+
                 <table class="form3-table">
                     <thead>
                         <tr>
@@ -220,53 +74,63 @@
                     </thead>
 
                     <tbody>
-                        @for (int i = 0; i < Model.Meetings.Count; i++)
+                        @if (Model?.Meetings != null && Model.Meetings.Any())
+                        {
+                            @for (int i = 0; i < Model.Meetings.Count; i++)
+                            {
+                                <tr>
+                                    <td class="center">
+                                        @Model.Meetings[i].MeetingNo
+                                        <input asp-for="Meetings[i].MeetingNo" type="hidden" />
+                                    </td>
+
+                                    <td>
+                                        <input asp-for="Meetings[i].MeetingDate" class="cell-input" />
+                                    </td>
+
+                                    <td>
+                                        <label class="check-row">
+                                            <input asp-for="Meetings[i].PurposeAcademic" type="checkbox" />
+                                            Academic
+                                        </label>
+
+                                        <label class="check-row">
+                                            <input asp-for="Meetings[i].PurposeCareer" type="checkbox" />
+                                            Career
+                                        </label>
+
+                                        <label class="check-row">
+                                            <input asp-for="Meetings[i].PurposeOther" type="checkbox" />
+                                            Other
+                                        </label>
+                                    </td>
+
+                                    <td>
+                                        <div class="mini-field">
+                                            <span>Name:</span>
+                                            <input asp-for="Meetings[i].ReferralName" class="cell-input" />
+                                        </div>
+
+                                        <div class="mini-field">
+                                            <span>Reason:</span>
+                                            <input asp-for="Meetings[i].ReferralReason" class="cell-input" />
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <textarea asp-for="Meetings[i].ProposedSolutions" class="cell-textarea" rows="4"></textarea>
+                                        <div class="initials">
+                                            <span>(Student Initial)</span>
+                                            <span>(Advisor Initial)</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td class="center">
-                                    @Model.Meetings[i].MeetingNo
-                                    <input asp-for="Meetings[@i].MeetingNo" type="hidden" />
-                                </td>
-
-                                <td>
-                                    <input asp-for="Meetings[@i].MeetingDate" class="cell-input" />
-                                </td>
-
-                                <td>
-                                    <label class="check-row">
-                                        <input asp-for="Meetings[@i].PurposeAcademic" type="checkbox" />
-                                        Academic
-                                    </label>
-
-                                    <label class="check-row">
-                                        <input asp-for="Meetings[@i].PurposeCareer" type="checkbox" />
-                                        Career
-                                    </label>
-
-                                    <label class="check-row">
-                                        <input asp-for="Meetings[@i].PurposeOther" type="checkbox" />
-                                        Other
-                                    </label>
-                                </td>
-
-                                <td>
-                                    <div class="mini-field">
-                                        <span>Name:</span>
-                                        <input asp-for="Meetings[@i].ReferralName" class="cell-input" />
-                                    </div>
-                                    <div class="mini-field">
-                                        <span>Reason:</span>
-                                        <input asp-for="Meetings[@i].ReferralReason" class="cell-input" />
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <textarea asp-for="Meetings[@i].ProposedSolutions" class="cell-textarea" rows="4"></textarea>
-                                    <div class="initials">
-                                        <span>(Student Initial)</span>
-                                        <span>(Advisor Initial)</span>
-                                    </div>
-                                </td>
+                                <td colspan="5" class="center">No meeting records found.</td>
                             </tr>
                         }
                     </tbody>
@@ -287,15 +151,11 @@
                     class="btn-save">
                 Save
             </button>
+
+            <a asp-action="Form3History" asp-controller="Advisor" class="btn-light">
+                Form History
+            </a>
         </section>
     </form>
 
-<<<<<<< HEAD
 </div>
->>>>>>> origin_second/rahafgh
-=======
-</div>
->>>>>>> origin_second/linaLMversion
-=======
-</main>
->>>>>>> origin_second/لما2

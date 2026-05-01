@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin_second/لما2
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +7,6 @@ namespace Acadify.Models;
 
 [Table("GraduationProjectEligibilityForm")]
 public partial class GraduationProjectEligibilityForm
-<<<<<<< HEAD
 {
     [Key]
     [Column("formID")]
@@ -29,40 +23,42 @@ public partial class GraduationProjectEligibilityForm
     [ForeignKey("FormId")]
     [InverseProperty("GraduationProjectEligibilityForm")]
     public virtual Form Form { get; set; } = null!;
-=======
-﻿namespace Acadify.Models
-=======
->>>>>>> origin_second/لما2
-{
-    [Key]
-    [Column("formID")]
-    public int FormId { get; set; }
 
-    [Column("eligibility")]
-    [StringLength(50)]
-    public string? Eligibility { get; set; }
+    // UI-only properties for the old Advisor/Form5.cshtml view.
+    // These are not database columns.
+    [NotMapped]
+    public string? StudentName { get; set; }
 
-    [Column("requiredCoursesStatus")]
-    [StringLength(200)]
-    public string? RequiredCoursesStatus { get; set; }
+    [NotMapped]
+    public string? StudentId { get; set; }
 
-<<<<<<< HEAD
-        // المواد المسجلة أو المتوقعة
-        public bool CPIS360 { get; set; }
-        public bool CPIS375 { get; set; }
-        public bool CPIS342 { get; set; }
+    [NotMapped]
+    public bool CPIS351 { get; set; }
 
-        // النتيجة النهائية
-        public bool IsEligible { get; set; }
+    [NotMapped]
+    public bool CPIS358 { get; set; }
 
-        public string AdvisorComment { get; set; }
-        public string FormStatus { get; set; } // Pending / Accepted / Rejected
-        public DateTime CreatedDate { get; set; }
-    }
->>>>>>> origin_second/linaLMversion
-=======
-    [ForeignKey("FormId")]
-    [InverseProperty("GraduationProjectEligibilityForm")]
-    public virtual Form Form { get; set; } = null!;
->>>>>>> origin_second/لما2
+    [NotMapped]
+    public bool CPIS323 { get; set; }
+
+    [NotMapped]
+    public bool CPIS360 { get; set; }
+
+    [NotMapped]
+    public bool CPIS375 { get; set; }
+
+    [NotMapped]
+    public bool CPIS342 { get; set; }
+
+    [NotMapped]
+    public bool IsEligible { get; set; }
+
+    [NotMapped]
+    public string? AdvisorComment { get; set; }
+
+    [NotMapped]
+    public string? FormStatus { get; set; }
+
+    [NotMapped]
+    public DateTime CreatedDate { get; set; }
 }

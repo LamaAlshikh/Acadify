@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Acadify.Models
+namespace Acadify.Models.Db
 {
     [Table("Admin")]
     [Index("UserId", Name = "UQ_Admin_UserID", IsUnique = true)]
@@ -17,13 +16,12 @@ namespace Acadify.Models
         [Column("userID")]
         public int UserId { get; set; }
 
-        // --- العلاقات (Navigation Properties) ---
+        // --- Navigation Properties ---
 
         [ForeignKey("UserId")]
         [InverseProperty("Admin")]
         public virtual User User { get; set; } = null!;
 
-        [InverseProperty("Admin")]
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

@@ -1,28 +1,28 @@
 ﻿using Acadify.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
-<<<<<<< HEAD
 using Microsoft.EntityFrameworkCore;
-=======
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
->>>>>>> origin_second/linaLMversion
-=======
-using Microsoft.EntityFrameworkCore;
->>>>>>> origin_second/لما2
+using System.Net;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Db = Acadify.Models.Db;
 
 namespace Acadify.ViewComponents
 {
     public class NotificationsViewComponent : ViewComponent
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        private readonly AcadifyDbContext _db;
+        private readonly Db.AcadifyDbContext _db;
+        private readonly IConfiguration _configuration;
 
-        public NotificationsViewComponent(AcadifyDbContext db)
+        public NotificationsViewComponent(Db.AcadifyDbContext db, IConfiguration configuration)
         {
             _db = db;
+            _configuration = configuration;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
@@ -33,218 +33,47 @@ namespace Acadify.ViewComponents
             int? advisorId = GetAdvisorId();
             int? adminId = GetAdminId();
 
-            var query = _db.Notifications.AsNoTracking().AsQueryable();
-
-            if (role == "Student" && studentId.HasValue)
-            {
-                query = query.Where(n => n.StudentId == studentId.Value);
-            }
-            else if (role == "Advisor" && advisorId.HasValue)
-            {
-                query = query.Where(n => n.AdvisorId == advisorId.Value);
-            }
-            else if (role == "Admin" && adminId.HasValue)
-            {
-                query = query.Where(n => n.AdminId == adminId.Value);
-            }
-            else
-            {
-                query = query.Where(n => false);
-            }
-
-            var dbNotifs = await query
-                .OrderByDescending(n => n.Date)
-                .Take(50)
-                .ToListAsync();
-
-            var dbNotifications = dbNotifs.Select(n => new NotificationViewModel
-            {
-                NotificationID = n.NotificationId,
-                NotificationContent = n.Message,
-                NotificationDate = n.Date,
-                NotificationType = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
-                Title = BuildTitle(n.SourceType),
-                SenderName = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
-                IsRead = n.IsRead,
-                TargetUrl = BuildTargetUrl(n.SourceType, role),
-                TimeAgo = GetTimeAgo(n.Date),
-                SourceType = string.IsNullOrWhiteSpace(n.SourceType) ? "General" : n.SourceType!
-            }).ToList();
-
-            var calendarNotifications = await BuildAcademicCalendarNotificationsAsync(role);
-
-            var all = dbNotifications
-                .Concat(calendarNotifications)
-                .OrderByDescending(n => n.NotificationDate)
-                .ToList();
-
-            return View(all);
-        }
-
-        private string GetCurrentRole()
-        {
-            if (User.IsInRole("Admin")) return "Admin";
-            if (User.IsInRole("Advisor")) return "Advisor";
-            return "Student";
-        }
-
-        private int? GetStudentId()
-        {
-            var claim = HttpContext.User.FindFirst("StudentId")?.Value;
-            return int.TryParse(claim, out var id) ? id : null;
-        }
-
-        private int? GetAdvisorId()
-        {
-            var claim = HttpContext.User.FindFirst("AdvisorId")?.Value;
-            return int.TryParse(claim, out var id) ? id : null;
-        }
-
-        private int? GetAdminId()
-        {
-            var claim = HttpContext.User.FindFirst("AdminId")?.Value;
-            return int.TryParse(claim, out var id) ? id : null;
-        }
-
-        private string GetFutureText(int daysLeft)
-        {
-            if (daysLeft == 0) return "Today";
-            if (daysLeft == 1) return "Tomorrow";
-            return $"After {daysLeft} days";
-        }
-
-        private async Task<List<NotificationViewModel>> BuildAcademicCalendarNotificationsAsync(string role)
-        {
-            var result = new List<NotificationViewModel>();
-
-            // إشعارات الكالندر تظهر فقط للطالبة والمرشد
-            if (role != "Student" && role != "Advisor")
-                return result;
-
-            var latestCalendarId = await _db.AcademicCalendars
-                .OrderByDescending(c => c.CalendarId)
-                .Select(c => (int?)c.CalendarId)
-                .FirstOrDefaultAsync();
-
-            if (!latestCalendarId.HasValue)
-                return result;
+            await EnsureAdminRequestNotificationsAsync(role, adminId);
+            await EnsureAcademicCalendarNotificationsAsync(role, studentId, advisorId);
 
             var today = DateTime.Today;
 
-            var events = await _db.AcademicCalendarEvents
-                .Where(e => e.CalendarId == latestCalendarId.Value)
-                .OrderBy(e => e.GregorianDate)
-                .ToListAsync();
-
-            foreach (var e in events)
-            {
-                var eventDate = e.GregorianDate.Date;
-                var daysLeft = (eventDate - today).Days;
-
-                // فقط: قبل يومين، قبل يوم، ويوم الحدث نفسه
-                if (daysLeft != 2 && daysLeft != 1 && daysLeft != 0)
-                    continue;
-
-                string message;
-                string timeText;
-
-                if (daysLeft == 2)
-                {
-                    message = $"يتبقى يومان على {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
-                    timeText = "After 2 days";
-                }
-                else if (daysLeft == 1)
-                {
-                    message = $"غدًا {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
-                    timeText = "Tomorrow";
-                }
-                else
-                {
-                    message = $"اليوم {e.EventName}.";
-                    timeText = "Today";
-                }
-
-                result.Add(new NotificationViewModel
-                {
-                    NotificationID = 0,
-                    NotificationContent = message,
-                    NotificationDate = eventDate,
-                    NotificationType = "System",
-                    Title = "Academic calendar",
-                    SenderName = "System",
-                    IsRead = false,
-                    TargetUrl = "/Notifications/Panel",
-                    TimeAgo = timeText,
-                    SourceType = "Calendar"
-                });
-            }
-
-            return result
-                .OrderByDescending(n => n.NotificationDate)
-                .ToList();
-        }
-
-        private string BuildTitle(string? sourceType)
-        {
-            return sourceType switch
-            {
-                "Recommendation" => "Recommendation notification",
-                "Meeting" => "Meeting notification",
-                "Chat" => "New message",
-                "Form" => "Form notification",
-                "Transcript" => "Transcript notification",
-                "Calendar" => "Academic calendar",
-                "Request" => "Request notification",
-                "StudyPlan" => "Study plan notification",
-                _ => "System notification"
-            };
-        }
-
-        private string BuildTargetUrl(string? sourceType, string role)
-        {
-            return sourceType switch
-            {
-                "Recommendation" => role == "Student" ? "/Student/StudentHome" : "/Forms",
-                "Meeting" => "/Meeting",
-                "Chat" => "/Community",
-                "Form" => "/Forms",
-                "Transcript" => "/Student/StudentHome",
-                "Calendar" => "/Notifications/Panel",
-                "Request" => role == "Admin" ? "/Admin/ManageAdvisorRequests" : "/Student/StudentHome",
-                "StudyPlan" => "/Admin/UploadStudyPlan",
-                _ => "/Notifications/Panel"
-=======
-        public IViewComponentResult Invoke()
-=======
-        private readonly AcadifyDbContext _db;
-
-        public NotificationsViewComponent(AcadifyDbContext db)
->>>>>>> origin_second/لما2
-        {
-            _db = db;
-        }
-
-        public async Task<IViewComponentResult> InvokeAsync()
-        {
-            var role = GetCurrentRole();
-
-            int? studentId = GetStudentId();
-            int? advisorId = GetAdvisorId();
-            int? adminId = GetAdminId();
-
-            var query = _db.Notifications.AsNoTracking().AsQueryable();
+            var query = _db.Notifications
+                .AsNoTracking()
+                .AsQueryable();
 
             if (role == "Student" && studentId.HasValue)
             {
-                query = query.Where(n => n.StudentId == studentId.Value);
+                query = query.Where(n =>
+                    n.StudentId == studentId.Value &&
+                    n.SourceType == "Calendar" &&
+                    n.Date.Date == today);
             }
             else if (role == "Advisor" && advisorId.HasValue)
             {
-                query = query.Where(n => n.AdvisorId == advisorId.Value);
+                query = query.Where(n =>
+                    n.AdvisorId == advisorId.Value &&
+                    (
+                        n.SourceType == "StudentAssigned" ||
+                        (n.SourceType == "Calendar" && n.Date.Date == today)
+                    ));
             }
             else if (role == "Admin" && adminId.HasValue)
             {
-                query = query.Where(n => n.AdminId == adminId.Value);
+                var activeRequestKeys = await GetActiveAdminRequestKeysAsync();
+
+                if (activeRequestKeys.Count == 0)
+                {
+                    query = query.Where(n => false);
+                }
+                else
+                {
+                    query = query.Where(n =>
+                        n.AdminId == adminId.Value &&
+                        n.SourceType == "Request" &&
+                        n.Type != null &&
+                        activeRequestKeys.Contains(n.Type));
+                }
             }
             else
             {
@@ -256,28 +85,27 @@ namespace Acadify.ViewComponents
                 .Take(50)
                 .ToListAsync();
 
-            var dbNotifications = dbNotifs.Select(n => new NotificationViewModel
+            var notifications = dbNotifs.Select(n =>
             {
-                NotificationID = n.NotificationId,
-                NotificationContent = n.Message,
-                NotificationDate = n.Date,
-                NotificationType = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
-                Title = BuildTitle(n.SourceType),
-                SenderName = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
-                IsRead = n.IsRead,
-                TargetUrl = BuildTargetUrl(n.SourceType, role, n),
-                TimeAgo = GetTimeAgo(n.Date),
-                SourceType = string.IsNullOrWhiteSpace(n.SourceType) ? "General" : n.SourceType!
+                var title = BuildTitle(n.SourceType);
+
+                return new NotificationViewModel
+                {
+                    NotificationID = n.NotificationId,
+                    NotificationContent = n.Message,
+                    NotificationDate = n.Date,
+                    NotificationType = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
+                    Title = title,
+                    SenderName = string.IsNullOrWhiteSpace(n.SenderRole) ? "System" : n.SenderRole!,
+                    IsRead = n.IsRead,
+                    TargetUrl = BuildTargetUrl(n.SourceType, role),
+                    TimeAgo = BuildTimeText(n),
+                    SourceType = string.IsNullOrWhiteSpace(n.SourceType) ? "General" : n.SourceType!,
+                    Initials = BuildInitials(title)
+                };
             }).ToList();
 
-            var calendarNotifications = await BuildAcademicCalendarNotificationsAsync(role);
-
-            var all = dbNotifications
-                .Concat(calendarNotifications)
-                .OrderByDescending(n => n.NotificationDate)
-                .ToList();
-
-            return View(all);
+            return View(notifications);
         }
 
         private string GetCurrentRole()
@@ -300,12 +128,80 @@ namespace Acadify.ViewComponents
             return HttpContext.Session.GetInt32("AdminId");
         }
 
-        private async Task<List<NotificationViewModel>> BuildAcademicCalendarNotificationsAsync(string role)
+        private async Task EnsureAdminRequestNotificationsAsync(string role, int? adminId)
         {
-            var result = new List<NotificationViewModel>();
+            if (role != "Admin" || !adminId.HasValue)
+                return;
 
+            var requests = await _db.AdvisorRequests
+                .Include(r => r.Student)
+                .Include(r => r.RequestedAdvisor)
+                    .ThenInclude(a => a!.User)
+                .Where(r => r.Status == "Pending" || r.Status == "Updated")
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            foreach (var request in requests)
+            {
+                var key = BuildAdminRequestKey(request.RequestId, request.Status);
+
+                bool exists = await _db.Notifications.AnyAsync(n =>
+                    n.AdminId == adminId.Value &&
+                    n.SourceType == "Request" &&
+                    n.Type == key);
+
+                if (exists)
+                    continue;
+
+                string studentName = request.Student?.Name ?? "A student";
+
+                string advisorName =
+                    request.RequestedAdvisor?.User?.Name ??
+                    request.RequestedAdvisorEmail ??
+                    "the selected advisor";
+
+                var message = $"Student Request: {studentName} requested {advisorName} as academic advisor.";
+
+                var notification = new Db.Notification
+                {
+                    SenderRole = "Student",
+                    SourceType = "Request",
+                    Type = key,
+                    Message = message,
+                    AdminId = adminId.Value,
+                    Date = request.CreatedAt,
+                    IsRead = false
+                };
+
+                var adminEmail = await GetAdminEmailAsync(adminId.Value);
+
+                await AddNotificationWithEmailAsync(notification, adminEmail);
+            }
+        }
+
+        private async Task<List<string>> GetActiveAdminRequestKeysAsync()
+        {
+            return await _db.AdvisorRequests
+                .Where(r => r.Status == "Pending" || r.Status == "Updated")
+                .Select(r => "student-request-" + r.RequestId + "-" + r.Status)
+                .ToListAsync();
+        }
+
+        private static string BuildAdminRequestKey(int requestId, string? status)
+        {
+            return $"student-request-{requestId}-{status ?? "Pending"}";
+        }
+
+        private async Task EnsureAcademicCalendarNotificationsAsync(string role, int? studentId, int? advisorId)
+        {
             if (role != "Student" && role != "Advisor")
-                return result;
+                return;
+
+            if (role == "Student" && !studentId.HasValue)
+                return;
+
+            if (role == "Advisor" && !advisorId.HasValue)
+                return;
 
             var latestCalendarId = await _db.AcademicCalendars
                 .OrderByDescending(c => c.CalendarId)
@@ -313,159 +209,252 @@ namespace Acadify.ViewComponents
                 .FirstOrDefaultAsync();
 
             if (!latestCalendarId.HasValue)
-                return result;
+                return;
 
             var today = DateTime.Today;
+            var fromDate = today.AddDays(-1);
+            var toDate = today.AddDays(3);
 
             var events = await _db.AcademicCalendarEvents
-                .Where(e => e.CalendarId == latestCalendarId.Value)
+                .Where(e =>
+                    e.CalendarId == latestCalendarId.Value &&
+                    e.GregorianDate.Date >= fromDate &&
+                    e.GregorianDate.Date <= toDate)
                 .OrderBy(e => e.GregorianDate)
                 .ToListAsync();
 
-            foreach (var e in events)
+            foreach (var calendarEvent in events)
             {
-                var eventDate = e.GregorianDate.Date;
-                var daysLeft = (eventDate - today).Days;
+                var eventDate = calendarEvent.GregorianDate.Date;
+                var daysToEvent = (eventDate - today).Days;
 
-                if (daysLeft != 2 && daysLeft != 1 && daysLeft != 0)
+                if (daysToEvent != 3 && daysToEvent != 0 && daysToEvent != -1)
                     continue;
 
-                string message;
-                string timeText;
+                string reminderCode = daysToEvent switch
+                {
+                    3 => "Before3Days",
+                    0 => "EventDay",
+                    -1 => "After1Day",
+                    _ => "General"
+                };
 
-                if (daysLeft == 2)
+                string notificationType = $"calendar-{calendarEvent.Id}-{reminderCode}";
+
+                bool exists;
+
+                if (role == "Student")
                 {
-                    message = $"يتبقى يومان على {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
-                    timeText = "After 2 days";
-                }
-<<<<<<< HEAD
->>>>>>> origin_second/linaLMversion
-=======
-                else if (daysLeft == 1)
-                {
-                    message = $"غدًا {e.EventName} بتاريخ {eventDate:dd/MM/yyyy}.";
-                    timeText = "Tomorrow";
+                    exists = await _db.Notifications.AnyAsync(n =>
+                        n.StudentId == studentId.Value &&
+                        n.SourceType == "Calendar" &&
+                        n.Type == notificationType);
                 }
                 else
                 {
-                    message = $"اليوم {e.EventName}.";
-                    timeText = "Today";
+                    exists = await _db.Notifications.AnyAsync(n =>
+                        n.AdvisorId == advisorId.Value &&
+                        n.SourceType == "Calendar" &&
+                        n.Type == notificationType);
                 }
 
-                result.Add(new NotificationViewModel
+                if (exists)
+                    continue;
+
+                string message = BuildCalendarMessage(calendarEvent.EventName, eventDate, daysToEvent);
+
+                var notification = new Db.Notification
                 {
-                    NotificationID = 0,
-                    NotificationContent = message,
-                    NotificationDate = eventDate,
-                    NotificationType = "System",
-                    Title = "Academic calendar",
-                    SenderName = "System",
-                    IsRead = false,
-                    TargetUrl = "/Notifications/Panel",
-                    TimeAgo = timeText,
-                    SourceType = "Calendar"
-                });
-            }
+                    SenderRole = "System",
+                    SourceType = "Calendar",
+                    Type = notificationType,
+                    Message = message,
+                    StudentId = role == "Student" ? studentId : null,
+                    AdvisorId = role == "Advisor" ? advisorId : null,
+                    Date = DateTime.Now,
+                    IsRead = false
+                };
 
-            return result
-                .OrderByDescending(n => n.NotificationDate)
-                .ToList();
+                var email = await GetCurrentUserEmailAsync(role, studentId, advisorId);
+
+                await AddNotificationWithEmailAsync(notification, email);
+            }
         }
 
-        private string BuildTitle(string? sourceType)
+        private static string BuildCalendarMessage(string eventName, DateTime eventDate, int daysToEvent)
         {
-            return sourceType switch
+            return daysToEvent switch
             {
-                "Recommendation" => "Recommendation notification",
-                "Meeting" => "Meeting notification",
-                "Chat" => "New message",
-                "Form" => "Form notification",
-                "Transcript" => "Transcript notification",
-                "Calendar" => "Academic calendar",
-                "Request" => "Request notification",
-                "StudyPlan" => "Study plan notification",
-                "Community" => "Community notification",
-                _ => "System notification"
->>>>>>> origin_second/لما2
+                3 => $"تذكير: يتبقى 3 أيام على {eventName}. تاريخ الحدث: {eventDate:dd/MM/yyyy}.",
+                0 => $"تذكير: {eventName} اليوم.",
+                -1 => $"تذكير: كان موعد {eventName} بالأمس. تاريخ الحدث: {eventDate:dd/MM/yyyy}.",
+                _ => $"تذكير: {eventName}. تاريخ الحدث: {eventDate:dd/MM/yyyy}."
             };
         }
 
-        private string BuildTargetUrl(string? sourceType, string role, Notification notification)
+        private async Task AddNotificationWithEmailAsync(Db.Notification notification, string? recipientEmail)
+        {
+            _db.Notifications.Add(notification);
+            await _db.SaveChangesAsync();
+
+            await SendNotificationEmailAsync(
+                recipientEmail,
+                $"Acadify Notification - {BuildTitle(notification.SourceType)}",
+                notification.Message);
+        }
+
+        private async Task<string?> GetCurrentUserEmailAsync(string role, int? studentId, int? advisorId)
+        {
+            if (role == "Student" && studentId.HasValue)
+            {
+                return await _db.Students
+                    .Where(s => s.StudentId == studentId.Value)
+                    .Select(s => s.User.Email)
+                    .FirstOrDefaultAsync();
+            }
+
+            if (role == "Advisor" && advisorId.HasValue)
+            {
+                return await _db.Advisors
+                    .Where(a => a.AdvisorId == advisorId.Value)
+                    .Select(a => a.User.Email)
+                    .FirstOrDefaultAsync();
+            }
+
+            return null;
+        }
+
+        private async Task<string?> GetAdminEmailAsync(int adminId)
+        {
+            return await _db.Admins
+                .Where(a => a.AdminId == adminId)
+                .Select(a => a.User.Email)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task SendNotificationEmailAsync(string? toEmail, string subject, string body)
+        {
+            if (string.IsNullOrWhiteSpace(toEmail))
+                return;
+
+            var host = _configuration["Smtp:Host"];
+            var username = _configuration["Smtp:Username"];
+            var password = _configuration["Smtp:Password"];
+            var fromEmail = _configuration["Smtp:FromEmail"] ?? username;
+
+            if (string.IsNullOrWhiteSpace(host) ||
+                string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(password) ||
+                string.IsNullOrWhiteSpace(fromEmail))
+            {
+                return;
+            }
+
+            int port = 587;
+            int.TryParse(_configuration["Smtp:Port"], out port);
+
+            bool enableSsl = true;
+            bool.TryParse(_configuration["Smtp:EnableSsl"], out enableSsl);
+
+            try
+            {
+                using var client = new SmtpClient(host, port)
+                {
+                    EnableSsl = enableSsl,
+                    Credentials = new NetworkCredential(username, password)
+                };
+
+                using var message = new MailMessage(fromEmail, toEmail)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = false
+                };
+
+                await client.SendMailAsync(message);
+            }
+            catch
+            {
+                // Email failure should not stop the notification display.
+            }
+        }
+
+        private static string BuildTitle(string? sourceType)
         {
             return sourceType switch
             {
-                "Recommendation" => role == "Student" ? "/Student/StudentHome" : "/Advisor/AdvisorHome",
-
-                "Meeting" => role == "Advisor"
-                    ? "/Advisor/Meetings"
-                    : "/Student/Meeting",
-
-                "Chat" => role == "Advisor"
-                    ? "/Advisor/CommunityAdvisor"
-                    : "/Student/CommunityStudent",
-
-                "Community" => role == "Advisor"
-                    ? "/Advisor/CommunityAdvisor"
-                    : "/Student/CommunityStudent",
-
-                "Form" => BuildFormTargetUrl(role, notification),
-
-                "Transcript" => role == "Advisor"
-                    ? "/Advisor/AdvisorHome"
-                    : role == "Admin"
-                        ? "/Admin/ManageAdvisorRequests"
-                        : "/Student/StudentHome",
-
-                "Calendar" => "/Notifications/Panel",
-
-                "Request" => "/Notifications/Panel",
-
-                "StudyPlan" => "/Admin/UploadStudyPlan",
-
-                _ => "/Notifications/Panel"
+                "Request" => "Student Request",
+                "StudentAssigned" => "Student Assigned",
+                "Calendar" => "Academic Calendar",
+                _ => "System Notification"
             };
         }
 
-        private string BuildFormTargetUrl(string role, Notification notification)
+        private static string BuildTargetUrl(string? sourceType, string role)
         {
-            if (role == "Admin")
-                return "/Admin/ManageAdvisorRequests";
-
-            if (role == "Advisor")
+            return sourceType switch
             {
-                if (notification.StudentId.HasValue)
-                    return $"/Advisor/StudentForms?studentId={notification.StudentId.Value}";
-
-                return "/Advisor/AdvisorHome";
-            }
-
-            return "/Student/StudentHome";
+                "Request" when role == "Admin" => "/Admin/ManageAdvisorRequests",
+                "Calendar" => "#",
+                "StudentAssigned" => "#",
+                _ => "#"
+            };
         }
 
-        private string GetTimeAgo(DateTime date)
+        private static string BuildTimeText(Db.Notification notification)
+        {
+            if (notification.SourceType == "Calendar")
+            {
+                if (!string.IsNullOrWhiteSpace(notification.Type))
+                {
+                    if (notification.Type.Contains("Before3Days"))
+                        return "In 3 days";
+
+                    if (notification.Type.Contains("EventDay"))
+                        return "Today";
+
+                    if (notification.Type.Contains("After1Day"))
+                        return "Yesterday";
+                }
+            }
+
+            return GetTimeAgo(notification.Date);
+        }
+
+        private static string GetTimeAgo(DateTime date)
         {
             var span = DateTime.Now - date;
 
-            if (span.TotalMinutes < 1) return "Just now";
-            if (span.TotalHours < 1) return $"{(int)span.TotalMinutes} min ago";
-            if (span.TotalDays < 1) return $"{(int)span.TotalHours} hours ago";
-            if (span.TotalDays < 2) return "Yesterday";
-<<<<<<< HEAD
-<<<<<<< HEAD
-            return $"{(int)span.TotalDays} days ago";
-        }
-    }
-}
-=======
+            if (span.TotalMinutes < 1)
+                return "Just now";
+
+            if (span.TotalHours < 1)
+                return $"{(int)span.TotalMinutes} min ago";
+
+            if (span.TotalDays < 1)
+                return $"{(int)span.TotalHours} hours ago";
+
+            if (span.TotalDays < 2)
+                return "Yesterday";
 
             return $"{(int)span.TotalDays} days ago";
         }
-    }
-}
->>>>>>> origin_second/linaLMversion
-=======
-            return $"{(int)span.TotalDays} days ago";
+
+        private static string BuildInitials(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                return "SY";
+
+            var words = Regex
+                .Split(title.Trim(), @"\s+")
+                .Where(w => !string.IsNullOrWhiteSpace(w))
+                .Take(2)
+                .ToList();
+
+            if (words.Count == 0)
+                return "SY";
+
+            return string.Join("", words.Select(w => char.ToUpper(w[0])));
         }
     }
 }
->>>>>>> origin_second/لما2

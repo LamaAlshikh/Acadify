@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Acadify.Models
+namespace Acadify.Models.Db
 {
     public partial class GraduationProjectEligibilityForm
     {

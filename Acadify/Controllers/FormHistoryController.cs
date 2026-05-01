@@ -1,15 +1,15 @@
-﻿using Acadify.Models;
+﻿using Acadify.Models.Db;
 using Acadify.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Db = Acadify.Models.Db;
 namespace Acadify.Controllers
 {
     public class FormHistoryController : Controller
     {
-        private readonly AcadifyDbContext _context;
+        private readonly Db.AcadifyDbContext _context;
 
-        public FormHistoryController(AcadifyDbContext context)
+        public FormHistoryController(Db.AcadifyDbContext context)
         {
             _context = context;
         }
@@ -99,7 +99,7 @@ namespace Acadify.Controllers
             return v;
         }
 
-        private static GraduationProjectEligibilityFormVM BuildHistoryForm5Vm(GraduationProjectEligibilityForm entity)
+        private static GraduationProjectEligibilityFormVM BuildHistoryForm5Vm(Db.GraduationProjectEligibilityForm entity)
         {
             var vm = new GraduationProjectEligibilityFormVM
             {

@@ -21,3 +21,54 @@
 .advisor-menu li a i {
     color: #ffffff;
 }
+.profile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topbar-notif-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .topbar-notif-btn i {
+        font-size: 18px;
+    }
+.advisor-profile .profile-top {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.advisor-profile .topbar-notif-btn {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+}
+
+    .advisor-profile .topbar-notif-btn i {
+        font-size: 18px;
+        color: #ffffff;
+    }
+
+  

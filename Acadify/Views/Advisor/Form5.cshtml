@@ -1,4 +1,4 @@
-﻿@model Acadify.Models.GraduationProjectEligibilityForm
+﻿@model Acadify.Models.Db.GraduationProjectEligibilityForm
 @{
     Layout = "_AdvisorLayout";
 }
@@ -61,12 +61,12 @@
         <ul class="course-list">
             <li class="course-item">
                 <span>CPIS 360 – Introduction to E-Business Systems</span>
-                <i class="fa-solid @(Model.CPIS360 ? "fa-check completed" : "fa-xmark not-completed")"></i>
+                <i class="fa-solid @(Model.CPIS380 ? "fa-check completed" : "fa-xmark not-completed")"></i>
             </li>
 
             <li class="course-item">
                 <span>CPIS 375 – Software Quality & Testing</span>
-                <i class="fa-solid @(Model.CPIS375 ? "fa-check completed" : "fa-xmark not-completed")"></i>
+                <i class="fa-solid @(Model.CPIS357 ? "fa-check completed" : "fa-xmark not-completed")"></i>
             </li>
 
             <li class="course-item">

@@ -1,6 +1,10 @@
-﻿@model Acadify.ViewModels.GraduationProjectEligibilityFormVM
+@model Acadify.ViewModels.GraduationProjectEligibilityFormVM
+
 @{
     Layout = "_AdvisorLayout";
+    ViewData["Title"] = "Graduation Project Eligibility";
+
+    bool transcriptMissing = ViewBag.TranscriptMissing == true;
 }
 
 <link rel="stylesheet" href="~/css/site.css" />
@@ -21,21 +25,14 @@
             <h2>Graduation Project Eligibility (Form 5)</h2>
         </div>
 
-        @if (!Model.IsHistoryView)
+        @if (!Model.IsHistoryView && !transcriptMissing)
         {
             <div class="form5-header-actions">
                 <a class="btn-history"
-<<<<<<< HEAD
-                   asp-controller="FormHistory"
-                   asp-action="FormHistory"
-                   asp-route-studentId="@Model.Form.StudentId"
-                   asp-route-formType="GraduationProjectEligibilityForm">
-=======
                        asp-controller="FormHistory"
                        asp-action="FormHistory"
                        asp-route-studentId="@Model.Form.StudentId"
                        asp-route-formType="GraduationProjectEligibilityForm">
->>>>>>> origin_second/لما2
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     History
                 </a>
@@ -48,34 +45,93 @@
         }
     </div>
 
-    <div class="form5-info">
-        <p><strong>Student Name:</strong> @Model.StudentName</p>
-        <p><strong>Student ID:</strong> @Model.StudentId</p>
-    </div>
-
-    @if (Model.IsEditMode && !Model.IsHistoryView)
+    @if (transcriptMissing)
     {
-        <form method="post" asp-controller="GraduationProjectEligibility" asp-action="SaveUpdate">
-            @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="FormId" />
+        <div class="form5-section">
+            <h4 style="text-align:center; margin-top:80px; margin-bottom:80px;">
+                The student has not uploaded the transcript yet.
+            </h4>
+        </div>
+    }
+    else
+    {
+        <div class="form5-info">
+            <p><strong>Student Name:</strong> @Model.StudentName</p>
+            <p><strong>Student ID:</strong> @Model.StudentId</p>
+        </div>
 
+        @if (Model.IsEditMode && !Model.IsHistoryView)
+        {
+            <form method="post" asp-controller="GraduationProjectEligibility" asp-action="SaveUpdate">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="FormId" />
+
+                <div class="form5-section">
+                    <h4>The Student Has Completed The Following Courses:</h4>
+
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span>CPIS 351 – Analysis &amp; Design II</span>
+                            <input type="checkbox" asp-for="CPIS351" />
+                        </li>
+
+                        <li class="course-item">
+                            <span>CPIS 358 – Internet Application &amp; Web Programming</span>
+                            <input type="checkbox" asp-for="CPIS358" />
+                        </li>
+
+                        <li class="course-item">
+                            <span>CPIS 323 – Summer Training</span>
+                            <input type="checkbox" asp-for="CPIS323" />
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="form5-section">
+                    <h4>The Student Has Completed or Registered For The Following Courses:</h4>
+
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span>CPIS 380 – Introduction to E-Business Systems</span>
+                            <input type="checkbox" asp-for="CPIS380" />
+                        </li>
+
+                        <li class="course-item">
+                            <span>CPIS 357 – Software Quality &amp; Testing</span>
+                            <input type="checkbox" asp-for="CPIS357" />
+                        </li>
+
+                        <li class="course-item">
+                            <span>CPIS 342 – Data Mining &amp; Warehousing</span>
+                            <input type="checkbox" asp-for="CPIS342" />
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="form5-actions">
+                    <button type="submit" class="btn-update">Save Update</button>
+                </div>
+            </form>
+        }
+        else
+        {
             <div class="form5-section">
                 <h4>The Student Has Completed The Following Courses:</h4>
 
                 <ul class="course-list">
                     <li class="course-item">
                         <span>CPIS 351 – Analysis &amp; Design II</span>
-                        <input type="checkbox" asp-for="CPIS351" />
+                        <i class="fa-solid @(Model.CPIS351 ? "fa-check completed" : "fa-xmark not-completed")"></i>
                     </li>
 
                     <li class="course-item">
                         <span>CPIS 358 – Internet Application &amp; Web Programming</span>
-                        <input type="checkbox" asp-for="CPIS358" />
+                        <i class="fa-solid @(Model.CPIS358 ? "fa-check completed" : "fa-xmark not-completed")"></i>
                     </li>
 
                     <li class="course-item">
                         <span>CPIS 323 – Summer Training</span>
-                        <input type="checkbox" asp-for="CPIS323" />
+                        <i class="fa-solid @(Model.CPIS323 ? "fa-check completed" : "fa-xmark not-completed")"></i>
                     </li>
                 </ul>
             </div>
@@ -86,106 +142,58 @@
                 <ul class="course-list">
                     <li class="course-item">
                         <span>CPIS 380 – Introduction to E-Business Systems</span>
-                        <input type="checkbox" asp-for="CPIS380" />
+                        <i class="fa-solid @(Model.CPIS380 ? "fa-check completed" : "fa-xmark not-completed")"></i>
                     </li>
 
                     <li class="course-item">
                         <span>CPIS 357 – Software Quality &amp; Testing</span>
-                        <input type="checkbox" asp-for="CPIS357" />
+                        <i class="fa-solid @(Model.CPIS357 ? "fa-check completed" : "fa-xmark not-completed")"></i>
                     </li>
 
                     <li class="course-item">
                         <span>CPIS 342 – Data Mining &amp; Warehousing</span>
-                        <input type="checkbox" asp-for="CPIS342" />
+                        <i class="fa-solid @(Model.CPIS342 ? "fa-check completed" : "fa-xmark not-completed")"></i>
                     </li>
                 </ul>
             </div>
 
-            <div class="form5-actions">
-                <button type="submit" class="btn-update">Save Update</button>
+            <div class="eligibility-status @(Model.IsEligible ? "eligible" : "not-eligible")">
+                @(Model.IsEligible
+                    ? "The Student Is Eligible to Register Graduation Project"
+                    : "The Student Is Not Eligible to Register Graduation Project")
             </div>
-        </form>
-    }
-    else
-    {
-        <div class="form5-section">
-            <h4>The Student Has Completed The Following Courses:</h4>
 
-            <ul class="course-list">
-                <li class="course-item">
-                    <span>CPIS 351 – Analysis &amp; Design II</span>
-                    <i class="fa-solid @(Model.CPIS351 ? "fa-check completed" : "fa-xmark not-completed")"></i>
-                </li>
+            @if (!Model.IsHistoryView)
+            {
+                <div class="form5-actions">
+                    <a asp-controller="GraduationProjectEligibility"
+                       asp-action="Form5"
+                       asp-route-formId="@Model.FormId"
+                       asp-route-editMode="true"
+                       class="btn-update">Update</a>
 
-                <li class="course-item">
-                    <span>CPIS 358 – Internet Application &amp; Web Programming</span>
-                    <i class="fa-solid @(Model.CPIS358 ? "fa-check completed" : "fa-xmark not-completed")"></i>
-                </li>
+                    <form method="post"
+                          asp-controller="GraduationProjectEligibility"
+                          asp-action="UpdateStatus"
+                          class="inline-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="formId" value="@Model.FormId" />
+                        <button type="submit" name="status" value="Accepted" class="btn-accept">Accept</button>
+                        <button type="submit" name="status" value="Rejected" class="btn-reject">Reject</button>
+                    </form>
 
-                <li class="course-item">
-                    <span>CPIS 323 – Summer Training</span>
-                    <i class="fa-solid @(Model.CPIS323 ? "fa-check completed" : "fa-xmark not-completed")"></i>
-                </li>
-            </ul>
-        </div>
-
-        <div class="form5-section">
-            <h4>The Student Has Completed or Registered For The Following Courses:</h4>
-
-            <ul class="course-list">
-                <li class="course-item">
-                    <span>CPIS 380 – Introduction to E-Business Systems</span>
-                    <i class="fa-solid @(Model.CPIS380 ? "fa-check completed" : "fa-xmark not-completed")"></i>
-                </li>
-
-                <li class="course-item">
-                    <span>CPIS 357 – Software Quality &amp; Testing</span>
-                    <i class="fa-solid @(Model.CPIS357 ? "fa-check completed" : "fa-xmark not-completed")"></i>
-                </li>
-
-                <li class="course-item">
-                    <span>CPIS 342 – Data Mining &amp; Warehousing</span>
-                    <i class="fa-solid @(Model.CPIS342 ? "fa-check completed" : "fa-xmark not-completed")"></i>
-                </li>
-            </ul>
-        </div>
-
-        <div class="eligibility-status @(Model.IsEligible ? "eligible" : "not-eligible")">
-            @(Model.IsEligible
-                ? "The Student Is Eligible to Register Graduation Project"
-                : "The Student Is Not Eligible to Register Graduation Project")
-        </div>
-
-        @if (!Model.IsHistoryView)
-        {
-            <div class="form5-actions">
-                <a asp-controller="GraduationProjectEligibility"
-                   asp-action="Form5"
-                   asp-route-formId="@Model.FormId"
-                   asp-route-editMode="true"
-                   class="btn-update">Update</a>
-
-                <form method="post"
-                      asp-controller="GraduationProjectEligibility"
-                      asp-action="UpdateStatus"
-                      class="inline-form">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="formId" value="@Model.FormId" />
-                    <button type="submit" name="status" value="Accepted" class="btn-accept">Accept</button>
-                    <button type="submit" name="status" value="Rejected" class="btn-reject">Reject</button>
-                </form>
-
-                <form method="post"
-                      asp-controller="GraduationProjectEligibility"
-                      asp-action="SendToAdvisingCommittee"
-                      class="inline-form">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="formId" value="@Model.FormId" />
-                    <button type="submit" class="btn-send-committee">
-                        Send to Advising Committee
-                    </button>
-                </form>
-            </div>
+                    <form method="post"
+                          asp-controller="GraduationProjectEligibility"
+                          asp-action="SendToAdvisingCommittee"
+                          class="inline-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="formId" value="@Model.FormId" />
+                        <button type="submit" class="btn-send-committee">
+                            Send to Advising Committee
+                        </button>
+                    </form>
+                </div>
+            }
         }
     }
 

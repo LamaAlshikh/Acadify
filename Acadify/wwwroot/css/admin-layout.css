@@ -1,21 +1,32 @@
 ﻿/* =========================
    Admin Layout Root
 ========================= */
-html, body {
+html,
+body {
+    width: 100%;
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-}
-
-/* ملاحظة: نخلي الصفحة ثابتة والـ scroll يكون داخل المحتوى */
-body {
     overflow: hidden;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: #ffffff;
+}
+
+/* =========================
+   Main Layout
+========================= */
 .admin-layout {
     display: flex;
+    width: 100vw;
     height: 100vh;
     background: #ffffff;
+    overflow: hidden;
 }
 
 /* =========================
@@ -25,13 +36,12 @@ body {
     width: 240px;
     min-width: 240px;
     height: 100vh;
-    /* نفس روح الأكاديفاي */
-    background: linear-gradient(180deg, #2A8C8F 0%, #6CB8A9 100%);
+    background: linear-gradient(180deg, #94C7B6 0%, #2272AD 50%, #76BAA5 100%, #12889C 100%);
     padding: 18px 14px;
     display: flex;
     flex-direction: column;
-    /* ملاحظة: ثبات السايدبار */
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* =========================
@@ -47,6 +57,13 @@ body {
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
+}
+
+.admin-profile-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .admin-avatar {
@@ -72,6 +89,36 @@ body {
 }
 
 /* =========================
+   Notification Button
+========================= */
+.admin-notif-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #4b4b4b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: 0.2s ease;
+}
+
+    .admin-notif-btn:hover {
+        transform: translateY(-1px);
+        background-color: #f4f4f4;
+    }
+
+    .admin-notif-btn i {
+        font-size: 16px;
+    }
+
+/* =========================
    Menu
 ========================= */
 .admin-menu {
@@ -85,7 +132,6 @@ body {
         margin-top: 18px;
     }
 
-        /* ملاحظة: نخلي الرابط هو اللي ياخذ شكل الـ li */
         .admin-menu li a {
             display: flex;
             align-items: center;
@@ -96,7 +142,6 @@ body {
             font-size: 14px;
             color: #ffffff;
             text-decoration: none;
-            /* تحسين بسيط */
             transition: background 0.15s ease, transform 0.15s ease;
         }
 
@@ -109,7 +154,6 @@ body {
                 transform: translateY(-1px);
             }
 
-        /* ملاحظة: لو تبين active من السيرفر لاحقاً */
         .admin-menu li.active a {
             background: rgba(255,255,255,0.18);
         }
@@ -118,10 +162,11 @@ body {
    Logout
 ========================= */
 .admin-logout {
+    margin-top: auto;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px;
+    padding: 20px;
     border-radius: 12px;
     color: #ffffff;
     cursor: pointer;
@@ -135,26 +180,35 @@ body {
         background: rgba(255,255,255,0.16);
     }
 
+.admin-logout-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+    .admin-logout-link:hover {
+        opacity: 0.8;
+    }
+
+.logout-button-reset {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
 /* =========================
    Main Content
 ========================= */
 .admin-content {
     flex: 1;
+    width: calc(100vw - 240px);
     height: 100vh;
-    /* ملاحظة: هنا يكون الـ scroll */
-    overflow-y: auto;
     padding: 22px 24px;
-    
+    overflow: hidden;
     box-sizing: border-box;
-}
-.admin-sidebar {
-    width: 240px;
-    min-width: 240px;
-    height: 100vh;
-    /* نفس تدرج الأكاديفاي حسب الفيقما */
-    background: linear-gradient(180deg, #94C7B6 0%, #2272AD 50%, #76BAA5 100%, #12889C 100%);
-    padding: 18px 14px;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+    background: #ffffff;
 }

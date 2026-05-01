@@ -16,4 +16,5 @@ public partial class VwMyStudent
     public string? MatchingStatus { get; set; }
 
     public int? AdvisorId { get; set; }
+
 }

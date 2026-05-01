@@ -1,28 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Acadify.Models.Db;
 
+[Table("MeetingMessages")]
 public partial class MeetingMessage
 {
+    [Key]
+    [Column("messageID")]
     public int MessageId { get; set; }
 
+    [Column("meetingID")]
     public int MeetingId { get; set; }
 
+    [Column("senderName")]
+    [StringLength(120)]
     public string SenderName { get; set; } = null!;
 
+    [Column("messageText")]
     public string MessageText { get; set; } = null!;
 
+    [Column("messageDate")]
     public DateTime? MessageDate { get; set; }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
+    [Column("isRecorded")]
     public bool IsRecorded { get; set; }
->>>>>>> origin_second/rahafgh
-=======
-    public bool IsRecorded { get; set; }
->>>>>>> origin_second/linaLMversion
-=======
->>>>>>> origin_second/لما2
 }

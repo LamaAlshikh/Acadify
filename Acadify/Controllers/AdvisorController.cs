@@ -1,70 +1,54 @@
-﻿using Acadify.Models;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.Linq;
-=======
-=======
-using Acadify.Models.Db;
->>>>>>> origin_second/linaLMversion
+using Acadify.Models;
+using Db = Acadify.Models.Db;
 using Acadify.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UglyToad.PdfPig;
-<<<<<<< HEAD
-using Microsoft.AspNetCore.Http;
-using Acadify.Models.Db;
-
->>>>>>> origin_second/rahafgh
-=======
-
->>>>>>> origin_second/linaLMversion
-=======
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
->>>>>>> origin_second/لما2
 
 namespace Acadify.Controllers
 {
     public class AdvisorController : Controller
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     {
-        private readonly AcadifyDbContext _context;
-        private const string Form4SessionKey = "Form4Draft";
-=======
-    {
-        private readonly AcadifyDbContext _context;
+        private readonly Db.AcadifyDbContext _context; private readonly IWebHostEnvironment _env; private readonly AiSummaryService _aiSummaryService;
+
+        private const string Form1SessionKey = "Form1Draft";
         private const string Form4SessionKey = "Form4Draft";
         private const string SelectedStudentSessionKey = "SelectedStudentId";
->>>>>>> origin_second/لما2
 
-        public AdvisorController(AcadifyDbContext context)
+        public AdvisorController(
+            Db.AcadifyDbContext context,
+            IWebHostEnvironment env,
+            AiSummaryService aiSummaryService)
         {
             _context = context;
+            _env = env;
+            _aiSummaryService = aiSummaryService;
         }
 
-<<<<<<< HEAD
         /* ========================================================
-                            Student Forms
+                            Shared Helpers
            ======================================================== */
-        public IActionResult StudentForms()
-        {
-=======
+
         private int? GetCurrentAdvisorId()
         {
             return HttpContext.Session.GetInt32("AdvisorId");
         }
-
+        private async Task<bool> HasUploadedTranscriptAsync(int studentId)
+        {
+            return await _context.Transcripts
+                .AnyAsync(t => t.StudentId == studentId &&
+                               !string.IsNullOrWhiteSpace(t.PdfFile));
+        }
         private int? GetSelectedStudentId()
         {
             return HttpContext.Session.GetInt32(SelectedStudentSessionKey);
@@ -73,6 +57,27 @@ namespace Acadify.Controllers
         private void SetSelectedStudentId(int studentId)
         {
             HttpContext.Session.SetInt32(SelectedStudentSessionKey, studentId);
+        }
+
+        private int ResolveStudentId(int? studentId = null)
+        {
+            if (studentId.HasValue && studentId.Value > 0)
+            {
+                SetSelectedStudentId(studentId.Value);
+                return studentId.Value;
+            }
+
+            var selectedStudentId = GetSelectedStudentId();
+            if (selectedStudentId.HasValue && selectedStudentId.Value > 0)
+                return selectedStudentId.Value;
+
+            // Temporary fallback for prototype pages that are opened directly.
+            return 2210783;
+        }
+
+        private int ResolveAdvisorId()
+        {
+            return GetCurrentAdvisorId() ?? 1;
         }
 
         private static string GetMatchStatusText(object? matchingStatus)
@@ -84,11 +89,11 @@ namespace Acadify.Controllers
 
             var propNames = new[]
             {
-                "Status",
-                "MatchStatus",
-                "MatchingStatus",
-                "Result"
-            };
+            "Status",
+            "MatchStatus",
+            "MatchingStatus",
+            "Result"
+        };
 
             foreach (var propName in propNames)
             {
@@ -104,7 +109,7 @@ namespace Acadify.Controllers
             return "matched";
         }
 
-        private static string GetAcademicStatusText(GraduationStatus? graduationStatus)
+        private static string GetAcademicStatusText(Db.GraduationStatus? graduationStatus)
         {
             if (graduationStatus == null)
                 return "Has Remaining Courses";
@@ -118,10 +123,9 @@ namespace Acadify.Controllers
             return "Has Remaining Courses";
         }
 
-        private async Task<Student?> GetAdvisorStudentAsync(int advisorId, int studentId)
+        private async Task<Db.Student?> GetAdvisorStudentAsync(int advisorId, int studentId)
         {
             return await _context.Students
-                .Include(s => s.User)
                 .Include(s => s.GraduationStatus)
                 .Include(s => s.MatchingStatus)
                 .FirstOrDefaultAsync(s => s.StudentId == studentId && s.AdvisorId == advisorId);
@@ -137,7 +141,7 @@ namespace Acadify.Controllers
 
             if (latestForm5 == null)
             {
-                latestForm5 = new Form
+                latestForm5 = new Db.Form
                 {
                     StudentId = studentId,
                     AdvisorId = advisorId,
@@ -151,8 +155,14 @@ namespace Acadify.Controllers
 
                 _context.Forms.Add(latestForm5);
                 await _context.SaveChangesAsync();
+            }
 
-                var details = new GraduationProjectEligibilityForm
+            var details = await _context.GraduationProjectEligibilityForms
+                .FirstOrDefaultAsync(g => g.FormId == latestForm5.FormId);
+
+            if (details == null)
+            {
+                details = new Db.GraduationProjectEligibilityForm
                 {
                     FormId = latestForm5.FormId,
                     Eligibility = null,
@@ -162,24 +172,6 @@ namespace Acadify.Controllers
                 _context.GraduationProjectEligibilityForms.Add(details);
                 await _context.SaveChangesAsync();
             }
-            else
-            {
-                var details = await _context.GraduationProjectEligibilityForms
-                    .FirstOrDefaultAsync(g => g.FormId == latestForm5.FormId);
-
-                if (details == null)
-                {
-                    details = new GraduationProjectEligibilityForm
-                    {
-                        FormId = latestForm5.FormId,
-                        Eligibility = null,
-                        RequiredCoursesStatus = null
-                    };
-
-                    _context.GraduationProjectEligibilityForms.Add(details);
-                    await _context.SaveChangesAsync();
-                }
-            }
 
             return latestForm5.FormId;
         }
@@ -187,6 +179,7 @@ namespace Acadify.Controllers
         /* ========================================================
                             Advisor Home
            ======================================================== */
+
         [HttpGet]
         public async Task<IActionResult> AdvisorHome(string? cohort = null)
         {
@@ -198,7 +191,6 @@ namespace Acadify.Controllers
                 return RedirectToAction("Login", "Account");
 
             var studentsQuery = _context.Students
-                .Include(s => s.User)
                 .Include(s => s.GraduationStatus)
                 .Include(s => s.MatchingStatus)
                 .Where(s => s.AdvisorId == advisorId.Value)
@@ -230,6 +222,7 @@ namespace Acadify.Controllers
         /* ========================================================
                             Student Forms
            ======================================================== */
+
         [HttpGet]
         public async Task<IActionResult> StudentForms(int? studentId)
         {
@@ -240,69 +233,63 @@ namespace Acadify.Controllers
             if (!advisorId.HasValue)
                 return RedirectToAction("Login", "Account");
 
-            int resolvedStudentId;
-
-            if (studentId.HasValue && studentId.Value > 0)
-            {
-                resolvedStudentId = studentId.Value;
-                SetSelectedStudentId(resolvedStudentId); // نحفظ الطالبة الحالية
-            }
-            else
-            {
-                var selectedStudentId = GetSelectedStudentId();
-                if (!selectedStudentId.HasValue || selectedStudentId.Value <= 0)
-                    return RedirectToAction("AdvisorHome");
-
-                resolvedStudentId = selectedStudentId.Value;
-            }
+            int resolvedStudentId = ResolveStudentId(studentId);
 
             var student = await GetAdvisorStudentAsync(advisorId.Value, resolvedStudentId);
-
             if (student == null)
                 return NotFound("Student was not found for this advisor.");
 
             ViewBag.StudentId = student.StudentId;
             ViewBag.StudentName = student.Name;
 
->>>>>>> origin_second/لما2
-            var forms = new List<StudentFormsVM>
+            bool hasTranscript = await HasUploadedTranscriptAsync(student.StudentId);
+
+            if (!hasTranscript)
             {
-                new StudentFormsVM
-                {
-                    FormId = 1,
-                    FormTitle = "Academic Advising Confirmation",
-                    FormType = "Form1",
-                    CanSend = true
-                },
-                new StudentFormsVM
-                {
-                    FormId = 2,
-                    FormTitle = "Next Semester Course Selection",
-                    FormType = "Form2",
-                    CanSend = true
-                },
-                new StudentFormsVM
-                {
-                    FormId = 3,
-                    FormTitle = "Meeting Record Form",
-                    FormType = "Form3",
-                    CanSend = true
-                },
-                new StudentFormsVM
-                {
-                    FormId = 4,
-                    FormTitle = "Study Plan Matching",
-                    FormType = "Form4",
-                    CanSend = true
-                },
-                new StudentFormsVM
-                {
-                    FormId = 5,
-                    FormTitle = "Graduation Project Eligibility",
-                    FormType = "Form5",
-                    CanSend = true
-                }
-            };
+                ViewBag.TranscriptMissing = true;
+                ViewBag.TranscriptMessage = "The student has not uploaded the transcript yet.";
+
+                return View(new List<StudentFormsVM>());
+            }
+
+            var forms = new List<StudentFormsVM>
+{
+    new StudentFormsVM
+    {
+        FormId = 1,
+        FormTitle = "Academic Advising Confirmation",
+        FormType = "Form1",
+        CanSend = true
+    },
+    new StudentFormsVM
+    {
+        FormId = 2,
+        FormTitle = "Next Semester Course Selection",
+        FormType = "Form2",
+        CanSend = true
+    },
+    new StudentFormsVM
+    {
+        FormId = 3,
+        FormTitle = "Meeting Record Form",
+        FormType = "Form3",
+        CanSend = true
+    },
+    new StudentFormsVM
+    {
+        FormId = 4,
+        FormTitle = "Study Plan Matching",
+        FormType = "Form4",
+        CanSend = true
+    },
+    new StudentFormsVM
+    {
+        FormId = 5,
+        FormTitle = "Graduation Project Eligibility",
+        FormType = "Form5",
+        CanSend = true
+    }
+};
 
             return View(forms);
         }
@@ -314,118 +301,27 @@ namespace Acadify.Controllers
         }
 
         [HttpGet]
-<<<<<<< HEAD
-        public IActionResult ViewForm(int formId)
-        {
-            return Content($"View Form {formId}");
-        }
-
-        [HttpGet]
-        public IActionResult PrintForm(int formId)
-        {
-            return Content($"Print Form {formId}");
-        }
-
-        [HttpPost]
-        public IActionResult SendForm(int formId)
-        {
-            TempData["SuccessMessage"] = $"Form {formId} sent successfully.";
-            return RedirectToAction("StudentForms");
-        }
-
-        /* ========================================================
-                            Advisor Home
-           ======================================================== */
-        public IActionResult AdvisorHome(string? cohort = null)
-        {
-            var students = new List<AdvisorHomeStudentVM>
-            {
-                new AdvisorHomeStudentVM
-                {
-                    StudentId = 1,
-                    StudentName = "lama alshikh",
-                    CohortYear = 2025,
-                    AcademicStatus = "near graduation",
-                    MatchStatus = "matched",
-                    ImagePath = "~/images/user.png"
-                },
-                new AdvisorHomeStudentVM
-                {
-                    StudentId = 2,
-                    StudentName = "lina alrwaily",
-                    CohortYear = 2025,
-                    AcademicStatus = "near graduation",
-                    MatchStatus = "matched",
-                    ImagePath = "~/images/user.png"
-                },
-                new AdvisorHomeStudentVM
-                {
-                    StudentId = 3,
-                    StudentName = "rahaf alghamdi",
-                    CohortYear = 2024,
-                    AcademicStatus = "Has Remaining Courses",
-                    MatchStatus = "not matched",
-                    ImagePath = "~/images/user.png"
-                }
-            };
-
-            if (!string.IsNullOrWhiteSpace(cohort) && int.TryParse(cohort, out int selectedYear))
-            {
-                students = students.Where(s => s.CohortYear == selectedYear).ToList();
-            }
-
-            return View(students);
-        }
-
-        public IActionResult StudentFormsByStudent(int studentId)
-        {
-=======
         public async Task<IActionResult> ViewForm(int? studentId, int formId)
         {
-            if (HttpContext.Session.GetString("UserRole") != "Advisor")
-                return RedirectToAction("Login", "Account");
-
-            int? advisorId = GetCurrentAdvisorId();
-            if (!advisorId.HasValue)
-                return RedirectToAction("Login", "Account");
-
-            int resolvedStudentId;
-
-            if (studentId.HasValue && studentId.Value > 0)
-            {
-                resolvedStudentId = studentId.Value;
-                SetSelectedStudentId(resolvedStudentId);
-            }
-            else
-            {
-                var selectedStudentId = GetSelectedStudentId();
-                if (!selectedStudentId.HasValue || selectedStudentId.Value <= 0)
-                    return RedirectToAction("AdvisorHome");
-
-                resolvedStudentId = selectedStudentId.Value;
-            }
-
-            var student = await GetAdvisorStudentAsync(advisorId.Value, resolvedStudentId);
-
-            if (student == null)
-                return NotFound("Student was not found for this advisor.");
+            int resolvedStudentId = ResolveStudentId(studentId);
+            int advisorId = ResolveAdvisorId();
 
             switch (formId)
             {
                 case 1:
-                    return Content($"Form 1 page for student {student.Name} is not connected yet.");
+                    return RedirectToAction(nameof(Form1), new { studentId = resolvedStudentId });
 
                 case 2:
-                    return Content($"Form 2 page for student {student.Name} is not connected yet.");
+                    return RedirectToAction(nameof(Form2), new { studentId = resolvedStudentId });
 
                 case 3:
-                    return RedirectToAction("Form3", new { studentId = resolvedStudentId });
+                    return RedirectToAction(nameof(Form3), new { studentId = resolvedStudentId });
 
                 case 4:
-                    return RedirectToAction("Form4", new { studentId = resolvedStudentId });
+                    return RedirectToAction(nameof(Form4), new { studentId = resolvedStudentId });
 
                 case 5:
-                    int form5Id = await GetOrCreateLatestForm5ForStudentAsync(resolvedStudentId, advisorId.Value);
+                    int form5Id = await GetOrCreateLatestForm5ForStudentAsync(resolvedStudentId, advisorId);
                     return RedirectToAction("Form5", "GraduationProjectEligibility", new { formId = form5Id });
 
                 default:
@@ -436,64 +332,28 @@ namespace Acadify.Controllers
         [HttpGet]
         public async Task<IActionResult> PrintForm(int? studentId, int formId)
         {
-            if (HttpContext.Session.GetString("UserRole") != "Advisor")
-                return RedirectToAction("Login", "Account");
-
-            int? advisorId = GetCurrentAdvisorId();
-            if (!advisorId.HasValue)
-                return RedirectToAction("Login", "Account");
-
-            int resolvedStudentId;
-
-            if (studentId.HasValue && studentId.Value > 0)
-            {
-                resolvedStudentId = studentId.Value;
-                SetSelectedStudentId(resolvedStudentId);
-            }
-            else
-            {
-                var selectedStudentId = GetSelectedStudentId();
-                if (!selectedStudentId.HasValue || selectedStudentId.Value <= 0)
-                    return RedirectToAction("AdvisorHome");
-
-                resolvedStudentId = selectedStudentId.Value;
-            }
-
-            var student = await GetAdvisorStudentAsync(advisorId.Value, resolvedStudentId);
-
-            if (student == null)
-                return NotFound("Student was not found for this advisor.");
+            int resolvedStudentId = ResolveStudentId(studentId);
+            int advisorId = ResolveAdvisorId();
 
             if (formId == 5)
             {
-                int form5Id = await GetOrCreateLatestForm5ForStudentAsync(resolvedStudentId, advisorId.Value);
+                int form5Id = await GetOrCreateLatestForm5ForStudentAsync(resolvedStudentId, advisorId);
                 return RedirectToAction("Form5", "GraduationProjectEligibility", new { formId = form5Id });
             }
 
-            return Content($"Print Form {formId} for student {student.Name}");
+            return RedirectToAction(nameof(ViewForm), new { studentId = resolvedStudentId, formId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendForm(int studentId, int formId)
         {
-            if (HttpContext.Session.GetString("UserRole") != "Advisor")
-                return RedirectToAction("Login", "Account");
-
-            int? advisorId = GetCurrentAdvisorId();
-            if (!advisorId.HasValue)
-                return RedirectToAction("Login", "Account");
-
+            int advisorId = ResolveAdvisorId();
             SetSelectedStudentId(studentId);
-
-            var student = await GetAdvisorStudentAsync(advisorId.Value, studentId);
-
-            if (student == null)
-                return NotFound("Student was not found for this advisor.");
 
             if (formId == 5)
             {
-                int form5Id = await GetOrCreateLatestForm5ForStudentAsync(studentId, advisorId.Value);
+                int form5Id = await GetOrCreateLatestForm5ForStudentAsync(studentId, advisorId);
 
                 var form = await _context.Forms.FirstOrDefaultAsync(f => f.FormId == form5Id);
                 if (form != null)
@@ -505,258 +365,114 @@ namespace Acadify.Controllers
             }
 
             TempData["SuccessMessage"] = $"Form {formId} sent successfully.";
-            return RedirectToAction("StudentForms", new { studentId = studentId });
+            return RedirectToAction(nameof(StudentForms), new { studentId });
         }
 
         [HttpGet]
         public IActionResult StudentFormsByStudent(int studentId)
         {
             SetSelectedStudentId(studentId);
->>>>>>> origin_second/لما2
-            return RedirectToAction("StudentForms", new { studentId = studentId });
+            return RedirectToAction(nameof(StudentForms), new { studentId });
         }
 
         public IActionResult RequestMeeting(int studentId)
         {
-<<<<<<< HEAD
-=======
             SetSelectedStudentId(studentId);
->>>>>>> origin_second/لما2
             return Content($"Meeting page for student {studentId}");
         }
 
         /* ========================================================
                             Community Advisor
            ======================================================== */
+
         public IActionResult CommunityAdvisor()
         {
             var model = new CommunityAdvisorVM
             {
                 Messages = new List<CommunityMessageVM>
+            {
+                new CommunityMessageVM
                 {
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Lina Alrwaily",
-                        SenderInitials = "LA",
-                        MessageText = "السلام عليكم دكتورة أمينة",
-                        IsAdvisorMessage = false,
-                        BubbleColorClass = "msg-blue"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Lina Alrwaily",
-                        SenderInitials = "LA",
-                        MessageText = "هل أقدر أنزل مادة تطوير برمجيات الترم الجاي",
-                        IsAdvisorMessage = false,
-                        BubbleColorClass = "msg-blue"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Rahaf Alghamdi",
-                        SenderInitials = "RA",
-                        MessageText = "ايوه دكتورة حتى أنا",
-                        IsAdvisorMessage = false,
-                        BubbleColorClass = "msg-pink"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Amina Gamlo (me)",
-                        SenderInitials = "AG",
-                        MessageText = "وعليكم السلام و رحمة الله و بركاته\nليش ما تبغو تنزلوها هذا الترم؟",
-                        IsAdvisorMessage = true,
-                        BubbleColorClass = "msg-purple"
-                    },
-                    new CommunityMessageVM
-                    {
-                        SenderName = "Lama Alshaikh",
-                        SenderInitials = "LA",
-                        MessageText = "عندي استفسار بخصوص التدريب",
-                        IsAdvisorMessage = false,
-                        BubbleColorClass = "msg-indigo"
-                    }
+                    SenderName = "Lina Alrwaily",
+                    SenderInitials = "LA",
+                    MessageText = "السلام عليكم دكتورة أمينة",
+                    IsAdvisorMessage = false,
+                    BubbleColorClass = "msg-blue"
                 },
-
-                Members = new List<CommunityMemberVM>
+                new CommunityMessageVM
                 {
-                    new CommunityMemberVM
-                    {
-                        Name = "Lma Alshaikh",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Lina Alrwaily",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Rahaf Alghamdi",
-                        ImagePath = "~/images/user.png"
-                    },
-                    new CommunityMemberVM
-                    {
-                        Name = "Rahaf Alzahrani",
-                        ImagePath = "~/images/user.png"
-                    }
+                    SenderName = "Lina Alrwaily",
+                    SenderInitials = "LA",
+                    MessageText = "هل أقدر أنزل مادة تطوير برمجيات الترم الجاي",
+                    IsAdvisorMessage = false,
+                    BubbleColorClass = "msg-blue"
+                },
+                new CommunityMessageVM
+                {
+                    SenderName = "Rahaf Alghamdi",
+                    SenderInitials = "RA",
+                    MessageText = "ايوه دكتورة حتى أنا",
+                    IsAdvisorMessage = false,
+                    BubbleColorClass = "msg-pink"
+                },
+                new CommunityMessageVM
+                {
+                    SenderName = "Amina Gamlo (me)",
+                    SenderInitials = "AG",
+                    MessageText = "وعليكم السلام و رحمة الله و بركاته\nليش ما تبغو تنزلوها هذا الترم؟",
+                    IsAdvisorMessage = true,
+                    BubbleColorClass = "msg-purple"
+                },
+                new CommunityMessageVM
+                {
+                    SenderName = "Lama Alshaikh",
+                    SenderInitials = "LA",
+                    MessageText = "عندي استفسار بخصوص التدريب",
+                    IsAdvisorMessage = false,
+                    BubbleColorClass = "msg-indigo"
                 }
-            };
-
-            return View(model);
-        }
-
-        /* ========================================================
-<<<<<<< HEAD
-                            Form 5 يحدددددددددددققققققققققققققققققققققققققققققققققققققققققققققق 
-           ======================================================== */
-        [HttpGet]
-        public IActionResult Form5()
-        {
-            var model = new GraduationProjectEligibilityForm
+            },
+                Members = new List<CommunityMemberVM>
             {
-                FormId = 5,
-                StudentName = "Lama Zaki Alshikh",
-                StudentId = "22190123",
-                CPIS351 = true,
-                CPIS358 = true,
-                CPIS323 = true,
-                CPIS360 = false,
-                CPIS375 = false,
-                CPIS342 = true
-            };
-
-            model.IsEligible =
-                model.CPIS351 &&
-                model.CPIS358 &&
-                model.CPIS323 &&
-                model.CPIS360 &&
-                model.CPIS375 &&
-                model.CPIS342;
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult UpdateStatus(int formId, string status)
-        {
-            return RedirectToAction("Form5");
-        }
-
-        /* ========================================================
-                            Form 3
-           ======================================================== */
-        [HttpGet]
-        public IActionResult Form3()
-        {
-=======
-                            Form 3
-           ======================================================== */
-        [HttpGet]
-        public IActionResult Form3(int? studentId = null)
-        {
-            if (studentId.HasValue && studentId.Value > 0)
-                SetSelectedStudentId(studentId.Value);
-
-            ViewBag.StudentId = studentId ?? GetSelectedStudentId();
->>>>>>> origin_second/لما2
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult SendForm3()
-        {
-            TempData["Success"] = "Form 3 sent successfully.";
-<<<<<<< HEAD
-            return RedirectToAction("Form3");
-=======
-            return RedirectToAction("Form3", new { studentId = GetSelectedStudentId() });
->>>>>>> origin_second/لما2
-        }
-
-        [HttpPost]
-        public IActionResult AddNotesForm3(string notes)
-        {
-            TempData["Success"] = "Notes saved successfully.";
-<<<<<<< HEAD
-            return RedirectToAction("Form3");
-=======
-            return RedirectToAction("Form3", new { studentId = GetSelectedStudentId() });
->>>>>>> origin_second/لما2
-        }
-
-        [HttpGet]
-        public IActionResult Form3History()
-        {
-            return View();
-        }
-
-        /* ========================================================
-                            Form 4
-           ======================================================== */
-        [HttpGet]
-<<<<<<< HEAD
-        public IActionResult Form4()
-        {
-=======
-        public IActionResult Form4(int? studentId = null)
-        {
-            if (studentId.HasValue && studentId.Value > 0)
-                SetSelectedStudentId(studentId.Value);
-            else
-                studentId = GetSelectedStudentId();
-
->>>>>>> origin_second/لما2
-            var json = HttpContext.Session.GetString(Form4SessionKey);
-
-            Form4ViewModel model;
-
-            if (!string.IsNullOrEmpty(json))
-            {
-                model = JsonSerializer.Deserialize<Form4ViewModel>(json) ?? CreateNewForm4();
+                new CommunityMemberVM { Name = "Lma Alshaikh", ImagePath = "~/images/user.png" },
+                new CommunityMemberVM { Name = "Lina Alrwaily", ImagePath = "~/images/user.png" },
+                new CommunityMemberVM { Name = "Rahaf Alghamdi", ImagePath = "~/images/user.png" },
+                new CommunityMemberVM { Name = "Rahaf Alzahrani", ImagePath = "~/images/user.png" }
             }
-            else
-            {
-                model = CreateNewForm4();
-<<<<<<< HEAD
-=======
+            };
 
+            return View(model);
+        }
 
-    {
-        /* form1 did by rahaf gh*/
-        // ==============================
-        // FORM 1 (Advisor) - Session Draft
-        // ==============================
-        private const string Form1SessionKey = "Form1Draft";
+        /* ========================================================
+                            Form 1
+           ======================================================== */
 
-        // GET: Advisor/Form1
         [HttpGet]
-        public IActionResult Form1()
+        public IActionResult Form1(int? studentId = null)
         {
+            if (studentId.HasValue && studentId.Value > 0)
+                SetSelectedStudentId(studentId.Value);
+
             var json = HttpContext.Session.GetString(Form1SessionKey);
 
             Form1ViewModel model;
 
             if (!string.IsNullOrEmpty(json))
             {
-                model = JsonSerializer.Deserialize<Form1ViewModel>(json)
-                        ?? CreateNewForm1();
+                model = JsonSerializer.Deserialize<Form1ViewModel>(json) ?? CreateNewForm1();
             }
             else
             {
                 model = CreateNewForm1();
-=======
             }
 
             if (studentId.HasValue)
-            {
                 model.StudentId = studentId.Value.ToString();
->>>>>>> origin_second/لما2
-            }
 
             return View(model);
         }
 
-<<<<<<< HEAD
-        // POST: Save Draft
         [HttpPost]
         public IActionResult SaveForm1(Form1ViewModel model)
         {
@@ -764,11 +480,9 @@ namespace Acadify.Controllers
             SaveForm1ToSession(model);
 
             TempData["Success"] = "Form 1 saved successfully.";
-            return RedirectToAction("Form1");
-
+            return RedirectToAction(nameof(Form1), new { studentId = GetSelectedStudentId() });
         }
 
-        // POST: Send
         [HttpPost]
         public IActionResult SendForm1(Form1ViewModel model)
         {
@@ -776,7 +490,7 @@ namespace Acadify.Controllers
             SaveForm1ToSession(model);
 
             TempData["Success"] = "Form 1 sent successfully.";
-            return RedirectToAction("Form1");
+            return RedirectToAction(nameof(Form1), new { studentId = GetSelectedStudentId() });
         }
 
         private void SaveForm1ToSession(Form1ViewModel model)
@@ -785,7 +499,6 @@ namespace Acadify.Controllers
             HttpContext.Session.SetString(Form1SessionKey, json);
         }
 
-        // Default data (تجريبي)
         private Form1ViewModel CreateNewForm1()
         {
             return new Form1ViewModel
@@ -800,43 +513,570 @@ namespace Acadify.Controllers
             };
         }
 
+        /* ========================================================
+                            Form 2
+           ======================================================== */
 
-
-      
-
-
-
-        private readonly AiSummaryService _aiSummaryService;
-        private readonly Acadify.Models.Db.AcadifyDbContext _context;
-        private readonly IWebHostEnvironment _env;
-
-        public AdvisorController(Acadify.Models.Db.AcadifyDbContext context, IWebHostEnvironment env, AiSummaryService aiSummaryService)
-=======
-
-
-    {
-
-        private readonly AiSummaryService _aiSummaryService;
-
-
-        private readonly AcadifyDbContext _context;
-        private readonly IWebHostEnvironment _env;
-
-        public AdvisorController(AcadifyDbContext context, IWebHostEnvironment env, AiSummaryService aiSummaryService)
->>>>>>> origin_second/linaLMversion
+        [HttpGet]
+        public async Task<IActionResult> Form2(int? studentId = null)
         {
-            _context = context;
-            _env = env;
-            _aiSummaryService = aiSummaryService;
+            int resolvedStudentId = ResolveStudentId(studentId);
+
+            var latestForm = await _context.Forms
+                .Include(f => f.CourseChoiceMonitoringForm)
+                .Where(f => f.StudentId == resolvedStudentId && f.FormType == "Form 2")
+                .OrderByDescending(f => f.FormId)
+                .FirstOrDefaultAsync();
+
+            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
+                return NotFound("Form 2 not found.");
+
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StudentId == resolvedStudentId);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            var form2 = latestForm.CourseChoiceMonitoringForm;
+
+            var selectedCourses = string.IsNullOrWhiteSpace(form2.SelectedCoursesJson)
+                ? new List<SelectedCourseVM>()
+                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(form2.SelectedCoursesJson) ?? new List<SelectedCourseVM>();
+
+            var model = new Form2ViewModel
+            {
+                StudentName = student.Name,
+                StudentId = student.StudentId,
+                Semester = form2.Semester ?? "",
+                ComingSemester = form2.ComingSemester ?? "",
+                RunningCreditHours = form2.RunningCreditHours ?? 0,
+                AdvisedCreditHours = form2.AdvisedCreditHours ?? 0,
+                Level = form2.Level ?? "",
+                DropSubjects = form2.DropSubjects ?? "",
+                ICSubjects = form2.ICSubjects ?? "",
+                IPSubjects = form2.IpSubjects ?? "",
+                SelectedCourses = selectedCourses
+            };
+
+            return View(model);
         }
 
-<<<<<<< HEAD
+        [HttpPost]
+        public async Task<IActionResult> SaveForm2(Form2ViewModel model)
+        {
+            await UpdateForm2Async(model, "Draft");
 
+            TempData["SuccessMessage"] = "Form 2 saved successfully.";
+            return RedirectToAction(nameof(Form2), new { studentId = model.StudentId });
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> SendForm2(Form2ViewModel model)
+        {
+            await UpdateForm2Async(model, "Sent to Advising Committee");
 
+            TempData["SuccessMessage"] = "Form 2 sent to the advising committee successfully.";
+            return RedirectToAction(nameof(Form2), new { studentId = model.StudentId });
+        }
 
-=======
->>>>>>> origin_second/linaLMversion
+        [HttpPost]
+        public async Task<IActionResult> ReturnForm2ToStudent(Form2ViewModel model)
+        {
+            await UpdateForm2Async(model, "Returned to Student");
+
+            TempData["SuccessMessage"] = "Form 2 returned to the student successfully.";
+            return RedirectToAction(nameof(Form2), new { studentId = model.StudentId });
+        }
+
+        private async Task UpdateForm2Async(Form2ViewModel model, string status)
+        {
+            int studentId = model.StudentId;
+
+            var latestForm = await _context.Forms
+                .Include(f => f.CourseChoiceMonitoringForm)
+                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
+                .OrderByDescending(f => f.FormId)
+                .FirstOrDefaultAsync();
+
+            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
+                throw new InvalidOperationException("Form 2 not found.");
+
+            var form2 = latestForm.CourseChoiceMonitoringForm;
+
+            form2.Semester = model.Semester;
+            form2.ComingSemester = model.ComingSemester;
+            form2.RunningCreditHours = model.RunningCreditHours;
+            form2.AdvisedCreditHours = model.AdvisedCreditHours;
+            form2.Level = model.Level;
+            form2.DropSubjects = model.DropSubjects;
+            form2.ICSubjects = model.ICSubjects;
+            form2.IpSubjects = model.IPSubjects;
+            form2.SelectedCoursesJson = JsonSerializer.Serialize(model.SelectedCourses ?? new List<SelectedCourseVM>());
+
+            latestForm.FormStatus = status;
+            latestForm.FormDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+        }
+
+        /* ========================================================
+                            Form 3
+           ======================================================== */
+
+        [HttpGet]
+        public IActionResult Form3(int? studentId = null)
+        {
+            if (studentId.HasValue && studentId.Value > 0)
+                SetSelectedStudentId(studentId.Value);
+
+            ViewBag.StudentId = studentId ?? GetSelectedStudentId();
+
+            int meetingId = 1; // temporary until meetings are fully connected
+
+            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
+            if (meeting == null)
+                return View(CreateEmptyForm3ViewModel());
+
+            var existingForm = _context.Forms
+                .Include(f => f.MeetingForm)
+                .FirstOrDefault(f => f.FormType == "Form 3"
+                                  && f.MeetingForm != null
+                                  && f.MeetingForm.MeetingId == meetingId);
+
+            var model = CreateEmptyForm3ViewModel();
+            model.Status = existingForm?.FormStatus ?? "Draft";
+            model.AdvisorNotes = existingForm?.AdvisorNotes ?? "";
+
+            var row1 = model.Meetings[0];
+
+            if (existingForm?.MeetingForm != null)
+            {
+                var mf = existingForm.MeetingForm;
+
+                if (mf.MeetingStart.HasValue)
+                    row1.MeetingDate = mf.MeetingStart.Value.ToString("dd/MM/yyyy hh:mm tt");
+
+                row1.PurposeAcademic = mf.MeetingPurpose == "Academic";
+                row1.PurposeCareer = mf.MeetingPurpose == "Career";
+                row1.PurposeOther = mf.MeetingPurpose == "Other";
+                row1.ReferralName = mf.ReferredTo ?? "";
+                row1.ReferralReason = mf.ReferralReason ?? "";
+                row1.ProposedSolutions = mf.MeetingNotes ?? "";
+            }
+
+            if (string.IsNullOrWhiteSpace(row1.MeetingDate) && meeting.RecordingStartedAt.HasValue)
+                row1.MeetingDate = meeting.RecordingStartedAt.Value.ToString("dd/MM/yyyy hh:mm tt");
+
+            if (string.IsNullOrWhiteSpace(row1.ProposedSolutions) && !string.IsNullOrWhiteSpace(meeting.ChatSummary))
+                row1.ProposedSolutions = meeting.ChatSummary;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult SaveForm3(Form3ViewModel model)
+        {
+            SaveOrSendForm3(model, "Draft");
+            TempData["Success"] = "Form 3 saved successfully.";
+            return RedirectToAction(nameof(Form3), new { studentId = GetSelectedStudentId() });
+        }
+
+        [HttpPost]
+        public IActionResult SendForm3(Form3ViewModel model)
+        {
+            SaveOrSendForm3(model, "Sent");
+            TempData["Success"] = "Form 3 sent successfully.";
+            return RedirectToAction(nameof(Form3), new { studentId = GetSelectedStudentId() });
+        }
+
+        [HttpPost]
+        public IActionResult AddNotesForm3(string notes)
+        {
+            TempData["Success"] = "Notes saved successfully.";
+            return RedirectToAction(nameof(Form3), new { studentId = GetSelectedStudentId() });
+        }
+
+        private Form3ViewModel CreateEmptyForm3ViewModel()
+        {
+            var model = new Form3ViewModel
+            {
+                StudentName = "",
+                StudentId = "",
+                Status = "Draft",
+                AdvisorNotes = "",
+                Meetings = new List<Form3MeetingRowVM>()
+            };
+
+            for (int i = 1; i <= 3; i++)
+            {
+                model.Meetings.Add(new Form3MeetingRowVM
+                {
+                    MeetingNo = i,
+                    MeetingDate = "",
+                    PurposeAcademic = false,
+                    PurposeCareer = false,
+                    PurposeOther = false,
+                    ReferralName = "",
+                    ReferralReason = "",
+                    ProposedSolutions = "",
+                    StudentInitial = "",
+                    AdvisorInitial = ""
+                });
+            }
+
+            return model;
+        }
+
+        private void SaveOrSendForm3(Form3ViewModel model, string status)
+        {
+            int meetingId = 1; // temporary until meetings are fully connected
+
+            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
+            if (meeting == null)
+                throw new InvalidOperationException("Meeting not found.");
+
+            var form = _context.Forms
+                .Include(f => f.MeetingForm)
+                .FirstOrDefault(f => f.FormType == "Form 3"
+                                  && f.MeetingForm != null
+                                  && f.MeetingForm.MeetingId == meetingId);
+
+            if (form == null)
+            {
+                form = new Db.Form
+                {
+                    StudentId = meeting.StudentId,
+                    AdvisorId = meeting.AdvisorId,
+                    FormType = "Form 3",
+                    FormDate = DateTime.Now,
+                    FormStatus = status,
+                    AdvisorNotes = model.AdvisorNotes,
+                    AutoFilled = true,
+                    AdvisorConfirmation = status == "Sent"
+                };
+
+                _context.Forms.Add(form);
+                _context.SaveChanges();
+
+                form.MeetingForm = new Db.MeetingForm
+                {
+                    FormId = form.FormId,
+                    MeetingId = meetingId
+                };
+
+                _context.MeetingForms.Add(form.MeetingForm);
+            }
+
+            form.FormDate = DateTime.Now;
+            form.FormStatus = status;
+            form.AdvisorNotes = model.AdvisorNotes;
+            form.AdvisorConfirmation = status == "Sent";
+
+            var row1 = model.Meetings.FirstOrDefault();
+
+            if (row1 != null && form.MeetingForm != null)
+            {
+                if (DateTime.TryParseExact(
+                        row1.MeetingDate,
+                        "dd/MM/yyyy hh:mm tt",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out var parsedMeetingStart))
+                {
+                    form.MeetingForm.MeetingStart = parsedMeetingStart;
+                }
+                else
+                {
+                    form.MeetingForm.MeetingStart = meeting.RecordingStartedAt;
+                }
+
+                form.MeetingForm.MeetingEnd = meeting.RecordingStoppedAt;
+
+                if (row1.PurposeAcademic)
+                    form.MeetingForm.MeetingPurpose = "Academic";
+                else if (row1.PurposeCareer)
+                    form.MeetingForm.MeetingPurpose = "Career";
+                else if (row1.PurposeOther)
+                    form.MeetingForm.MeetingPurpose = "Other";
+                else
+                    form.MeetingForm.MeetingPurpose = null;
+
+                form.MeetingForm.ReferredTo = row1.ReferralName;
+                form.MeetingForm.ReferralReason = row1.ReferralReason;
+                form.MeetingForm.MeetingNotes = row1.ProposedSolutions;
+                form.MeetingForm.MeetingId = meetingId;
+            }
+
+            _context.SaveChanges();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Form3History()
+        {
+            int meetingId = 1; // temporary
+
+            var items = await _context.Forms
+                .Include(f => f.MeetingForm)
+                .Where(f => f.FormType == "Form 3"
+                         && f.MeetingForm != null
+                         && f.MeetingForm.MeetingId == meetingId)
+                .OrderByDescending(f => f.FormDate)
+                .Select(f => new FormHistoryItemViewModel
+                {
+                    FormId = f.FormId,
+                    FormTitle = "Meeting Record (Form 3)",
+                    Status = f.FormStatus,
+                    DateText = f.FormDate.ToString("MMM d, yyyy"),
+                    ViewUrl = Url.Action("ViewSavedForm3", "Advisor", new { formId = f.FormId })!
+                })
+                .ToListAsync();
+
+            return View(items);
+        }
+
+        [HttpGet]
+        public IActionResult ViewSavedForm3(int formId)
+        {
+            var form = _context.Forms
+                .Include(f => f.MeetingForm)
+                .FirstOrDefault(f => f.FormId == formId && f.FormType == "Form 3");
+
+            if (form == null || form.MeetingForm == null)
+                return NotFound();
+
+            var model = CreateEmptyForm3ViewModel();
+            model.Status = form.FormStatus ?? "Draft";
+            model.AdvisorNotes = form.AdvisorNotes ?? "";
+
+            var row1 = model.Meetings[0];
+            var mf = form.MeetingForm;
+
+            if (mf.MeetingStart.HasValue)
+                row1.MeetingDate = mf.MeetingStart.Value.ToString("dd/MM/yyyy hh:mm tt");
+
+            row1.PurposeAcademic = mf.MeetingPurpose == "Academic";
+            row1.PurposeCareer = mf.MeetingPurpose == "Career";
+            row1.PurposeOther = mf.MeetingPurpose == "Other";
+            row1.ReferralName = mf.ReferredTo ?? "";
+            row1.ReferralReason = mf.ReferralReason ?? "";
+            row1.ProposedSolutions = mf.MeetingNotes ?? "";
+
+            return View("Form3", model);
+        }
+
+        /* ========================================================
+                            Form 4
+           ======================================================== */
+
+        [HttpGet]
+        public async Task<IActionResult> Form4(int? studentId = null)
+        {
+            int resolvedStudentId = ResolveStudentId(studentId);
+
+            var student = await _context.Students
+                .Include(s => s.Transcript)
+                    .ThenInclude(t => t.Courses)
+                .FirstOrDefaultAsync(s => s.StudentId == resolvedStudentId);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            var model = BuildForm4ViewModel(student);
+            model.PlanCourseOptions = GetIsPlanCourseOptions();
+
+            var latestForm = await _context.Forms
+                .Where(f => f.StudentId == resolvedStudentId && f.FormType == "Form 4")
+                .OrderByDescending(f => f.FormId)
+                .FirstOrDefaultAsync();
+
+            if (latestForm != null)
+                model.AdvisorNotes = latestForm.AdvisorNotes ?? "";
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveForm4(Form4ViewModel model)
+        {
+            int studentId = ResolveStudentId(ParseNullableInt(model.StudentId));
+            int advisorId = ResolveAdvisorId();
+
+            await SaveCourseDecisionsAsync(studentId, model.PendingCourses);
+            await SaveForm4ToDatabaseAsync(model, studentId, advisorId, "Draft", false);
+
+            TempData["Success"] = "Form 4 saved successfully.";
+            return RedirectToAction(nameof(Form4), new { studentId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendForm4(Form4ViewModel model)
+        {
+            int studentId = ResolveStudentId(ParseNullableInt(model.StudentId));
+            int advisorId = ResolveAdvisorId();
+
+            await SaveCourseDecisionsAsync(studentId, model.PendingCourses);
+            await SaveForm4ToDatabaseAsync(model, studentId, advisorId, "Sent", true);
+
+            TempData["Success"] = "Form 4 sent successfully.";
+            return RedirectToAction(nameof(Form4), new { studentId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveFreeCourses(Form4ViewModel model)
+        {
+            int studentId = ResolveStudentId(ParseNullableInt(model.StudentId));
+
+            await SaveCourseDecisionsAsync(studentId, model.PendingCourses);
+
+            TempData["Success"] = "Free courses updated successfully.";
+            return RedirectToAction(nameof(Form4), new { studentId });
+        }
+
+        private async Task SaveForm4ToDatabaseAsync(
+            Form4ViewModel model,
+            int studentId,
+            int advisorId,
+            string status,
+            bool advisorConfirmation)
+        {
+            var student = await _context.Students
+                .Include(s => s.Transcript)
+                    .ThenInclude(t => t.Courses)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId);
+
+            if (student == null)
+                throw new InvalidOperationException("Student not found.");
+
+            var vm = BuildForm4ViewModel(student);
+
+            var form = new Db.Form
+            {
+                StudentId = studentId,
+                AdvisorId = advisorId,
+                FormType = "Form 4",
+                FormDate = DateTime.Now,
+                FormStatus = status,
+                AdvisorNotes = model.AdvisorNotes,
+                AutoFilled = true,
+                AdvisorConfirmation = advisorConfirmation
+            };
+
+            _context.Forms.Add(form);
+            await _context.SaveChangesAsync();
+
+            var form4 = new Db.StudyPlanMatchingForm
+            {
+                FormId = form.FormId,
+                GraduationStatus = null,
+                RemainingHours = Math.Max(140 - vm.EarnedHours, 0),
+                RequiredHours = 140,
+                EarnedHours = vm.EarnedHours,
+                RegisteredHours = null,
+                UniversityHours = vm.UniversityReqHours,
+                PrepYearHours = vm.PrepYearReqHours,
+                FreeCoursesHours = vm.FreeCoursesHours,
+                CollegeMandatoryHours = vm.CollegeMandatoryHours,
+                DeptMandatoryHours = vm.DeptMandatoryHours,
+                DeptElectiveHours = vm.DeptElectiveHours,
+                TotalHours = vm.TotalHours
+            };
+
+            _context.StudyPlanMatchingForms.Add(form4);
+            await _context.SaveChangesAsync();
+        }
+
+        private static int? ParseNullableInt(string? value)
+        {
+            return int.TryParse(value, out var result) ? result : null;
+        }
+
+        private void SaveForm4ToSession(Form4ViewModel model)
+        {
+            var json = JsonSerializer.Serialize(model);
+            HttpContext.Session.SetString(Form4SessionKey, json);
+        }
+
+        private Form4ViewModel CreateNewForm4()
+        {
+            return new Form4ViewModel
+            {
+                StudentName = "Lama Alshikh",
+                StudentId = "000000000",
+                AcademicYear = DateTime.Now.Year.ToString(),
+                EarnedHours = 129,
+                RegisteredHours = 11,
+                UniversityReqHours = 26,
+                PrepYearReqHours = 15,
+                FreeCoursesHours = 9,
+                CollegeMandatoryHours = 24,
+                DeptMandatoryHours = 57,
+                DeptElectiveHours = 9,
+                TotalHours = 140,
+                GraduationTermText = "الفصل الدراسي الاول 2024",
+                Note1 = "BUS220 و BUS320 تعادل إدارة المنظمات BUS 232",
+                Note2 = "BUS230 و BUS335 تعادل إدارة المنظمات BUS 232",
+                Note3 = "مادة التسويق تعادل BUS 232",
+                Note4 = "تم احتساب 11 ساعة ضمن الفصل القادم",
+                AdvisorNameLabel = "المرشدة الأكاديمية للطالبة",
+                AdvisorName = "Dr. Amina Gamlo",
+                AdvisorSignature = "",
+                Status = "Draft"
+            };
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Form4History()
+        {
+            int studentId = ResolveStudentId();
+
+            var items = await _context.Forms
+                .Where(f => f.StudentId == studentId && f.FormType == "Form 4")
+                .OrderByDescending(f => f.FormDate)
+                .Select(f => new FormHistoryItemViewModel
+                {
+                    FormId = f.FormId,
+                    FormTitle = "Study Plan Matching (Form 4)",
+                    Status = f.FormStatus,
+                    DateText = f.FormDate.ToString("MMM d, yyyy"),
+                    ViewUrl = Url.Action("ViewSavedForm4", "Advisor", new { formId = f.FormId })!
+                })
+                .ToListAsync();
+
+            return View(items);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ViewSavedForm4(int formId)
+        {
+            var form = await _context.Forms
+                .Include(f => f.Student)
+                    .ThenInclude(s => s.Transcript)
+                        .ThenInclude(t => t.Courses)
+                .Include(f => f.StudyPlanMatchingForm)
+                .FirstOrDefaultAsync(f => f.FormId == formId && f.FormType == "Form 4");
+
+            if (form == null || form.Student == null)
+                return NotFound("Form 4 not found.");
+
+            var model = BuildForm4ViewModel(form.Student);
+            model.AdvisorNotes = form.AdvisorNotes ?? "";
+            model.PlanCourseOptions = GetIsPlanCourseOptions();
+
+            if (form.StudyPlanMatchingForm != null)
+            {
+                model.EarnedHours = form.StudyPlanMatchingForm.EarnedHours ?? model.EarnedHours;
+                model.UniversityReqHours = form.StudyPlanMatchingForm.UniversityHours ?? model.UniversityReqHours;
+                model.PrepYearReqHours = form.StudyPlanMatchingForm.PrepYearHours ?? model.PrepYearReqHours;
+                model.FreeCoursesHours = form.StudyPlanMatchingForm.FreeCoursesHours ?? model.FreeCoursesHours;
+                model.CollegeMandatoryHours = form.StudyPlanMatchingForm.CollegeMandatoryHours ?? model.CollegeMandatoryHours;
+                model.DeptMandatoryHours = form.StudyPlanMatchingForm.DeptMandatoryHours ?? model.DeptMandatoryHours;
+                model.DeptElectiveHours = form.StudyPlanMatchingForm.DeptElectiveHours ?? model.DeptElectiveHours;
+                model.TotalHours = form.StudyPlanMatchingForm.TotalHours ?? model.TotalHours;
+            }
+
+            return View("Form4", model);
+        }
+
         private string ExtractLastAcademicTerm(string? extractedInfo)
         {
             if (string.IsNullOrWhiteSpace(extractedInfo))
@@ -853,50 +1093,18 @@ namespace Acadify.Controllers
             return matches[matches.Count - 1].Value.ToUpper();
         }
 
-        private Form4ViewModel BuildForm4ViewModel(Student student)
+        private Form4ViewModel BuildForm4ViewModel(Db.Student student)
         {
             var transcript = student.Transcript;
-            var courses = transcript?.Courses?.ToList() ?? new List<Course>();
+            var courses = transcript?.Courses?.ToList() ?? new List<Db.Course>();
 
             var electiveCourses = new List<string>
-    {
-        "CPIS382","CPIS483","CPIS486","CPIS320",
-        "CPIS420","CPIS424","CPIS360","CPIS363",
-        "CPIS490","CPIS430","CPIS426","CPIS350"
-    };
+        {
+            "CPIS382","CPIS483","CPIS486","CPIS320",
+            "CPIS420","CPIS424","CPIS360","CPIS363",
+            "CPIS490","CPIS430","CPIS426","CPIS350"
+        };
 
-<<<<<<< HEAD
-            int universityHours = courses
-                .Where(c => c.RequirementCategory == "University")
-                .Sum(c => c.Hours);
-
-            int prepYearHours = courses
-                .Where(c => c.RequirementCategory == "PrepYear")
-                .Sum(c => c.Hours);
-
-            int collegeMandatoryHours = courses
-                .Where(c => c.RequirementCategory == "CollegeMandatory")
-                .Sum(c => c.Hours);
-
-            int deptMandatoryHours = courses
-                .Where(c => c.RequirementCategory == "DeptMandatory")
-                .Sum(c => c.Hours);
-
-            var electiveTaken = courses
-                .Where(c => electiveCourses.Contains(c.CourseId))
-                .Select(c => c.CourseId)
-                .Distinct()
-                .ToList();
-
-            int electiveHoursRaw = electiveTaken.Count * 3;
-            int deptElectiveHours = Math.Min(electiveHoursRaw, 9);
-            int extraElective = Math.Max(electiveHoursRaw - 9, 0);
-
-            int freeCoursesHoursFromPdf = ExtractFreeCourseHoursFromTranscriptPdf(transcript, electiveCourses);
-            int freeCoursesHours = Math.Min(freeCoursesHoursFromPdf + extraElective, 9);
-
-            // هذا فقط مجموع التصنيفات في الفورم
-=======
             int universityHours = 0;
             int prepYearHours = 0;
             int collegeMandatoryHours = 0;
@@ -912,7 +1120,6 @@ namespace Acadify.Controllers
 
             foreach (var course in courses)
             {
-                // 1) مواد مصنفة مباشرة
                 if (course.RequirementCategory == "University")
                 {
                     universityHours += course.Hours;
@@ -943,19 +1150,16 @@ namespace Acadify.Controllers
                     continue;
                 }
 
-                // 2) إذا المادة غير مصنفة، نشوف هل لها قرار سابق
                 var decision = decisions.FirstOrDefault(d => d.TranscriptCourseId == course.CourseId);
 
                 if (decision != null)
                 {
-                    // إذا القرار مادة حرة
                     if (decision.DecisionType == "FreeElective")
                     {
                         freeCoursesHours += course.Hours;
                         continue;
                     }
 
-                    // إذا القرار معادلة لمادة من الخطة
                     if (decision.DecisionType == "EquivalentToPlan" &&
                         !string.IsNullOrWhiteSpace(decision.EquivalentCourseId))
                     {
@@ -965,36 +1169,23 @@ namespace Acadify.Controllers
                         if (equivalentCourse != null)
                         {
                             if (equivalentCourse.RequirementCategory == "University")
-                            {
                                 universityHours += equivalentCourse.Hours;
-                            }
                             else if (equivalentCourse.RequirementCategory == "PrepYear")
-                            {
                                 prepYearHours += equivalentCourse.Hours;
-                            }
                             else if (equivalentCourse.RequirementCategory == "CollegeMandatory")
-                            {
                                 collegeMandatoryHours += equivalentCourse.Hours;
-                            }
                             else if (equivalentCourse.RequirementCategory == "DeptMandatory")
-                            {
                                 deptMandatoryHours += equivalentCourse.Hours;
-                            }
                             else if (electiveCourses.Contains(equivalentCourse.CourseId))
-                            {
                                 deptElectiveHours += equivalentCourse.Hours;
-                            }
                             else
-                            {
                                 freeCoursesHours += equivalentCourse.Hours;
-                            }
 
                             continue;
                         }
                     }
                 }
 
-                // 3) إذا ما عندها قرار → تظهر للدكتورة في Form 4
                 pendingCourses.Add(new Form4CourseDecisionItemVM
                 {
                     TranscriptCourseId = course.CourseId,
@@ -1005,7 +1196,6 @@ namespace Acadify.Controllers
                 });
             }
 
->>>>>>> origin_second/linaLMversion
             int categorizedHours = universityHours
                                  + prepYearHours
                                  + collegeMandatoryHours
@@ -1013,15 +1203,8 @@ namespace Acadify.Controllers
                                  + deptElectiveHours
                                  + freeCoursesHours;
 
-<<<<<<< HEAD
-            // هذا هو الرقم الرسمي من الترانسكربت
             int transcriptEarnedHours = ExtractTranscriptEarnedHours(transcript?.ExtractedInfo);
 
-            // إذا ما قدرنا نقرأه من الترانسكربت، نرجع لمجموع التصنيفات
-=======
-            int transcriptEarnedHours = ExtractTranscriptEarnedHours(transcript?.ExtractedInfo);
-
->>>>>>> origin_second/linaLMversion
             if (transcriptEarnedHours <= 0)
                 transcriptEarnedHours = categorizedHours;
 
@@ -1030,42 +1213,23 @@ namespace Acadify.Controllers
                 StudentName = student.Name ?? "",
                 StudentId = student.StudentId.ToString(),
                 AcademicYear = DateTime.Now.Year.ToString(),
-
-<<<<<<< HEAD
-                // من الترانسكربت
                 EarnedHours = transcriptEarnedHours,
-
-                // منطق التصنيفات
-=======
-                EarnedHours = transcriptEarnedHours,
-
->>>>>>> origin_second/linaLMversion
                 UniversityReqHours = universityHours,
                 PrepYearReqHours = prepYearHours,
                 FreeCoursesHours = freeCoursesHours,
                 CollegeMandatoryHours = collegeMandatoryHours,
                 DeptMandatoryHours = deptMandatoryHours,
                 DeptElectiveHours = deptElectiveHours,
-
-<<<<<<< HEAD
-                // من الترانسكربت أيضًا
-=======
->>>>>>> origin_second/linaLMversion
                 TotalHours = transcriptEarnedHours,
-
+                GraduationTermText = ExtractLastAcademicTerm(transcript?.ExtractedInfo),
                 AdvisorNameLabel = "المرشدة الأكاديمية للطالبة",
                 AdvisorName = "",
-<<<<<<< HEAD
-                AdvisorNotes = ""
-=======
                 AdvisorNotes = "",
-
                 PendingCourses = pendingCourses
->>>>>>> origin_second/linaLMversion
             };
         }
 
-        private int ExtractFreeCourseHoursFromTranscriptPdf(Transcript? transcript, List<string> electiveCourses)
+        private int ExtractFreeCourseHoursFromTranscriptPdf(Db.Transcript? transcript, List<string> electiveCourses)
         {
             if (transcript == null || string.IsNullOrWhiteSpace(transcript.PdfFile))
                 return 0;
@@ -1155,13 +1319,9 @@ namespace Acadify.Controllers
                     Math.Abs(line[0].BoundingBox.Bottom - word.BoundingBox.Bottom) <= 3.5);
 
                 if (existingLine == null)
-                {
                     lines.Add(new List<UglyToad.PdfPig.Content.Word> { word });
-                }
                 else
-                {
                     existingLine.Add(word);
-                }
             }
 
             return lines;
@@ -1177,7 +1337,6 @@ namespace Acadify.Controllers
 
             for (int i = 0; i < tokens.Count; i++)
             {
-                // حالة: MRKC323 أو MRKC-323 أو CPIS352
                 var m = Regex.Match(tokens[i], @"^([A-Z]{3,6})[-]?(\d{3})$");
                 if (m.Success)
                 {
@@ -1189,7 +1348,6 @@ namespace Acadify.Controllers
                     }
                 }
 
-                // حالة: MRKC 323 أو CPIS 352
                 if (i < tokens.Count - 1 &&
                     Regex.IsMatch(tokens[i], @"^[A-Z]{3,6}$") &&
                     tokens[i] == prefix &&
@@ -1209,7 +1367,6 @@ namespace Acadify.Controllers
 
             var candidates = new List<(int Distance, int Value, bool IsBefore)>();
 
-            // نبحث في نطاق أوسع حول الكود
             for (int i = Math.Max(0, codeIndex - 10); i <= Math.Min(tokens.Count - 1, codeIndex + 10); i++)
             {
                 if (i == codeIndex)
@@ -1228,10 +1385,6 @@ namespace Acadify.Controllers
             if (candidates.Count == 0)
                 return false;
 
-            // نفضّل:
-            // 1) الأقرب
-            // 2) اللي قبل الكود
-            // 3) غير الصفر أولًا
             var best = candidates
                 .OrderBy(c => c.Distance)
                 .ThenBy(c => c.IsBefore ? 0 : 1)
@@ -1268,8 +1421,6 @@ namespace Acadify.Controllers
             return 0;
         }
 
-<<<<<<< HEAD
-=======
         private List<PlanCourseOptionVM> GetIsPlanCourseOptions()
         {
             return _context.StudyPlans
@@ -1286,24 +1437,13 @@ namespace Acadify.Controllers
                 .ToList();
         }
 
-        private bool IsDirectlyClassifiedCourse(Course course, List<string> electiveCourses)
+        private bool IsDirectlyClassifiedCourse(Db.Course course, List<string> electiveCourses)
         {
-            if (course.RequirementCategory == "University")
-                return true;
-
-            if (course.RequirementCategory == "PrepYear")
-                return true;
-
-            if (course.RequirementCategory == "CollegeMandatory")
-                return true;
-
-            if (course.RequirementCategory == "DeptMandatory")
-                return true;
-
-            if (electiveCourses.Contains(course.CourseId))
-                return true;
-
-            return false;
+            return course.RequirementCategory == "University"
+                || course.RequirementCategory == "PrepYear"
+                || course.RequirementCategory == "CollegeMandatory"
+                || course.RequirementCategory == "DeptMandatory"
+                || electiveCourses.Contains(course.CourseId);
         }
 
         private async Task SaveCourseDecisionsAsync(int studentId, List<Form4CourseDecisionItemVM> pendingCourses)
@@ -1326,7 +1466,7 @@ namespace Acadify.Controllers
 
                 if (existing == null)
                 {
-                    existing = new TranscriptCourseDecision
+                    existing = new Db.TranscriptCourseDecision
                     {
                         StudentId = studentId,
                         TranscriptCourseId = item.TranscriptCourseId
@@ -1347,12 +1487,11 @@ namespace Acadify.Controllers
             await _context.SaveChangesAsync();
         }
 
->>>>>>> origin_second/linaLMversion
+        /* ========================================================
+                            Chat + Form 3 Auto Fill
+           ======================================================== */
 
-        // =======================
-        // helpers
-        // =======================
-        private Form3AutoFillViewModel BuildForm3AutoFillData(Meeting meeting)
+        private Form3AutoFillViewModel BuildForm3AutoFillData(Db.Meeting meeting)
         {
             var model = new Form3AutoFillViewModel
             {
@@ -1362,15 +1501,10 @@ namespace Acadify.Controllers
             };
 
             if (meeting.RecordingStartedAt.HasValue)
-            {
                 model.MeetingDateText = meeting.RecordingStartedAt.Value.ToString("dd/MM/yyyy hh:mm tt");
-            }
 
             if (!string.IsNullOrWhiteSpace(meeting.ChatRecord))
-            {
                 model.AutoBriefNotes = SummarizeChatRecord(meeting.ChatRecord);
-            }
-
 
             return model;
         }
@@ -1378,20 +1512,15 @@ namespace Acadify.Controllers
         [HttpGet("/Advisor/Form3AutoPreview")]
         public IActionResult Form3AutoPreview()
         {
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
             var model = BuildForm3AutoFillData(meeting);
-
             return View(model);
         }
-
-
-
 
         private string SummarizeChatRecord(string chatRecord)
         {
@@ -1416,29 +1545,20 @@ namespace Acadify.Controllers
             string summary = "";
 
             if (!string.IsNullOrWhiteSpace(studentText))
-            {
                 summary += $"ناقشت الطالبة موضوع: {studentText}. ";
-            }
 
             if (!string.IsNullOrWhiteSpace(advisorText))
-            {
                 summary += $"وقدمت المرشدة التوجيه التالي: {advisorText}.";
-            }
 
             return summary.Trim();
         }
 
-        // =======================
-        // Advisor Chat
-        // =======================
-
         [HttpGet("/Advisor/Chat")]
         public IActionResult Chat()
         {
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
@@ -1481,10 +1601,9 @@ namespace Acadify.Controllers
         [HttpPost("/Advisor/StartRecording")]
         public IActionResult StartRecording()
         {
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
@@ -1502,10 +1621,9 @@ namespace Acadify.Controllers
         [HttpPost("/Advisor/StopRecording")]
         public async Task<IActionResult> StopRecording()
         {
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
@@ -1569,21 +1687,19 @@ namespace Acadify.Controllers
             return Redirect("/Advisor/Chat");
         }
 
-
         [HttpPost("/Advisor/SendMessage")]
         public IActionResult SendMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 return Redirect("/Advisor/Chat");
 
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
-            var newMessage = new MeetingMessage
+            var newMessage = new Db.MeetingMessage
             {
                 MeetingId = meetingId,
                 SenderName = "Amina Gamlo (me)",
@@ -1601,10 +1717,9 @@ namespace Acadify.Controllers
         [HttpPost("/Advisor/BuildChatRecord")]
         public IActionResult BuildChatRecord()
         {
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
@@ -1652,17 +1767,16 @@ namespace Acadify.Controllers
         [HttpPost("/Advisor/GenerateChatSummary")]
         public async Task<IActionResult> GenerateChatSummary()
         {
-            int meetingId = 1; // مؤقتًا
+            int meetingId = 1; // temporary
 
             var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
             if (meeting == null)
                 return NotFound();
 
             if (string.IsNullOrWhiteSpace(meeting.ChatRecord))
             {
                 TempData["Success"] = "لا يوجد ChatRecord لتلخيصه.";
-                return RedirectToAction("Form3");
+                return RedirectToAction(nameof(Form3));
             }
 
             try
@@ -1679,1096 +1793,8 @@ namespace Acadify.Controllers
                 TempData["Success"] = "حدث خطأ أثناء التلخيص: " + ex.Message;
             }
 
-            return RedirectToAction("Form3");
-        }
-
-
-
-
-
-
-
-        // GET: عرض الفورم
-        /* public IActionResult Form5()
-         {
-             // بيانات افتراضية (حالياً)
-             var model = new GraduationProjectEligibilityForm
-             {
-                 FormId = 5,
-                 StudentName = "Lama Zaki Alshikh",
-                 StudentId = "22190123",
-
-                 CPIS351 = true,
-                 CPIS358 = true,
-                 CPIS323 = true,
-
-                 CPIS360 = false,
-                 CPIS375 = false,
-                 CPIS342 = true,
-
-                 FormStatus = "Pending",
-                 CreatedDate = DateTime.Now
-             };
-
-             // تحديد الأهلية
-             model.IsEligible =
-                 model.CPIS351 &&
-                 model.CPIS358 &&
-                 model.CPIS323 &&
-                 model.CPIS360 &&
-                 model.CPIS375 &&
-                 model.CPIS342;
-
-             return View(model);
-         }
-
-         // POST: تحديث حالة الفورم (Accept / Reject / Update)
-         [HttpPost]
-         public IActionResult UpdateStatus(int formId, string status)
-         {
-             /*
-             // 🔗 ربط الداتابيس (معلّق حالياً)
-             using (var context = new AcadifyDbContext())
-             {
-                 var form = context.GraduationProjectEligibilityForms
-                                   .FirstOrDefault(f => f.FormId == formId);
-
-                 if (form != null)
-                 {
-                     form.FormStatus = status;
-                     context.SaveChanges();
-                 }
-             }
-
-
-             // حالياً بدون تخزين
-             return RedirectToAction("Form5");
-         }
-          */
-
-
-
-
-        // GET: Advisor/Form3
-        [HttpGet]
-        public IActionResult Form3()
-        {
-            int meetingId = 1; // مؤقتًا
-
-            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
-            if (meeting == null)
-                return NotFound();
-
-            var existingForm = _context.Forms
-                .Include(f => f.MeetingForm)
-                .FirstOrDefault(f => f.FormType == "Form 3"
-                                  && f.MeetingForm != null
-                                  && f.MeetingForm.MeetingId == meetingId);
-
-            var model = new Form3ViewModel
-            {
-                StudentName = "",
-                StudentId = "",
-                Status = existingForm?.FormStatus ?? "Draft",
-                AdvisorNotes = existingForm?.AdvisorNotes ?? "",
-                Meetings = new List<Form3MeetingRowVM>()
-            };
-
-            for (int i = 1; i <= 3; i++)
-            {
-                model.Meetings.Add(new Form3MeetingRowVM
-                {
-                    MeetingNo = i,
-                    MeetingDate = "",
-                    PurposeAcademic = false,
-                    PurposeCareer = false,
-                    PurposeOther = false,
-                    ReferralName = "",
-                    ReferralReason = "",
-                    ProposedSolutions = "",
-                    StudentInitial = "",
-                    AdvisorInitial = ""
-                });
-            }
-
-            // أول صف فقط
-            var row1 = model.Meetings[0];
-
-            // 1) إذا فيه بيانات محفوظة بالداتابيس، عبّي منها
-            if (existingForm?.MeetingForm != null)
-            {
-                var mf = existingForm.MeetingForm;
-
-                if (mf.MeetingStart.HasValue)
-                    row1.MeetingDate = mf.MeetingStart.Value.ToString("dd/MM/yyyy hh:mm tt");
-
-                row1.PurposeAcademic = mf.MeetingPurpose == "Academic";
-                row1.PurposeCareer = mf.MeetingPurpose == "Career";
-                row1.PurposeOther = mf.MeetingPurpose == "Other";
-
-                row1.ReferralName = mf.ReferredTo ?? "";
-                row1.ReferralReason = mf.ReferralReason ?? "";
-                row1.ProposedSolutions = mf.MeetingNotes ?? "";
-            }
-
-            // 2) إذا التاريخ ما زال فاضي، خذيه من الـ Meeting
-            if (string.IsNullOrWhiteSpace(row1.MeetingDate) && meeting.RecordingStartedAt.HasValue)
-            {
-                row1.MeetingDate = meeting.RecordingStartedAt.Value.ToString("dd/MM/yyyy hh:mm tt");
-            }
-
-            // 3) إذا خانة الملخص ما زالت فاضية، خذيها من ChatSummary
-            if (string.IsNullOrWhiteSpace(row1.ProposedSolutions) && !string.IsNullOrWhiteSpace(meeting.ChatSummary))
-            {
-                row1.ProposedSolutions = meeting.ChatSummary;
-            }
-
-            return View(model);
-        }
-        [HttpPost]
-        public IActionResult SaveForm3(Form3ViewModel model)
-        {
-            int meetingId = 1; // مؤقتًا
-
-            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
-            if (meeting == null)
-                return NotFound();
-
-<<<<<<< HEAD
-            var form = _context.Forms
-                .Include(f => f.MeetingForm)
-                .FirstOrDefault(f => f.FormType == "Form 3"
-                                  && f.MeetingForm != null
-                                  && f.MeetingForm.MeetingId == meetingId);
-
-            if (form == null)
-            {
-                form = new Form
-                {
-                    StudentId = meeting.StudentId,
-                    AdvisorId = meeting.AdvisorId,
-                    FormType = "Form 3",
-                    FormDate = DateTime.Now,
-                    FormStatus = "Draft",
-                    AdvisorNotes = model.AdvisorNotes,
-                    AutoFilled = true,
-                    AdvisorConfirmation = null
-                };
-
-                _context.Forms.Add(form);
-                _context.SaveChanges();
-
-                form.MeetingForm = new MeetingForm
-                {
-                    FormId = form.FormId,
-                    MeetingId = meetingId
-                };
-
-                _context.MeetingForms.Add(form.MeetingForm);
-            }
-
-            form.FormDate = DateTime.Now;
-            form.FormStatus = "Draft";
-            form.AdvisorNotes = model.AdvisorNotes;
-
-            var row1 = model.Meetings.FirstOrDefault();
-
-            if (row1 != null && form.MeetingForm != null)
-=======
-            var form = new Form
-            {
-                StudentId = meeting.StudentId,
-                AdvisorId = meeting.AdvisorId,
-                FormType = "Form 3",
-                FormDate = DateTime.Now,
-                FormStatus = "Draft",
-                AdvisorNotes = model.AdvisorNotes,
-                AutoFilled = true,
-                AdvisorConfirmation = null
-            };
-
-            _context.Forms.Add(form);
-            _context.SaveChanges();
-
-            var meetingForm = new MeetingForm
-            {
-                FormId = form.FormId,
-                MeetingId = meetingId
-            };
-
-            var row1 = model.Meetings.FirstOrDefault();
-
-            if (row1 != null)
->>>>>>> origin_second/linaLMversion
-            {
-                DateTime parsedMeetingStart;
-
-                if (DateTime.TryParseExact(
-                        row1.MeetingDate,
-                        "dd/MM/yyyy hh:mm tt",
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out parsedMeetingStart))
-                {
-<<<<<<< HEAD
-                    form.MeetingForm.MeetingStart = parsedMeetingStart;
-                }
-                else
-                {
-                    form.MeetingForm.MeetingStart = meeting.RecordingStartedAt;
-                }
-
-                form.MeetingForm.MeetingEnd = meeting.RecordingStoppedAt;
-
-                if (row1.PurposeAcademic)
-                    form.MeetingForm.MeetingPurpose = "Academic";
-                else if (row1.PurposeCareer)
-                    form.MeetingForm.MeetingPurpose = "Career";
-                else if (row1.PurposeOther)
-                    form.MeetingForm.MeetingPurpose = "Other";
-                else
-                    form.MeetingForm.MeetingPurpose = null;
-
-                form.MeetingForm.ReferredTo = row1.ReferralName;
-                form.MeetingForm.ReferralReason = row1.ReferralReason;
-                form.MeetingForm.MeetingNotes = row1.ProposedSolutions;
-                form.MeetingForm.MeetingId = meetingId;
-            }
-
-            _context.SaveChanges();
-
-            TempData["Success"] = "Form 3 saved successfully.";
-            return RedirectToAction("Form3");
-=======
-                    meetingForm.MeetingStart = parsedMeetingStart;
-                }
-                else
-                {
-                    meetingForm.MeetingStart = meeting.RecordingStartedAt;
-                }
-
-                meetingForm.MeetingEnd = meeting.RecordingStoppedAt;
-
-                if (row1.PurposeAcademic)
-                    meetingForm.MeetingPurpose = "Academic";
-                else if (row1.PurposeCareer)
-                    meetingForm.MeetingPurpose = "Career";
-                else if (row1.PurposeOther)
-                    meetingForm.MeetingPurpose = "Other";
-                else
-                    meetingForm.MeetingPurpose = null;
-
-                meetingForm.ReferredTo = row1.ReferralName;
-                meetingForm.ReferralReason = row1.ReferralReason;
-                meetingForm.MeetingNotes = row1.ProposedSolutions;
-            }
-
-            _context.MeetingForms.Add(meetingForm);
-            _context.SaveChanges();
-
-            TempData["Success"] = "Form 3 saved successfully.";
-            return RedirectToAction("Form3History");
->>>>>>> origin_second/linaLMversion
-        }
-        [HttpPost]
-        public IActionResult SendForm3(Form3ViewModel model)
-        {
-            int meetingId = 1; // مؤقتًا
-
-            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId);
-
-            if (meeting == null)
-                return NotFound();
-
-<<<<<<< HEAD
-            var form = _context.Forms
-                .Include(f => f.MeetingForm)
-                .FirstOrDefault(f => f.FormType == "Form 3"
-                                  && f.MeetingForm != null
-                                  && f.MeetingForm.MeetingId == meetingId);
-
-            if (form == null)
-            {
-                form = new Form
-                {
-                    StudentId = meeting.StudentId,
-                    AdvisorId = meeting.AdvisorId,
-                    FormType = "Form 3",
-                    FormDate = DateTime.Now,
-                    FormStatus = "Sent",
-                    AdvisorNotes = model.AdvisorNotes,
-                    AutoFilled = true,
-                    AdvisorConfirmation = null
-                };
-
-                _context.Forms.Add(form);
-                _context.SaveChanges();
-
-                form.MeetingForm = new MeetingForm
-                {
-                    FormId = form.FormId,
-                    MeetingId = meetingId
-                };
-
-                _context.MeetingForms.Add(form.MeetingForm);
-            }
-
-            form.FormDate = DateTime.Now;
-            form.FormStatus = "Sent";
-            form.AdvisorNotes = model.AdvisorNotes;
-
-            var row1 = model.Meetings.FirstOrDefault();
-
-            if (row1 != null && form.MeetingForm != null)
-            {
-                DateTime parsedMeetingStart;
-=======
-            var form = new Form
-            {
-                StudentId = meeting.StudentId,
-                AdvisorId = meeting.AdvisorId,
-                FormType = "Form 3",
-                FormDate = DateTime.Now,
-                FormStatus = "Sent",
-                AdvisorNotes = model.AdvisorNotes,
-                AutoFilled = true,
-                AdvisorConfirmation = null
-            };
-
-            _context.Forms.Add(form);
-            _context.SaveChanges();
-
-            var meetingForm = new MeetingForm
-            {
-                FormId = form.FormId,
-                MeetingId = meetingId
-            };
-
-            var row1 = model.Meetings.FirstOrDefault();
-
-            if (row1 != null)
-            {
-                DateTime parsedMeetingStart;
-
->>>>>>> origin_second/linaLMversion
-                if (DateTime.TryParseExact(
-                        row1.MeetingDate,
-                        "dd/MM/yyyy hh:mm tt",
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out parsedMeetingStart))
-                {
-<<<<<<< HEAD
-                    form.MeetingForm.MeetingStart = parsedMeetingStart;
-                }
-                else
-                {
-                    form.MeetingForm.MeetingStart = meeting.RecordingStartedAt;
-                }
-
-                form.MeetingForm.MeetingEnd = meeting.RecordingStoppedAt;
-
-                if (row1.PurposeAcademic)
-                    form.MeetingForm.MeetingPurpose = "Academic";
-                else if (row1.PurposeCareer)
-                    form.MeetingForm.MeetingPurpose = "Career";
-                else if (row1.PurposeOther)
-                    form.MeetingForm.MeetingPurpose = "Other";
-                else
-                    form.MeetingForm.MeetingPurpose = null;
-
-                form.MeetingForm.ReferredTo = row1.ReferralName;
-                form.MeetingForm.ReferralReason = row1.ReferralReason;
-                form.MeetingForm.MeetingNotes = row1.ProposedSolutions;
-                form.MeetingForm.MeetingId = meetingId;
-            }
-
-            _context.SaveChanges();
-
-            TempData["Success"] = "Form 3 sent successfully.";
-            return RedirectToAction("Form3");
-        }
-       
-=======
-                    meetingForm.MeetingStart = parsedMeetingStart;
-                }
-                else
-                {
-                    meetingForm.MeetingStart = meeting.RecordingStartedAt;
-                }
-
-                meetingForm.MeetingEnd = meeting.RecordingStoppedAt;
-
-                if (row1.PurposeAcademic)
-                    meetingForm.MeetingPurpose = "Academic";
-                else if (row1.PurposeCareer)
-                    meetingForm.MeetingPurpose = "Career";
-                else if (row1.PurposeOther)
-                    meetingForm.MeetingPurpose = "Other";
-                else
-                    meetingForm.MeetingPurpose = null;
-
-                meetingForm.ReferredTo = row1.ReferralName;
-                meetingForm.ReferralReason = row1.ReferralReason;
-                meetingForm.MeetingNotes = row1.ProposedSolutions;
-            }
-
-            _context.MeetingForms.Add(meetingForm);
-            _context.SaveChanges();
-
-            TempData["Success"] = "Form 3 sent successfully.";
-            return RedirectToAction("Form3History");
-        }
-
->>>>>>> origin_second/linaLMversion
-
-
-        private const string Form4SessionKey = "Form4Draft";
-
-        // ==============================
-        // GET: Advisor/Form4
-        // ==============================
-        [HttpGet]
-        public async Task<IActionResult> Form4()
-        {
-<<<<<<< HEAD
-            int studentId = 2210783; // مؤقتًا
-=======
-            int studentId = 2210783;
->>>>>>> origin_second/linaLMversion
-
-            var student = await _context.Students
-                .Include(s => s.Transcript)
-                    .ThenInclude(t => t.Courses)
-                .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            var model = BuildForm4ViewModel(student);
-<<<<<<< HEAD
-=======
-            model.PlanCourseOptions = GetIsPlanCourseOptions();
->>>>>>> origin_second/linaLMversion
-
-            var latestForm = await _context.Forms
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 4")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            if (latestForm != null)
-<<<<<<< HEAD
-            {
-                model.AdvisorNotes = latestForm.AdvisorNotes ?? "";
->>>>>>> origin_second/rahafgh
-            }
-=======
-                model.AdvisorNotes = latestForm.AdvisorNotes ?? "";
->>>>>>> origin_second/linaLMversion
-
-            return View(model);
-        }
-
-        [HttpPost]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        [HttpPost]
->>>>>>> origin_second/لما2
-        public IActionResult SaveForm4(Form4ViewModel model)
-        {
-            model.Status = "Draft";
-            SaveForm4ToSession(model);
-<<<<<<< HEAD
-=======
-        public async Task<IActionResult> SaveForm4(Form4ViewModel model)
-        {
-            int studentId = 2210783; // مؤقتًا
-            int advisorId = 1;       // مؤقتًا إلى أن تربطيه بتسجيل الدخول
-=======
-        public async Task<IActionResult> SaveForm4(Form4ViewModel model)
-        {
-            int studentId = 2210783; // مؤقتًا
-            int advisorId = 1;       // مؤقتًا
-
-            await SaveCourseDecisionsAsync(studentId, model.PendingCourses);
->>>>>>> origin_second/linaLMversion
-
-            var student = await _context.Students
-                .Include(s => s.Transcript)
-                    .ThenInclude(t => t.Courses)
-                .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            var vm = BuildForm4ViewModel(student);
-
-            var form = new Form
-            {
-                StudentId = studentId,
-                AdvisorId = advisorId,
-                FormType = "Form 4",
-                FormDate = DateTime.Now,
-                FormStatus = "Draft",
-<<<<<<< HEAD
-                AdvisorNotes = model.AdvisorNotes,   // هنا الصح
-=======
-                AdvisorNotes = model.AdvisorNotes,
->>>>>>> origin_second/linaLMversion
-                AutoFilled = true,
-                AdvisorConfirmation = null
-            };
-
-            _context.Forms.Add(form);
-            await _context.SaveChangesAsync();
-
-            var form4 = new StudyPlanMatchingForm
-            {
-                FormId = form.FormId,
-                GraduationStatus = null,
-                RemainingHours = Math.Max(140 - vm.EarnedHours, 0),
-                RequiredHours = 140,
-                EarnedHours = vm.EarnedHours,
-                RegisteredHours = null,
-<<<<<<< HEAD
-
-=======
->>>>>>> origin_second/linaLMversion
-                UniversityHours = vm.UniversityReqHours,
-                PrepYearHours = vm.PrepYearReqHours,
-                FreeCoursesHours = vm.FreeCoursesHours,
-                CollegeMandatoryHours = vm.CollegeMandatoryHours,
-                DeptMandatoryHours = vm.DeptMandatoryHours,
-                DeptElectiveHours = vm.DeptElectiveHours,
-                TotalHours = vm.TotalHours
-            };
-
-            _context.StudyPlanMatchingForms.Add(form4);
-            await _context.SaveChangesAsync();
-<<<<<<< HEAD
->>>>>>> origin_second/rahafgh
-
-            TempData["Success"] = "Form 4 saved successfully.";
-            return RedirectToAction("Form4");
-        }
-
-        [HttpPost]
-<<<<<<< HEAD
-=======
-
-            TempData["Success"] = "Form 4 saved successfully.";
-            return RedirectToAction("Form4", new { studentId = GetSelectedStudentId() });
-        }
-
-        [HttpPost]
->>>>>>> origin_second/لما2
-        public IActionResult SendForm4(Form4ViewModel model)
-        {
-            model.Status = "Sent";
-            SaveForm4ToSession(model);
-<<<<<<< HEAD
-=======
-=======
-
-            TempData["Success"] = "Form 4 saved successfully.";
-            return RedirectToAction("Form4History");
-        }
-
-        [HttpPost]
->>>>>>> origin_second/linaLMversion
-        public async Task<IActionResult> SendForm4(Form4ViewModel model)
-        {
-            int studentId = 2210783; // مؤقتًا
-            int advisorId = 1;       // مؤقتًا
-
-<<<<<<< HEAD
-=======
-            await SaveCourseDecisionsAsync(studentId, model.PendingCourses);
-
->>>>>>> origin_second/linaLMversion
-            var student = await _context.Students
-                .Include(s => s.Transcript)
-                    .ThenInclude(t => t.Courses)
-                .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            var vm = BuildForm4ViewModel(student);
-
-            var form = new Form
-            {
-                StudentId = studentId,
-                AdvisorId = advisorId,
-                FormType = "Form 4",
-                FormDate = DateTime.Now,
-                FormStatus = "Sent",
-<<<<<<< HEAD
-                AdvisorNotes = model.AdvisorNotes,   // هنا الصح
-=======
-                AdvisorNotes = model.AdvisorNotes,
->>>>>>> origin_second/linaLMversion
-                AutoFilled = true,
-                AdvisorConfirmation = true
-            };
-
-            _context.Forms.Add(form);
-            await _context.SaveChangesAsync();
-
-            var form4 = new StudyPlanMatchingForm
-            {
-                FormId = form.FormId,
-                GraduationStatus = null,
-                RemainingHours = Math.Max(140 - vm.EarnedHours, 0),
-                RequiredHours = 140,
-                EarnedHours = vm.EarnedHours,
-                RegisteredHours = null,
-<<<<<<< HEAD
-
-=======
->>>>>>> origin_second/linaLMversion
-                UniversityHours = vm.UniversityReqHours,
-                PrepYearHours = vm.PrepYearReqHours,
-                FreeCoursesHours = vm.FreeCoursesHours,
-                CollegeMandatoryHours = vm.CollegeMandatoryHours,
-                DeptMandatoryHours = vm.DeptMandatoryHours,
-                DeptElectiveHours = vm.DeptElectiveHours,
-                TotalHours = vm.TotalHours
-            };
-
-            _context.StudyPlanMatchingForms.Add(form4);
-            await _context.SaveChangesAsync();
-<<<<<<< HEAD
->>>>>>> origin_second/rahafgh
-
-            TempData["Success"] = "Form 4 sent successfully.";
-=======
-
-            TempData["Success"] = "Form 4 sent successfully.";
-            return RedirectToAction("Form4History");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ApproveFreeCourses(Form4ViewModel model)
-        {
-            int studentId = 2210783; // مؤقتًا
-
-            await SaveCourseDecisionsAsync(studentId, model.PendingCourses);
-
-            TempData["Success"] = "Free courses updated successfully.";
->>>>>>> origin_second/linaLMversion
-            return RedirectToAction("Form4");
-=======
-
-            TempData["Success"] = "Form 4 sent successfully.";
-            return RedirectToAction("Form4", new { studentId = GetSelectedStudentId() });
->>>>>>> origin_second/لما2
-        }
-
-        private void SaveForm4ToSession(Form4ViewModel model)
-        {
-            var json = JsonSerializer.Serialize(model);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin_second/لما2
-            HttpContext.Session.SetString(Form4SessionKey, json);
-        }
-
-        private Form4ViewModel CreateNewForm4()
-        {
-            return new Form4ViewModel
-            {
-                StudentName = "Lama Alshikh",
-                StudentId = "000000000",
-                AcademicYear = "2024",
-                EarnedHours = 129,
-                RegisteredHours = 11,
-                UniversityReqHours = 26,
-                PrepYearReqHours = 15,
-                FreeCoursesHours = 9,
-                CollegeMandatoryHours = 24,
-                DeptMandatoryHours = 57,
-                DeptElectiveHours = 9,
-                TotalHours = 140,
-                GraduationTermText = "الفصل الدراسي الاول 2024",
-                Note1 = "BUS220 و BUS320 تعادل إدارة المنظمات BUS 232",
-                Note2 = "BUS230 و BUS335 تعادل إدارة المنظمات BUS 232",
-                Note3 = "مادة التسويق تعادل BUS 232",
-                Note4 = "تم احتساب 11 ساعة ضمن الفصل القادم",
-                AdvisorNameLabel = "المرشدة الأكاديمية للطالبة",
-                AdvisorName = "Dr. Amina Gamlo",
-                AdvisorSignature = "",
-                Status = "Draft"
-            };
+            return RedirectToAction(nameof(Form3));
         }
     }
-<<<<<<< HEAD
+
 }
-=======
-            HttpContext.Session.SetString("Form4Draft", json);
-        }
-
-
-        /* from here to dowm codes for form2 by rahaf gh */
-        /*
-        [HttpGet]
-        public async Task<IActionResult> Form2(int studentId)
-        {
-            var latestForm = await _context.Forms
-                .Include(f => f.CourseChoiceMonitoringForm)
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
-                return NotFound("Form 2 not found.");
-
-            var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            var form2 = latestForm.CourseChoiceMonitoringForm;
-
-            var selectedCourses = string.IsNullOrWhiteSpace(form2.SelectedCoursesJson)
-                ? new List<SelectedCourseVM>()
-                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(form2.SelectedCoursesJson) ?? new List<SelectedCourseVM>();
-
-            var model = new Form2ViewModel
-            {
-                StudentName = student.Name,
-                StudentId = student.StudentId,
-                Semester = form2.Semester ?? "",
-                ComingSemester = form2.ComingSemester ?? "",
-                RunningCreditHours = form2.RunningCreditHours ?? 0,
-                AdvisedCreditHours = form2.AdvisedCreditHours ?? 0,
-                Level = form2.Level ?? "",
-                DropSubjects = form2.DropSubjects ?? "",
-                ICSubjects = form2.ICSubjects ?? "",
-                IPSubjects = form2.IpSubjects ?? "",
-                SelectedCourses = selectedCourses
-            };
-
-            return View(model);
-        } */
-
-
-        [HttpGet]
-        public async Task<IActionResult> Form2()
-        {
-            int studentId = 2210783;
-
-            var latestForm = await _context.Forms
-                .Include(f => f.CourseChoiceMonitoringForm)
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
-                return NotFound("Form 2 not found.");
-
-            var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-                return NotFound("Student not found.");
-
-            var form2 = latestForm.CourseChoiceMonitoringForm;
-
-            var selectedCourses = string.IsNullOrWhiteSpace(form2.SelectedCoursesJson)
-                ? new List<SelectedCourseVM>()
-                : JsonSerializer.Deserialize<List<SelectedCourseVM>>(form2.SelectedCoursesJson) ?? new List<SelectedCourseVM>();
-
-            var model = new Form2ViewModel
-            {
-                StudentName = student.Name,
-                StudentId = student.StudentId,
-                Semester = form2.Semester ?? "",
-                ComingSemester = form2.ComingSemester ?? "",
-                RunningCreditHours = form2.RunningCreditHours ?? 0,
-                AdvisedCreditHours = form2.AdvisedCreditHours ?? 0,
-                Level = form2.Level ?? "",
-                DropSubjects = form2.DropSubjects ?? "",
-                ICSubjects = form2.ICSubjects ?? "",
-                IPSubjects = form2.IpSubjects ?? "",
-                SelectedCourses = selectedCourses
-            };
-
-            return View(model);
-        }
-
-        //سشsave form2
-
-        [HttpPost]
-        public async Task<IActionResult> SaveForm2(Form2ViewModel model)
-        {
-            int studentId = model.StudentId;
-
-            var latestForm = await _context.Forms
-                .Include(f => f.CourseChoiceMonitoringForm)
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
-                return NotFound("Form 2 not found.");
-
-            var form2 = latestForm.CourseChoiceMonitoringForm;
-
-            form2.Semester = model.Semester;
-            form2.ComingSemester = model.ComingSemester;
-            form2.RunningCreditHours = model.RunningCreditHours;
-            form2.AdvisedCreditHours = model.AdvisedCreditHours;
-            form2.Level = model.Level;
-            form2.DropSubjects = model.DropSubjects;
-            form2.ICSubjects = model.ICSubjects;
-            form2.IpSubjects = model.IPSubjects;
-            form2.SelectedCoursesJson = JsonSerializer.Serialize(model.SelectedCourses ?? new List<SelectedCourseVM>());
-
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Form 2 saved successfully.";
-            return RedirectToAction("Form2");
-        }
-
-
-        // Send Form2
-        [HttpPost]
-        public async Task<IActionResult> SendForm2(Form2ViewModel model)
-        {
-            int studentId = model.StudentId;
-
-            var latestForm = await _context.Forms
-                .Include(f => f.CourseChoiceMonitoringForm)
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
-                return NotFound("Form 2 not found.");
-
-            var form2 = latestForm.CourseChoiceMonitoringForm;
-
-            form2.Semester = model.Semester;
-            form2.ComingSemester = model.ComingSemester;
-            form2.RunningCreditHours = model.RunningCreditHours;
-            form2.AdvisedCreditHours = model.AdvisedCreditHours;
-            form2.Level = model.Level;
-            form2.DropSubjects = model.DropSubjects;
-            form2.ICSubjects = model.ICSubjects;
-            form2.IpSubjects = model.IPSubjects;
-            form2.SelectedCoursesJson = JsonSerializer.Serialize(model.SelectedCourses ?? new List<SelectedCourseVM>());
-
-            // هنا حطي حالة الإرسال حسب الأعمدة الموجودة عندك
-            latestForm.FormStatus = "Sent to Advising Committee";
-            latestForm.FormDate = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Form 2 sent to the advising committee successfully.";
-            return RedirectToAction("Form2");
-        }
-
-        // Return Form2 To Student
-        [HttpPost]
-        public async Task<IActionResult> ReturnForm2ToStudent(Form2ViewModel model)
-        {
-            int studentId = model.StudentId;
-
-            var latestForm = await _context.Forms
-                .Include(f => f.CourseChoiceMonitoringForm)
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 2")
-                .OrderByDescending(f => f.FormId)
-                .FirstOrDefaultAsync();
-
-            if (latestForm == null || latestForm.CourseChoiceMonitoringForm == null)
-                return NotFound("Form 2 not found.");
-
-            var form2 = latestForm.CourseChoiceMonitoringForm;
-
-            form2.Semester = model.Semester;
-            form2.ComingSemester = model.ComingSemester;
-            form2.RunningCreditHours = model.RunningCreditHours;
-            form2.AdvisedCreditHours = model.AdvisedCreditHours;
-            form2.Level = model.Level;
-            form2.DropSubjects = model.DropSubjects;
-            form2.ICSubjects = model.ICSubjects;
-            form2.IpSubjects = model.IPSubjects;
-            form2.SelectedCoursesJson = JsonSerializer.Serialize(model.SelectedCourses ?? new List<SelectedCourseVM>());
-
-            // هنا حطي حالة الإرجاع حسب الأعمدة الموجودة عندك
-            latestForm.FormStatus = "Returned to Student";
-            latestForm.FormDate = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Form 2 returned to the student successfully.";
-            return RedirectToAction("Form2");
-        }
-
-    }
-}
->>>>>>> origin_second/rahafgh
-=======
-            HttpContext.Session.SetString("Form4Draft", json);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Form4History()
-        {
-            int studentId = 2210783; // مؤقتًا
-
-            var items = await _context.Forms
-                .Where(f => f.StudentId == studentId && f.FormType == "Form 4")
-                .OrderByDescending(f => f.FormDate)
-                .Select(f => new Acadify.Models.FormHistoryItemViewModel
-                {
-                    FormId = f.FormId,
-                    FormTitle = "Study Plan Matching (Form 4)",
-                    Status = f.FormStatus,
-                    DateText = f.FormDate.ToString("MMM d, yyyy"),
-                    ViewUrl = Url.Action("ViewSavedForm4", "Advisor", new { formId = f.FormId })!
-                })
-                .ToListAsync();
-
-            return View(items);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ViewSavedForm4(int formId)
-        {
-            var form = await _context.Forms
-                .Include(f => f.Student)
-                    .ThenInclude(s => s.Transcript)
-                        .ThenInclude(t => t.Courses)
-                .Include(f => f.StudyPlanMatchingForm)
-                .FirstOrDefaultAsync(f => f.FormId == formId && f.FormType == "Form 4");
-
-            if (form == null)
-                return NotFound("Form 4 not found.");
-
-            var student = form.Student;
-            var model = BuildForm4ViewModel(student);
-
-            model.AdvisorNotes = form.AdvisorNotes ?? "";
-            model.PlanCourseOptions = GetIsPlanCourseOptions();
-
-            if (form.StudyPlanMatchingForm != null)
-            {
-                model.EarnedHours = form.StudyPlanMatchingForm.EarnedHours ?? model.EarnedHours;
-                model.UniversityReqHours = form.StudyPlanMatchingForm.UniversityHours ?? model.UniversityReqHours;
-                model.PrepYearReqHours = form.StudyPlanMatchingForm.PrepYearHours ?? model.PrepYearReqHours;
-                model.FreeCoursesHours = form.StudyPlanMatchingForm.FreeCoursesHours ?? model.FreeCoursesHours;
-                model.CollegeMandatoryHours = form.StudyPlanMatchingForm.CollegeMandatoryHours ?? model.CollegeMandatoryHours;
-                model.DeptMandatoryHours = form.StudyPlanMatchingForm.DeptMandatoryHours ?? model.DeptMandatoryHours;
-                model.DeptElectiveHours = form.StudyPlanMatchingForm.DeptElectiveHours ?? model.DeptElectiveHours;
-                model.TotalHours = form.StudyPlanMatchingForm.TotalHours ?? model.TotalHours;
-            }
-
-            return View("Form4", model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Form3History()
-        {
-            int meetingId = 1; // مؤقتًا
-
-            var items = await _context.Forms
-                .Include(f => f.MeetingForm)
-                .Where(f => f.FormType == "Form 3"
-                         && f.MeetingForm != null
-                         && f.MeetingForm.MeetingId == meetingId)
-                .OrderByDescending(f => f.FormDate)
-                .Select(f => new Acadify.Models.FormHistoryItemViewModel
-                {
-                    FormId = f.FormId,
-                    FormTitle = "Meeting Record (Form 3)",
-                    Status = f.FormStatus,
-                    DateText = f.FormDate.ToString("MMM d, yyyy"),
-                    ViewUrl = Url.Action("ViewSavedForm3", "Advisor", new { formId = f.FormId })!
-                })
-                .ToListAsync();
-
-            return View(items);
-        }
-
-        [HttpGet]
-        public IActionResult ViewSavedForm3(int formId)
-        {
-            var form = _context.Forms
-                .Include(f => f.MeetingForm)
-                .FirstOrDefault(f => f.FormId == formId && f.FormType == "Form 3");
-
-            if (form == null)
-                return NotFound();
-
-            var meetingId = form.MeetingForm?.MeetingId;
-            if (meetingId == null)
-                return NotFound();
-
-            var meeting = _context.Meetings.FirstOrDefault(m => m.MeetingId == meetingId.Value);
-            if (meeting == null)
-                return NotFound();
-
-            var model = new Form3ViewModel
-            {
-                StudentName = "",
-                StudentId = "",
-                Status = form.FormStatus ?? "Draft",
-                AdvisorNotes = form.AdvisorNotes ?? "",
-                Meetings = new List<Form3MeetingRowVM>()
-            };
-
-            for (int i = 1; i <= 3; i++)
-            {
-                model.Meetings.Add(new Form3MeetingRowVM
-                {
-                    MeetingNo = i,
-                    MeetingDate = "",
-                    PurposeAcademic = false,
-                    PurposeCareer = false,
-                    PurposeOther = false,
-                    ReferralName = "",
-                    ReferralReason = "",
-                    ProposedSolutions = "",
-                    StudentInitial = "",
-                    AdvisorInitial = ""
-                });
-            }
-
-            var row1 = model.Meetings[0];
-            var mf = form.MeetingForm;
-
-            if (mf != null)
-            {
-                if (mf.MeetingStart.HasValue)
-                    row1.MeetingDate = mf.MeetingStart.Value.ToString("dd/MM/yyyy hh:mm tt");
-
-                row1.PurposeAcademic = mf.MeetingPurpose == "Academic";
-                row1.PurposeCareer = mf.MeetingPurpose == "Career";
-                row1.PurposeOther = mf.MeetingPurpose == "Other";
-
-                row1.ReferralName = mf.ReferredTo ?? "";
-                row1.ReferralReason = mf.ReferralReason ?? "";
-                row1.ProposedSolutions = mf.MeetingNotes ?? "";
-            }
-
-            return View("Form3", model);
-        }
-
-
-
-
-
-    }
-}
->>>>>>> origin_second/linaLMversion
-=======
-}
->>>>>>> origin_second/لما2

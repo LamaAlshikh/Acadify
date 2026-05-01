@@ -1,4 +1,4 @@
-﻿@model Acadify.Models.SignUpVM
+@model Acadify.Models.SignUpVM
 
 @{
     Layout = null;
@@ -6,10 +6,6 @@
 }
 
 <!DOCTYPE html>
-<<<<<<< HEAD
-
-=======
->>>>>>> origin_second/لما2
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -18,10 +14,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/RahafZh.css" />
-<<<<<<< HEAD
-
-=======
->>>>>>> origin_second/لما2
 </head>
 
 <body class="signup-page">
@@ -35,17 +27,6 @@
         <h1>Create <span>your account</span></h1>
 
         <form class="form" method="post" asp-action="SignUp" asp-controller="Account">
-<<<<<<< HEAD
-
-            <input class="input" asp-for="FullName" type="text" placeholder="Full name" />
-            <input class="input" asp-for="Email" type="email" placeholder="Email" />
-            <input class="input" asp-for="ID" type="text" placeholder="ID" />
-            <input class="input" asp-for="Password" type="password" placeholder="Password" />
-            <input class="input" asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" />
-
-            <button class="btn" type="submit">Sign up</button>
-
-=======
             @Html.AntiForgeryToken()
 
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -60,16 +41,6 @@
                 <input class="input" asp-for="ID" type="text" placeholder="ID" />
                 <span asp-validation-for="ID" class="text-danger"></span>
             </div>
-
-            <div id="roleContainer" style="display:none;">
-                <select class="input" asp-for="Role" id="roleSelect">
-                    <option value="">Choose role</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Advisor">Advisor</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-
             <input class="input" asp-for="Password" type="password" placeholder="Password" />
             <span asp-validation-for="Password" class="text-danger"></span>
 
@@ -86,45 +57,11 @@
                        href="/Account/Login">Login</a>
                 </div>
             </div>
->>>>>>> origin_second/لما2
         </form>
 
     </div>
-
-<<<<<<< HEAD
-</body>
-</html>
-=======
-    <script>
-            const emailInput = document.getElementById("emailInput");
-            const roleContainer = document.getElementById("roleContainer");
-            const studentIdContainer = document.getElementById("studentIdContainer");
-            const roleSelect = document.getElementById("roleSelect");
-
-            function toggleFields() {
-                const email = (emailInput.value || "").toLowerCase().trim();
-
-                if (email.endsWith("@@kau.edu.sa") && !email.endsWith("@@stu.kau.edu.sa")) {
-                    roleContainer.style.display = "block";
-                    studentIdContainer.style.display = "none";
-                } else if (email.endsWith("@@stu.kau.edu.sa")) {
-                    roleContainer.style.display = "none";
-                    studentIdContainer.style.display = "block";
-                    roleSelect.value = "";
-                } else {
-                    roleContainer.style.display = "none";
-                    studentIdContainer.style.display = "block";
-                    roleSelect.value = "";
-                }
-            }
-
-            emailInput.addEventListener("input", toggleFields);
-            window.addEventListener("load", toggleFields);
-    </script>
-
-    @{
+@{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 </body>
 </html>
->>>>>>> origin_second/لما2

@@ -1,487 +1,377 @@
-﻿using System.Globalization;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using Acadify.Models;
+﻿using Acadify.Models;
+using Acadify.Models.Db;
 using Acadify.Services.AcademicCalendar.Interfaces;
+using ClosedXML.Excel;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Acadify.Services.AcademicCalendar
 {
     public class AcademicCalendarAiExtractor : IAcademicCalendarAiExtractor
     {
-        private readonly OpenAiVisionClient _vision;
-<<<<<<< HEAD
-
-        public AcademicCalendarAiExtractor(OpenAiVisionClient vision)
+        private sealed class EventSpec
         {
-            _vision = vision;
-=======
-        private readonly IPdfOcrService _ocr;
-
-        public AcademicCalendarAiExtractor(OpenAiVisionClient vision, IPdfOcrService ocr)
-        {
-            _vision = vision;
-            _ocr = ocr;
->>>>>>> origin_second/لما2
+            public string EventName { get; set; } = "";
+            public bool UseEndDate { get; set; }
+            public List<string> Aliases { get; set; } = new();
         }
 
-        private static readonly string[] AllowedEvents =
+        private sealed class CalendarRow
         {
-            "بداية فترة تسجيل المقررات للطالب والطالبات على ODUS PLUS",
-            "نهاية فترة تسجيل المقررات للطالب والطالبات على ODUS PLUS",
-            "بداية فترة تسجيل المقررات للمرشدين الأكاديميين على ODUS PLUS وللشؤون التعليمية والوكلاء والوكيلات بالكليات",
-            "نهاية فترة التسجيل للمرشدين الأكاديميين",
-            "بداية تقديم طلبات سحب مقرر للطالب والطالبات في الفصل الدراسي الحالي",
-            "نهاية فترة تقديم طلب سحب مقرر للفصل الدراسي الحالي",
-            "بداية تقديم طلبات التأجيل",
-            "نهاية تقديم طلبات التأجيل",
-            "بداية تقديم طلبات الاعتذار",
-<<<<<<< HEAD
-            "نهاية فترة تقديم طلبات الاعتذار"
+            public string EventText { get; set; } = "";
+            public DateTime? FromDate { get; set; }
+            public DateTime? ToDate { get; set; }
+        }
+
+        private static readonly List<EventSpec> TargetEvents = new()
+        {
+            new EventSpec
+            {
+                EventName = "بداية فترة تسجيل المقررات للطالب والطالبات على ODUS PLUS",
+                UseEndDate = false,
+                Aliases = new()
+                {
+                    "تسجيل المقررات للطلاب والطالبات على odus plus",
+                    "تسجيل المقررات للطالب والطالبات على odus plus",
+                    "registration for male and female students on odus plus",
+                    "students registration on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "نهاية فترة تسجيل المقررات للطالب والطالبات على ODUS PLUS",
+                UseEndDate = true,
+                Aliases = new()
+                {
+                    "تسجيل المقررات للطلاب والطالبات على odus plus",
+                    "تسجيل المقررات للطالب والطالبات على odus plus",
+                    "registration for male and female students on odus plus",
+                    "students registration on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "بداية فترة تسجيل المقررات للمرشدين الأكاديميين على ODUS PLUS وللشؤون التعليمية والوكلاء والوكيلات بالكليات",
+                UseEndDate = false,
+                Aliases = new()
+                {
+                    "تسجيل المقررات للمرشدين الأكاديميين",
+                    "تسجيل المقررات للشؤون التعليمية بالكليات",
+                    "تسجيل المقررات للوكلاء والوكيلات بالكليات",
+                    "academic advisors registration",
+                    "registration for academic advisors",
+                    "registration for academic affairs in colleges",
+                    "registration for vice deans and female vice deans in colleges"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "نهاية فترة التسجيل للمرشدين الأكاديميين",
+                UseEndDate = true,
+                Aliases = new()
+                {
+                    "تسجيل المقررات للمرشدين الأكاديميين",
+                    "academic advisors registration",
+                    "registration for academic advisors"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "بداية تقديم طلبات سحب مقرر للطالب والطالبات في الفصل الدراسي الحالي",
+                UseEndDate = false,
+                Aliases = new()
+                {
+                    "تقديم طلبات سحب مقرر للفصل الحالي على odus plus",
+                    "course withdrawal requests for the current semester on odus plus",
+                    "withdrawal requests on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "نهاية فترة تقديم طلب سحب مقرر للفصل الدراسي الحالي",
+                UseEndDate = true,
+                Aliases = new()
+                {
+                    "تقديم طلبات سحب مقرر للفصل الحالي على odus plus",
+                    "course withdrawal requests for the current semester on odus plus",
+                    "withdrawal requests on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "بداية تقديم طلبات التأجيل",
+                UseEndDate = false,
+                Aliases = new()
+                {
+                    "تقديم طلبات تأجيل الفصل الدراسي الأول للعام الجامعي 1448/1449هـ على odus plus",
+                    "deferment requests on odus plus",
+                    "postponement requests on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "نهاية تقديم طلبات التأجيل",
+                UseEndDate = true,
+                Aliases = new()
+                {
+                    "تقديم طلبات تأجيل الفصل الدراسي الأول للعام الجامعي 1448/1449هـ على odus plus",
+                    "deferment requests on odus plus",
+                    "postponement requests on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "بداية تقديم طلبات الاعتذار",
+                UseEndDate = false,
+                Aliases = new()
+                {
+                    "تقديم طلبات الاعتذار عن الفصل الحالي على odus plus",
+                    "apology requests for the current semester on odus plus",
+                    "withdrawal from semester requests on odus plus"
+                }
+            },
+            new EventSpec
+            {
+                EventName = "نهاية فترة تقديم طلبات الاعتذار",
+                UseEndDate = true,
+                Aliases = new()
+                {
+                    "تقديم طلبات الاعتذار عن الفصل الحالي على odus plus",
+                    "apology requests for the current semester on odus plus",
+                    "withdrawal from semester requests on odus plus"
+                }
+            }
         };
 
-        private sealed class AiRoot
+        public Task<List<AcademicCalendarEvent>> ExtractEventsFromPdfAsync(string filePath, int calendarId)
         {
-            public List<AiEvent>? events { get; set; }
-        }
+            var ext = Path.GetExtension(filePath).ToLowerInvariant();
 
-        private sealed class AiEvent
-        {
-            public string? @event { get; set; }
-=======
-            "نهاية فترة تقديم طلبات الاعتذار",
-            "إجازة نهاية العام"
-        };
+            if (ext != ".xlsx")
+                throw new InvalidOperationException("Please upload the academic calendar as an Excel (.xlsx) file.");
 
-        private sealed class SingleEventRoot
-        {
->>>>>>> origin_second/لما2
-            public string? gregorian_date { get; set; }
-        }
+            using var workbook = new XLWorkbook(filePath);
+            var worksheet = workbook.Worksheets.First();
 
-        public async Task<List<AcademicCalendarEvent>> ExtractEventsFromPdfAsync(string pdfPath, int calendarId)
-        {
-            var images = await PdfToImages.RenderAllPagesAsPngAsync(pdfPath);
+            var rows = ReadCalendarRows(worksheet);
+            var results = new List<AcademicCalendarEvent>();
 
-            if (images == null || images.Count == 0)
-                throw new InvalidOperationException("Could not render PDF pages to images.");
-
-<<<<<<< HEAD
-            var prompt = BuildPrompt();
-
-            var aiText = await _vision.GetJsonFromImagesAsync(prompt, images);
-            var json = ExtractJsonObject(aiText) ?? aiText;
-
-            AiRoot? root;
-            try
+            // أولاً: الأحداث الأساسية المعروفة
+            foreach (var spec in TargetEvents)
             {
-                root = JsonSerializer.Deserialize<AiRoot>(json,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            catch
-            {
-                throw new InvalidOperationException("AI returned invalid JSON.");
-            }
-
-            if (root?.events == null)
-                throw new InvalidOperationException("AI returned empty events list.");
-=======
-            int selectedPageIndex = await DetectTargetPageByTextAsync(pdfPath, images.Count);
-
-            if (selectedPageIndex < 0 || selectedPageIndex >= images.Count)
-                throw new InvalidOperationException($"Could not determine the correct second semester page. Page index = {selectedPageIndex}, Page count = {images.Count}");
-
-            var selectedImage = images[selectedPageIndex];
->>>>>>> origin_second/لما2
-
-            var result = new List<AcademicCalendarEvent>();
-
-            foreach (var allowedEvent in AllowedEvents)
-            {
-<<<<<<< HEAD
-                var matched = root.events.FirstOrDefault(e =>
-                    string.Equals(NormalizeText(e.@event), NormalizeText(allowedEvent), StringComparison.Ordinal));
-
-                if (matched == null)
+                var matchedRow = FindBestRow(rows, spec);
+                if (matchedRow == null)
                     continue;
 
-                if (string.IsNullOrWhiteSpace(matched.gregorian_date) ||
-                    matched.gregorian_date.Trim().ToLower() == "null")
-=======
-                var aiText = await _vision.GetJsonFromImagesAsync(
-                    BuildSingleEventPrompt(allowedEvent),
-                    new List<byte[]> { selectedImage });
+                var selectedDate = spec.UseEndDate
+                    ? (matchedRow.ToDate ?? matchedRow.FromDate)
+                    : (matchedRow.FromDate ?? matchedRow.ToDate);
 
-                var json = ExtractJsonObject(aiText) ?? aiText;
-
-                SingleEventRoot? root;
-                try
-                {
-                    root = JsonSerializer.Deserialize<SingleEventRoot>(
-                        json,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }
-                catch
->>>>>>> origin_second/لما2
-                {
-                    continue;
-                }
-
-<<<<<<< HEAD
-                var date = ParseGregorianDateOrThrow(matched.gregorian_date);
-=======
-                if (root == null ||
-                    string.IsNullOrWhiteSpace(root.gregorian_date) ||
-                    root.gregorian_date.Trim().Equals("null", StringComparison.OrdinalIgnoreCase))
+                if (selectedDate == null)
                     continue;
 
-                var date = ParseGregorianDateOrThrow(root.gregorian_date);
->>>>>>> origin_second/لما2
-
-                result.Add(new AcademicCalendarEvent
+                results.Add(new AcademicCalendarEvent
                 {
                     CalendarId = calendarId,
-                    EventName = allowedEvent,
-                    GregorianDate = date,
+                    EventName = spec.EventName,
+                    GregorianDate = selectedDate.Value.Date,
                     HijriDate = "-",
                     DayAr = null
                 });
             }
 
-<<<<<<< HEAD
-            return result;
-        }
-
-        private static string BuildPrompt()
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("أنت متخصص في قراءة التقويمات الأكاديمية العربية من الصور.");
-            sb.AppendLine("اقرأ صفحات التقويم كاملة بدقة.");
-            sb.AppendLine("استخرج فقط الأحداث التالية، وأعد فقط التاريخ الميلادي لكل حدث.");
-            sb.AppendLine("إذا لم تجد الحدث بشكل مؤكد فأعد gregorian_date = null.");
-            sb.AppendLine("لا تخمن.");
-            sb.AppendLine("يجب مطابقة الحدث بالنص الكامل.");
-            sb.AppendLine("يجب أخذ التاريخ من نفس العمود المرتبط بالحدث.");
-            sb.AppendLine("لا تخرج أي شرح.");
-            sb.AppendLine("أعد JSON فقط.");
-            sb.AppendLine();
-            sb.AppendLine("الأحداث المطلوبة بالنص EXACT:");
-            for (int i = 0; i < AllowedEvents.Length; i++)
+            // ثانيًا: أي صف فيه كلمة إجازة ينحفظ كما هو
+            foreach (var row in rows)
             {
-                sb.AppendLine($"{i + 1}) {AllowedEvents[i]}");
-            }
-
-            sb.AppendLine();
-            sb.AppendLine("قواعد التنظيف:");
-            sb.AppendLine("- احذف الرموز داخل الأقواس مثل (W1) (W2) وغيرها.");
-            sb.AppendLine("- وحّد ODUS و PLUS ODUS إلى ODUS PLUS.");
-            sb.AppendLine("- إذا كان النص موزعًا على أكثر من سطر، اجمعه في سطر واحد.");
-            sb.AppendLine("- لا تغيّر معنى اسم الحدث.");
-            sb.AppendLine();
-            sb.AppendLine("صيغة الإخراج المطلوبة EXACT:");
-            sb.AppendLine(@"
-{
-  ""events"": [
-    {
-      ""event"": ""بداية فترة تسجيل المقررات للطالب والطالبات على ODUS PLUS"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""نهاية فترة تسجيل المقررات للطالب والطالبات على ODUS PLUS"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""بداية فترة تسجيل المقررات للمرشدين الأكاديميين على ODUS PLUS وللشؤون التعليمية والوكلاء والوكيلات بالكليات"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""نهاية فترة التسجيل للمرشدين الأكاديميين"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""بداية تقديم طلبات سحب مقرر للطالب والطالبات في الفصل الدراسي الحالي"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""نهاية فترة تقديم طلب سحب مقرر للفصل الدراسي الحالي"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""بداية تقديم طلبات التأجيل"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""نهاية تقديم طلبات التأجيل"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""بداية تقديم طلبات الاعتذار"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    },
-    {
-      ""event"": ""نهاية فترة تقديم طلبات الاعتذار"",
-      ""gregorian_date"": ""dd/MM/yyyy""
-    }
-  ]
-}");
-            return sb.ToString();
-        }
-
-=======
-            ValidateResults(result);
-
-            return result;
-        }
-
-        private async Task<int> DetectTargetPageByTextAsync(string pdfPath, int pageCount)
-        {
-            int bestPageIndex = -1;
-            int bestScore = -1;
-
-            for (int i = 0; i < pageCount; i++)
-            {
-                var pageText = await _ocr.ExtractPageTextByOcrAsync(pdfPath, i + 1);
-                var normalized = NormalizeText(pageText);
-
-                if (string.IsNullOrWhiteSpace(normalized))
+                if (!ContainsVacationWord(row.EventText))
                     continue;
 
-                int score = 0;
+                var selectedDate = row.FromDate ?? row.ToDate;
+                if (selectedDate == null)
+                    continue;
 
-                if (normalized.Contains(NormalizeText("الفصل الدراسي الثاني")))
-                    score += 100;
+                var eventName = row.EventText.Trim();
 
-                if (normalized.Contains(NormalizeText("الفصل الدراسي الاول")))
-                    score -= 80;
+                bool alreadyExists = results.Any(x =>
+                    Normalize(x.EventName) == Normalize(eventName) &&
+                    x.GregorianDate.Date == selectedDate.Value.Date);
 
-                if (normalized.Contains(NormalizeText("الفصل الصيفي")))
-                    score -= 80;
+                if (alreadyExists)
+                    continue;
 
-                foreach (var ev in AllowedEvents)
+                results.Add(new AcademicCalendarEvent
                 {
-                    score += CountMatchedWords(normalized, NormalizeText(ev)) * 5;
-                }
+                    CalendarId = calendarId,
+                    EventName = eventName,
+                    GregorianDate = selectedDate.Value.Date,
+                    HijriDate = "-",
+                    DayAr = null
+                });
+            }
 
-                if (normalized.Contains(NormalizeText("بداية الدراسة")))
-                    score += 10;
+            return Task.FromResult(results);
+        }
 
-                if (normalized.Contains(NormalizeText("تسجيل المقررات")))
-                    score += 10;
+        private List<CalendarRow> ReadCalendarRows(IXLWorksheet ws)
+        {
+            var rows = new List<CalendarRow>();
+            var lastRow = ws.LastRowUsed()?.RowNumber() ?? 0;
 
-                if (normalized.Contains(NormalizeText("الاعتذار")))
-                    score += 10;
+            for (int row = 1; row <= lastRow; row++)
+            {
+                // حسب ملفك:
+                // A = الحدث
+                // B = من / اليوم والتاريخ
+                // D = إلى / اليوم والتاريخ
 
-                if (normalized.Contains(NormalizeText("التأجيل")))
-                    score += 10;
+                var eventText = ws.Cell(row, 1).GetString().Trim();
+                var fromText = ws.Cell(row, 2).GetString().Trim();
+                var toText = ws.Cell(row, 4).GetString().Trim();
 
+                if (string.IsNullOrWhiteSpace(eventText))
+                    continue;
+
+                if (IsHeaderLike(eventText))
+                    continue;
+
+                var fromDates = ExtractGregorianDates(fromText);
+                var toDates = ExtractGregorianDates(toText);
+
+                DateTime? fromDate = fromDates.FirstOrDefault();
+                DateTime? toDate = toDates.FirstOrDefault();
+
+                if (fromDate == null && toDate == null)
+                    continue;
+
+                rows.Add(new CalendarRow
+                {
+                    EventText = eventText,
+                    FromDate = fromDate,
+                    ToDate = toDate
+                });
+            }
+
+            return rows;
+        }
+
+        private CalendarRow? FindBestRow(List<CalendarRow> rows, EventSpec spec)
+        {
+            CalendarRow? bestRow = null;
+            int bestScore = 0;
+
+            foreach (var row in rows)
+            {
+                // نتجنب صفوف الإجازات عند مطابقة الأحداث الأساسية
+                if (ContainsVacationWord(row.EventText))
+                    continue;
+
+                var score = ScoreEvent(row.EventText, spec);
                 if (score > bestScore)
                 {
                     bestScore = score;
-                    bestPageIndex = i;
+                    bestRow = row;
                 }
             }
 
-            return bestPageIndex;
+            return bestScore >= 55 ? bestRow : null;
         }
 
-        private static string BuildSingleEventPrompt(string eventName)
+        private int ScoreEvent(string candidate, EventSpec spec)
         {
-            var sb = new StringBuilder();
+            var normalizedCandidate = Normalize(candidate);
+            int best = 0;
 
-            sb.AppendLine("أنت تقرأ صفحة واحدة من التقويم الأكاديمي العربي.");
-            sb.AppendLine("المطلوب استخراج التاريخ الميلادي لحدث واحد فقط.");
-            sb.AppendLine($"اسم الحدث المطلوب: {eventName}");
-            sb.AppendLine("ابحث عن هذا الحدث بالنص داخل الصفحة.");
-            sb.AppendLine("خذ التاريخ الميلادي المرتبط بنفس الخلية أو بنفس المربع أو الصف الخاص بهذا الحدث فقط.");
-            sb.AppendLine("لا تستخدم تاريخًا من حدث آخر.");
-            sb.AppendLine("لا تستخدم تاريخًا من أسبوع آخر.");
-            sb.AppendLine("إذا لم تجد الحدث بشكل مؤكد فأعد gregorian_date = null.");
-            sb.AppendLine("إذا كان داخل النص رموز مثل (W1) أو (W19) فتجاهلها.");
-            sb.AppendLine("أعد JSON فقط بهذه الصيغة:");
-            sb.AppendLine(@"
-{
-  ""gregorian_date"": ""dd/MM/yyyy""
-}");
-
-            return sb.ToString();
-        }
-
-        private static int CountMatchedWords(string actual, string expected)
-        {
-            if (string.IsNullOrWhiteSpace(actual) || string.IsNullOrWhiteSpace(expected))
-                return 0;
-
-            var words = expected
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Distinct()
-                .ToList();
-
-            int matched = 0;
-
-            foreach (var word in words)
+            foreach (var alias in spec.Aliases.Append(spec.EventName))
             {
-                if (actual.Contains(word))
-                    matched++;
+                var normalizedAlias = Normalize(alias);
+
+                if (normalizedCandidate.Contains(normalizedAlias) || normalizedAlias.Contains(normalizedCandidate))
+                    best = Math.Max(best, 100);
+
+                var words = normalizedAlias
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    .Where(w => w.Length > 2)
+                    .Distinct()
+                    .ToList();
+
+                if (words.Count == 0)
+                    continue;
+
+                int matched = words.Count(w => normalizedCandidate.Contains(w));
+                int score = (matched * 100) / words.Count;
+                best = Math.Max(best, score);
             }
 
-            return matched;
-        }
->>>>>>> origin_second/لما2
-        private static DateTime ParseGregorianDateOrThrow(string input)
-        {
-            var value = input.Trim();
-
-<<<<<<< HEAD
-            value = value.Replace("م", "").Trim();
-            value = Regex.Replace(value, @"\s+", "");
-
-            if (DateTime.TryParseExact(
-                value,
-                "dd/MM/yyyy",
-=======
-            value = ConvertArabicDigitsToEnglish(value);
-            value = value.Replace("م", "").Trim();
-            value = Regex.Replace(value, @"\s+", "");
-
-            string[] formats =
-            {
-        "dd/MM/yyyy",
-        "d/M/yyyy",
-        "yyyy-MM-dd",
-        "yyyy/M/d",
-        "yyyy/MM/dd",
-        "dd-MM-yyyy",
-        "d-M-yyyy"
-    };
-
-            if (DateTime.TryParseExact(
-                value,
-                formats,
->>>>>>> origin_second/لما2
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out var dt))
-            {
-                return dt.Date;
-            }
-
-<<<<<<< HEAD
-            throw new InvalidOperationException($"Invalid gregorian date returned by AI: {input}");
-=======
-            throw new InvalidOperationException($"Invalid gregorian date: {input}");
+            return best;
         }
 
-        
-        private static void ValidateResults(List<AcademicCalendarEvent> events)
+        private List<DateTime> ExtractGregorianDates(string input)
         {
-            if (events == null || events.Count == 0)
-                throw new InvalidOperationException("No valid calendar events were extracted.");
+            var results = new List<DateTime>();
 
-            var duplicatedNames = events
-                .GroupBy(e => e.EventName)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
-
-            if (duplicatedNames.Any())
-                throw new InvalidOperationException("Duplicate event names were found in extracted results.");
->>>>>>> origin_second/لما2
-        }
-
-        private static string NormalizeText(string? text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return string.Empty;
-
-            var t = text;
-
-<<<<<<< HEAD
-            t = Regex.Replace(t, @"ODUS\s*PLUS|PLUS\s*ODUS|ODUSPLUS|ODUS", "ODUS PLUS", RegexOptions.IgnoreCase);
-
-            t = Regex.Replace(t, @"\([A-Za-z]\d+\)", " ");
-            t = Regex.Replace(t, @"[■◆●•\u2022\u25A0\u25C6]+", " ");
-            t = t.Replace("للطلاب", "للطالب");
-            t = t.Replace("الطلاب", "الطالب");
-            t = t.Replace("والطالبات", "والطالبات");
-=======
-            t = ConvertArabicDigitsToEnglish(t);
-
-            t = Regex.Replace(t, @"ODUS\s*PLUS|PLUS\s*ODUS|ODUSPLUS|ODUS", "ODUS PLUS", RegexOptions.IgnoreCase);
-            t = Regex.Replace(t, @"\([A-Za-z]\d+\)", " ");
-            t = Regex.Replace(t, @"[■◆●•\u2022\u25A0\u25C6]+", " ");
-
-            t = t.Replace("أ", "ا")
-                 .Replace("إ", "ا")
-                 .Replace("آ", "ا")
-                 .Replace("ى", "ي")
-                 .Replace("ة", "ه")
-                 .Replace("ؤ", "و")
-                 .Replace("ئ", "ي")
-                 .Replace("ـ", "");
-
-            t = Regex.Replace(t, @"[\u064B-\u065F]", "");
->>>>>>> origin_second/لما2
-            t = Regex.Replace(t, @"\s+", " ").Trim();
-
-            return t;
-        }
-
-<<<<<<< HEAD
-=======
-        private static string ConvertArabicDigitsToEnglish(string input)
-        {
             if (string.IsNullOrWhiteSpace(input))
-                return input;
+                return results;
 
-            var map = new Dictionary<char, char>
+            var text = input.Trim();
+
+            var ymdMatches = Regex.Matches(text, @"(20\d{2})-(\d{2})-(\d{2})");
+            foreach (Match m in ymdMatches)
             {
-                ['٠'] = '0',
-                ['١'] = '1',
-                ['٢'] = '2',
-                ['٣'] = '3',
-                ['٤'] = '4',
-                ['٥'] = '5',
-                ['٦'] = '6',
-                ['٧'] = '7',
-                ['٨'] = '8',
-                ['٩'] = '9',
-                ['۰'] = '0',
-                ['۱'] = '1',
-                ['۲'] = '2',
-                ['۳'] = '3',
-                ['۴'] = '4',
-                ['۵'] = '5',
-                ['۶'] = '6',
-                ['۷'] = '7',
-                ['۸'] = '8',
-                ['۹'] = '9'
-            };
-
-            var chars = input.ToCharArray();
-
-            for (int i = 0; i < chars.Length; i++)
-            {
-                if (map.TryGetValue(chars[i], out var replacement))
-                    chars[i] = replacement;
+                var value = $"{m.Groups[1].Value}-{m.Groups[2].Value}-{m.Groups[3].Value}";
+                if (DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                    results.Add(dt.Date);
             }
 
-            return new string(chars);
+            var dmySlashMatches = Regex.Matches(text, @"(\d{2})/(\d{2})/(20\d{2})");
+            foreach (Match m in dmySlashMatches)
+            {
+                var value = $"{m.Groups[1].Value}/{m.Groups[2].Value}/{m.Groups[3].Value}";
+                if (DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                    results.Add(dt.Date);
+            }
+
+            return results.Distinct().OrderBy(x => x).ToList();
         }
 
->>>>>>> origin_second/لما2
-        private static string? ExtractJsonObject(string text)
+        private bool ContainsVacationWord(string text)
+        {
+            var normalized = Normalize(text);
+            return normalized.Contains(Normalize("إجازة")) ||
+                   normalized.Contains(Normalize("اجازة"));
+        }
+
+        private bool IsHeaderLike(string text)
+        {
+            var normalized = Normalize(text);
+
+            return normalized == Normalize("الحدث") ||
+                   normalized == Normalize("من") ||
+                   normalized == Normalize("إلى") ||
+                   normalized.Contains(Normalize("اليوم والتاريخ")) ||
+                   normalized.Contains(Normalize("الأسبوع"));
+        }
+
+        private string Normalize(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                return null;
+                return "";
 
-            var start = text.IndexOf('{');
-            var end = text.LastIndexOf('}');
+            text = text.ToLowerInvariant();
 
-            if (start >= 0 && end > start)
-                return text.Substring(start, end - start + 1);
+            text = text.Replace("أ", "ا")
+                       .Replace("إ", "ا")
+                       .Replace("آ", "ا")
+                       .Replace("ى", "ي")
+                       .Replace("ة", "ه")
+                       .Replace("ؤ", "و")
+                       .Replace("ئ", "ي")
+                       .Replace("ـ", "");
 
-            return null;
+            text = Regex.Replace(text, @"\([a-z]\d+\)", " ", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, @"[^\w\s/-]", " ");
+            text = Regex.Replace(text, @"\s+", " ").Trim();
+
+            return text;
         }
     }
 }

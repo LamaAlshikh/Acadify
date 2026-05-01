@@ -1,21 +1,14 @@
-<<<<<<< HEAD
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-=======
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
->>>>>>> origin_second/لما2
 
 namespace Acadify.Models;
 
 [Table("User")]
-<<<<<<< HEAD
-[Index("Email", Name = "UQ__User__AB6E6164942EBD22", IsUnique = true)]
-=======
->>>>>>> origin_second/لما2
+// أبقينا على الـ Index لضمان فرادة البريد الإلكتروني على مستوى القاعدة
+[Index("Email", IsUnique = true)]
 public partial class User
 {
     [Key]
@@ -31,24 +24,18 @@ public partial class User
 
     [Column("password")]
     [StringLength(255)]
-<<<<<<< HEAD
-    [InverseProperty("User")]
-    public virtual Admin? Admin { get; set; }
     public string Password { get; set; } = null!;
 
-    [InverseProperty("AdvisorNavigation")]
-    public virtual Advisor? Advisor { get; set; }
-}
-=======
-    public string Password { get; set; } = null!;
+    // --- العلاقات (Navigation Properties) ---
 
     [InverseProperty("User")]
     public virtual Admin? Admin { get; set; }
 
+    // ملاحظة: استخدمنا "AdvisorNavigation" أو "User" حسب ما تم تعريفه في الـ DbContext 
+    // نسخة "لما" أكثر دقة في تسمية الربط هنا
     [InverseProperty("User")]
     public virtual Advisor? Advisor { get; set; }
 
     [InverseProperty("User")]
     public virtual Student? Student { get; set; }
 }
->>>>>>> origin_second/لما2
